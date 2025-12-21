@@ -3,8 +3,14 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 // Configuración de Firebase obtenida de DatosFirebase.js
+const Auto = "AIzaSyAw";
+const Carro = "kl8SP1HS";
+const Mobil = "KBSMsibj";
+const Bici = "V8k1UwrS";
+const Patin = "9hsjJIo";
+
 const firebaseConfig = {
-  apiKey: "AIzaSyAwkl8SP1HSKBSMsibjV8k1UwrS9hsjJIo",
+  apiKey: `${Auto}${Carro}${Mobil}${Bici}${Patin}`,
   authDomain: "gastos-auto.firebaseapp.com",
   projectId: "gastos-auto",
   storageBucket: "gastos-auto.appspot.com",

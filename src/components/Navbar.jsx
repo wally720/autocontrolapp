@@ -10,7 +10,7 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="navbar-brand">
         <img 
-          src="/logo.png" 
+          src={`${import.meta.env.BASE_URL}logo.png`}
           alt="AutoGasto Pro Logo" 
           className="navbar-logo-placeholder" 
         />
