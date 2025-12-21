@@ -1,0 +1,61 @@
+/* src/features/Reports/ComparisonCard.css */
+.comparison-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #2a2a2a;
+    padding: 30px;
+    border-radius: 12px;
+    margin-top: 1.5rem;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    color: #c0c0c0;
+    font-weight: 500;
+}
+
+.card-value {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #e0e0e0;
+}
+
+.comparison-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    font-size: 2.5rem;
+}
+
+.percentage {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.percentage.up { color: #ff4d4d; }
+.percentage.down { color: #00c49f; }
+.icon-up { color: #ff4d4d; }
+.icon-down { color: #00c49f; }
+.icon-equal { color: #c0c0c0; }
+
+/* --- Responsive Design for Mobile --- */
+@media (max-width: 768px) {
+  .comparison-container {
+    flex-direction: column;
+    gap: 25px;
+  }
+
+  .comparison-icon {
+    /* Rotar el ícono para que apunte hacia abajo en el flujo vertical */
+    transform: rotate(90deg);
+  }
+}

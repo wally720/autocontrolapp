@@ -1,0 +1,58 @@
+/* src/features/Reports/Reports.css */
+
+.reports-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.report-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.report-buttons button, .export-button {
+    background-color: #3a3a3a;
+    border: 1px solid #555;
+    color: #e0e0e0;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.report-buttons button:hover:not(.active) {
+    background-color: #4a4a4a;
+}
+
+.report-buttons button.active {
+    background-color: #448aff;
+    color: #121212;
+    border-color: #448aff;
+    font-weight: bold;
+}
+
+.export-button {
+    background-color: #1c6b31; /* Verde oscuro */
+    color: white;
+    border: none;
+}
+
+.export-button:hover {
+    background-color: #278e43;
+}
+
+.report-content {
+    margin-top: 1rem;
+}
+
+/* Estilos para los textos de los gráficos de Recharts */
+.recharts-text {
+    fill: #e0e0e0;
+}

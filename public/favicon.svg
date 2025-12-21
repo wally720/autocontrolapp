@@ -1,0 +1,23 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <defs>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="64" height="64" rx="12" fill="#242424"/>
+  
+  <!-- Headlight Glows -->
+  <circle cx="24" cy="44" r="5" fill="#fef08a" filter="url(#glow)"/>
+  <circle cx="40" cy="44" r="5" fill="#fef08a" filter="url(#glow)"/>
+
+  <!-- W Shape -->
+  <polyline points="16 20, 24 44, 32 28, 40 44, 48 20" stroke="#448aff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Headlight Inner Circles -->
+  <circle cx="24" cy="44" r="3" fill="white"/>
+  <circle cx="40" cy="44" r="3" fill="white"/>
+</svg>

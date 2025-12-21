@@ -1,0 +1,74 @@
+/* src/components/DashboardHeader.css */
+.dashboard-header {
+  background: linear-gradient(135deg, #448aff 0%, #2979ff 100%);
+  color: white;
+  padding: 25px 35px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 8px 20px rgba(41, 121, 255, 0.25);
+}
+
+.header-left {
+  text-align: left;
+}
+
+.header-title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+.header-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.header-right {
+  text-align: right;
+}
+
+.total-label {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 400;
+  opacity: 0.9;
+  margin-bottom: 4px;
+}
+
+.total-amount {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+/* --- Responsive Design for Mobile --- */
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .header-left, .header-right {
+    text-align: center;
+  }
+
+  .header-subtitle {
+    justify-content: center;
+  }
+
+  .total-label {
+    justify-content: center;
+  }
+}

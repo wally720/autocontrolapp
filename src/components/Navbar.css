@@ -1,0 +1,69 @@
+/* src/components/Navbar.css */
+.navbar {
+  background-color: #242424;
+  padding: 15px 30px;
+  border-radius: 12px;
+  margin-bottom: 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #3a3a3a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-logo-placeholder {
+  height: 80px; /* Aumentado para un logo más grande */
+  width: auto;  /* Asegura que el ancho se ajuste para no deformar la imagen */
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 1rem;
+  background-color: #1a1a1a;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.navbar-links a {
+  color: #c0c0c0;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 6px;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar-links a:hover {
+  background-color: #3a3a3a;
+  color: #fff;
+}
+
+.navbar-links a.active {
+  background-color: #448aff;
+  color: #121212;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(68, 138, 255, 0.3);
+}
+
+/* --- Responsive Design for Mobile --- */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .navbar-links {
+    width: 100%;
+    justify-content: center;
+  }
+}

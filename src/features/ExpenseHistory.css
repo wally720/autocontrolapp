@@ -1,0 +1,165 @@
+/* src/features/ExpenseHistory.css */
+
+.history-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.loading, .no-expenses {
+  text-align: center;
+  padding: 40px;
+  color: #888;
+  font-size: 1.1rem;
+}
+
+.expenses-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.expenses-table th,
+.expenses-table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid #3a3a3a;
+  vertical-align: middle;
+}
+
+.expenses-table th {
+  background-color: #2a2a2a;
+  font-weight: 600;
+  color: #e0e0e0;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.expenses-table tr:nth-child(even) {
+  background-color: #2a2a2a; /* Zebra striping */
+}
+
+.expenses-table tr:hover {
+  background-color: #3a3a3a;
+}
+
+.expenses-table tr:last-child td {
+  border-bottom: none;
+}
+
+.expenses-table td.amount {
+  font-weight: bold;
+  color: #448aff;
+  font-size: 1.1rem;
+}
+
+.category-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+}
+
+.category-cell svg {
+  color: #829bff;
+  font-size: 1.2rem;
+}
+
+.category-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.category-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.fuel-details {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #b0b0b0;
+  margin-left: 36px; /* Indent under the category icon */
+}
+
+.fuel-details span:last-of-type {
+  background-color: #3a3a3a;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.notes-detail {
+  font-style: italic;
+  color: #aaa;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 36px; /* Indent under the category icon */
+}
+
+.notes-detail svg {
+  color: #777;
+}
+
+.actions-cell {
+  text-align: center;
+}
+
+.delete-button {
+  background: transparent;
+  border: none;
+  color: #8a9197;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.delete-button:hover {
+  background-color: #ff4d4d30;
+  color: #ff4d4d;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1.5rem;
+  gap: 10px;
+}
+
+.pagination button {
+  background-color: #3a3a3a;
+  border: 1px solid #555;
+  color: #e0e0e0;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: #4a4a4a;
+}
+
+.pagination button:disabled {
+  background-color: #2a2a2a;
+  cursor: not-allowed;
+  color: #777;
+}
+
+.pagination span {
+  font-weight: bold;
+}

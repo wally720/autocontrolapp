@@ -1,0 +1,26 @@
+/* src/features/Reports/ReportTable.css */
+/* Usamos un CSS común para las tablas de los nuevos reportes */
+
+.report-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+}
+
+.report-table th,
+.report-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #3a3a3a;
+}
+
+.report-table th {
+    background-color: #2a2a2a;
+    font-weight: 600;
+    color: #c0c0c0;
+    font-size: 0.9rem;
+}
+
+.report-table tr:nth-child(even) {
+    background-color: #2a2a2a;
+}

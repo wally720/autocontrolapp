@@ -1,0 +1,67 @@
+/* src/App.css */
+
+.app-header {
+  background-color: #242424; /* Color de superficie oscuro */
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #3a3a3a;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #448aff; /* Azul profesional más brillante */
+}
+
+.main-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 2rem;
+}
+
+.left-column, .right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Estilos para los "contenedores" o "tarjetas" de la UI */
+.feature-card {
+  background: #242424; /* Color de superficie oscuro */
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  text-align: left;
+  border: 1px solid #3a3a3a;
+}
+
+.feature-card h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #e0e0e0;
+  border-bottom: 1px solid #3a3a3a;
+  padding-bottom: 10px;
+}
+
+/* Título de la sección principal */
+h2 {
+  text-align: left;
+  margin-bottom: 1rem;
+}
+
+/* --- Responsive Design for Mobile --- */
+@media (max-width: 768px) {
+  .main-layout {
+    grid-template-columns: 1fr; /* Cambia a una sola columna */
+  }
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
