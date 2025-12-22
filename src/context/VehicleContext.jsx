@@ -6,7 +6,7 @@ import React, { createContext, useState, useMemo } from 'react';
 const VehicleContext = createContext();
 
 // Valores iniciales para las placas de los vehículos.
-const initialVehicles = ['XXX000', 'LZW000'];
+const initialVehicles = ['LZW520','XXX000'];
 
 // 2. Crear el Proveedor (Provider)
 // Este es un componente que envolverá a toda nuestra aplicación (o a las partes
