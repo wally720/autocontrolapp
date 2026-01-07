@@ -21,14 +21,24 @@ const firebaseConfig = {
   measurementId: "G-6H820PNL5L"
 };
 
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check";
+
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
+
+// Inicializar App Check con reCAPTCHA Enterprise
+// Nota: En desarrollo local, podrías necesitar activar el debug token en la consola de Firebase
+const appCheck = initializeAppCheck(app, {
+  provider: new ReCaptchaEnterpriseProvider('6Lfoj0IsAAAAAFcycYMz3_3Ur-73vqTmHJLMXg3x'),
+  isTokenAutoRefreshEnabled: true
+});
 
 // Inicializar Cloud Firestore y Auth
 const firestore = getFirestore(app);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
-export { firestore, auth, googleProvider };
+export { firestore, auth, googleProvider, appCheck };
+
 
 
