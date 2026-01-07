@@ -8,11 +8,12 @@ import {
 import './ExpenseHistory.css';
 
 export const formatCurrency = (value) => {
-  return new Intl.NumberFormat('es-CO', {
+  return new Intl.NumberFormat(undefined, {
     style: 'currency',
-    currency: 'COP',
+    currency: 'USD',
+    currencyDisplay: 'narrowSymbol',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    maximumFractionDigits: 2
   }).format(value);
 };
 
@@ -79,7 +80,7 @@ const ExpenseHistory = () => {
                   </div>
                   {expense.category === 'Combustible' && expense.odometer && (
                     <div className="fuel-details">
-                      <span>{expense.odometer.toLocaleString('es-CO')} km</span>
+                      <span>{expense.odometer.toLocaleString()} km</span>
                       <span>{expense.gallons ? expense.gallons.toFixed(2) + ' Gal' : ''}</span>
                     </div>
                   )}
@@ -97,8 +98,8 @@ const ExpenseHistory = () => {
                 <td>{expense.date}</td>
                 <td className="amount" style={{ textAlign: 'right' }}>{formatCurrency(expense.amount)}</td>
                 <td className="actions-cell">
-                  <button 
-                    className="delete-button" 
+                  <button
+                    className="delete-button"
                     onClick={() => handleDelete(expense.id, expense.amount)}
                     title="Eliminar gasto"
                   >
@@ -110,7 +111,7 @@ const ExpenseHistory = () => {
           </tbody>
         </table>
       </div>
-      
+
       {nPages > 1 && (
         <div className="pagination">
           <button onClick={prevPage} disabled={currentPage === 1}>Anterior</button>

@@ -6,7 +6,7 @@ import './ExpenseForm.css';
 
 const ExpenseForm = () => {
   const { addExpense } = useExpenses();
-  
+
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('Combustible');
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
@@ -25,7 +25,7 @@ const ExpenseForm = () => {
       alert('Por favor complete todos los campos obligatorios.');
       return;
     }
-    
+
     const newExpense = {
       amount: parseFloat(amount),
       category,
@@ -43,7 +43,7 @@ const ExpenseForm = () => {
     }
 
     await addExpense(newExpense);
-    
+
     // Limpiar el formulario
     setAmount('');
     setCategory('Combustible');
@@ -56,7 +56,7 @@ const ExpenseForm = () => {
   return (
     <form onSubmit={handleSubmit} className="expense-form">
       <h3>Registrar Nuevo Gasto</h3>
-      
+
       <div className="form-group">
         <label htmlFor="category">Categoría</label>
         <select id="category" value={category} onChange={(e) => setCategory(e.target.value)} required>
@@ -93,7 +93,7 @@ const ExpenseForm = () => {
       )}
 
       <div className="form-group">
-        <label htmlFor="amount">Monto Total Pagado (COP)</label>
+        <label htmlFor="amount">Monto Total Pagado</label>
         <input
           id="amount"
           type="number"
@@ -103,7 +103,7 @@ const ExpenseForm = () => {
           required
         />
       </div>
-      
+
       <div className="form-group">
         <label htmlFor="date">Fecha</label>
         <input

@@ -8,7 +8,7 @@ import './DashboardHeader.css';
 const DashboardHeader = () => {
   const { expenses, loading } = useExpenses();
 
-  const currentMonthName = new Date().toLocaleString('es-CO', { month: 'long' });
+  const currentMonthName = new Date().toLocaleString(undefined, { month: 'long' });
 
   const monthlyTotal = expenses.reduce((total, expense) => {
     const expenseMonth = new Date(expense.date).getMonth();

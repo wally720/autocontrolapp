@@ -48,9 +48,9 @@ const CategoryDistribution = () => {
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
-          <Tooltip 
+          <Tooltip
             contentStyle={{ backgroundColor: '#2a2a2a', border: '1px solid #4a4a4a' }}
-            formatter={(value) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(value)} 
+            formatter={(value) => new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD', currencyDisplay: 'narrowSymbol' }).format(value)}
           />
           <Legend wrapperStyle={{ color: '#e0e0e0' }} />
         </PieChart>
