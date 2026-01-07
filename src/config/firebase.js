@@ -1,6 +1,8 @@
 // src/config/firebase.js
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
+
 
 // Configuración de Firebase obtenida de DatosFirebase.js
 const Auto = "AIzaSyAw";
@@ -22,7 +24,11 @@ const firebaseConfig = {
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 
-// Inicializar Cloud Firestore y exportarlo para su uso en otras partes de la aplicación
+// Inicializar Cloud Firestore y Auth
 const firestore = getFirestore(app);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
 
-export { firestore };
+export { firestore, auth, googleProvider };
+
+

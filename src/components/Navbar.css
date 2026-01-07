@@ -12,8 +12,10 @@
 }
 
 .navbar-logo-placeholder {
-  height: 80px; /* Aumentado para un logo más grande */
-  width: auto;  /* Asegura que el ancho se ajuste para no deformar la imagen */
+  height: 80px;
+  /* Aumentado para un logo más grande */
+  width: auto;
+  /* Asegura que el ancho se ajuste para no deformar la imagen */
 }
 
 .navbar-brand {
@@ -58,11 +60,45 @@
 @media (max-width: 768px) {
   .navbar {
     flex-direction: column;
-    gap: 20px;
-    padding: 20px;
+    gap: 15px;
+    padding: 15px;
+    text-align: center;
+  }
+
+  .navbar-brand {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .navbar-logo-placeholder {
+    height: 60px;
   }
 
   .navbar-links {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 5px;
+  }
+
+  .navbar-links a {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+
+  /* Contenedor de Switcher y Perfil */
+  .navbar>div:last-child {
+    flex-direction: column;
+    width: 100%;
+    gap: 15px !important;
+  }
+
+  .user-profile-nav {
+    border-left: none !important;
+    padding-left: 0 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 10px;
     width: 100%;
     justify-content: center;
   }

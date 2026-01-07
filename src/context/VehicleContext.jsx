@@ -1,22 +1,27 @@
 // src/context/VehicleContext.jsx
-import React, { createContext, useState, useMemo } from 'react';
+import React, { createContext, useState, useEffect, useMemo } from 'react';
+import { useAuth } from './AuthContext';
 
-// 1. Crear el contexto
-// Este es el objeto que los componentes usarán para acceder al estado.
 const VehicleContext = createContext();
 
-// Valores iniciales para las placas de los vehículos.
-const initialVehicles = ['LZW520','XXX000'];
-
-// 2. Crear el Proveedor (Provider)
-// Este es un componente que envolverá a toda nuestra aplicación (o a las partes
-// que necesiten acceso al estado del vehículo). Se encarga de gestionar el estado.
 export const VehicleProvider = ({ children }) => {
-  const [vehicles] = useState(initialVehicles);
-  const [selectedVehicle, setSelectedVehicle] = useState(initialVehicles[0]);
+  const { userProfile } = useAuth();
+  const [selectedVehicle, setSelectedVehicle] = useState('');
 
-  // Usamos useMemo para evitar que el objeto de contexto se recree en cada render,
-  // lo cual podría causar re-renders innecesarios en los componentes consumidores.
+  // Sincronizar vehicles desde el perfil del usuario
+  const vehicles = useMemo(() => userProfile?.vehicles || [], [userProfile]);
+
+  // Si no hay vehículo seleccionado o el seleccionado ya no existe, elegir el primero
+  useEffect(() => {
+    if (vehicles.length > 0) {
+      if (!selectedVehicle || !vehicles.includes(selectedVehicle)) {
+        setSelectedVehicle(vehicles[0]);
+      }
+    } else {
+      setSelectedVehicle('');
+    }
+  }, [vehicles, selectedVehicle]);
+
   const value = useMemo(() => ({
     vehicles,
     selectedVehicle,
@@ -30,5 +35,5 @@ export const VehicleProvider = ({ children }) => {
   );
 };
 
-// 3. Exportar el contexto para que pueda ser usado por otros componentes.
 export default VehicleContext;
+

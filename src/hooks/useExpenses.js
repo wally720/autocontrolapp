@@ -3,31 +3,34 @@ import { useState, useEffect, useContext } from 'react';
 import { firestore } from '../config/firebase';
 import { collection, addDoc, query, where, onSnapshot, orderBy, doc, deleteDoc } from 'firebase/firestore';
 import VehicleContext from '../context/VehicleContext';
+import { useAuth } from '../context/AuthContext';
 
 /**
  * Hook personalizado para gestionar los gastos de un vehículo específico.
- * Proporciona los gastos en tiempo real y funciones para agregar o eliminar gastos.
- * @returns {object} - { expenses, loading, addExpense, deleteExpense }
  */
 export const useExpenses = () => {
   const { selectedVehicle } = useContext(VehicleContext);
+  const { currentUser } = useAuth();
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!selectedVehicle) {
+    if (!selectedVehicle || !currentUser) {
       setExpenses([]);
       setLoading(false);
       return;
     }
 
     setLoading(true);
-    
+
+    // Ahora filtramos SOLO por vehicleId para permitir acceso compartido.
+    // La seguridad se delega a las Reglas de Firestore (verificando authorizedUsers).
     const q = query(
-      collection(firestore, "expenses"), 
+      collection(firestore, "expenses"),
       where("vehicleId", "==", selectedVehicle),
       orderBy("date", "desc")
     );
+
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const expensesData = [];
@@ -42,31 +45,24 @@ export const useExpenses = () => {
     });
 
     return () => unsubscribe();
-  }, [selectedVehicle]);
+  }, [selectedVehicle, currentUser]);
 
-  /**
-   * Agrega un nuevo documento de gasto a la colección 'expenses'.
-   * @param {object} expense - El objeto de gasto a agregar.
-   */
   const addExpense = async (expense) => {
-    if (!selectedVehicle) {
-      console.error("No se puede agregar el gasto: no hay un vehículo seleccionado.");
+    if (!selectedVehicle || !currentUser) {
+      console.error("No se puede agregar el gasto: falta vehículo o usuario.");
       return;
     }
     try {
-      await addDoc(collection(firestore, "expenses"), { 
-        ...expense, 
-        vehicleId: selectedVehicle 
+      await addDoc(collection(firestore, "expenses"), {
+        ...expense,
+        vehicleId: selectedVehicle,
+        userId: currentUser.uid // Guardar ID del usuario
       });
     } catch (error) {
       console.error("Error al agregar el gasto:", error);
     }
   };
 
-  /**
-   * Elimina un documento de gasto de la colección 'expenses'.
-   * @param {string} id - El ID del documento a eliminar.
-   */
   const deleteExpense = async (id) => {
     try {
       const expenseDoc = doc(firestore, "expenses", id);
@@ -78,3 +74,4 @@ export const useExpenses = () => {
 
   return { expenses, loading, addExpense, deleteExpense };
 };
+

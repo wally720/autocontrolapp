@@ -60,15 +60,21 @@
     text-align: center;
   }
 
-  .header-left, .header-right {
+  .header-left,
+  .header-right {
     text-align: center;
   }
 
   .header-subtitle {
     justify-content: center;
+    font-size: 1.4rem;
   }
 
   .total-label {
     justify-content: center;
+  }
+
+  .total-amount {
+    font-size: 1.8rem;
   }
 }
