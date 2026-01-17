@@ -56,7 +56,7 @@
   .dashboard-header {
     flex-direction: column;
     gap: 15px;
-    padding: 20px;
+    padding: 20px 15px;
     text-align: center;
   }
 

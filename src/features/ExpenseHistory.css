@@ -5,7 +5,8 @@
   flex-direction: column;
 }
 
-.loading, .no-expenses {
+.loading,
+.no-expenses {
   text-align: center;
   padding: 40px;
   color: #888;
@@ -36,7 +37,8 @@
 }
 
 .expenses-table tr:nth-child(even) {
-  background-color: #2a2a2a; /* Zebra striping */
+  background-color: #2a2a2a;
+  /* Zebra striping */
 }
 
 .expenses-table tr:hover {
@@ -86,7 +88,8 @@
   gap: 8px;
   font-size: 0.9rem;
   color: #b0b0b0;
-  margin-left: 36px; /* Indent under the category icon */
+  margin-left: 36px;
+  /* Indent under the category icon */
 }
 
 .fuel-details span:last-of-type {
@@ -103,7 +106,8 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-left: 36px; /* Indent under the category icon */
+  margin-left: 36px;
+  /* Indent under the category icon */
 }
 
 .notes-detail svg {
@@ -162,4 +166,33 @@
 
 .pagination span {
   font-weight: bold;
+}
+
+@media (max-width: 768px) {
+
+  .expenses-table th,
+  .expenses-table td {
+    padding: 10px 8px;
+    font-size: 0.85rem;
+  }
+
+  .category-main {
+    font-size: 0.95rem;
+    gap: 8px;
+  }
+
+  .fuel-details,
+  .notes-detail {
+    margin-left: 28px;
+    font-size: 0.8rem;
+  }
+
+  .expenses-table td.amount {
+    font-size: 0.95rem;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+  }
 }

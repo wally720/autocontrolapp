@@ -10,10 +10,16 @@ const DashboardHeader = () => {
 
   const currentMonthName = new Date().toLocaleString(undefined, { month: 'long' });
 
+  const ahora = new Date();
+  const mesActual = ahora.getMonth();
+  const anioActual = ahora.getFullYear();
+
   const monthlyTotal = expenses.reduce((total, expense) => {
-    const expenseMonth = new Date(expense.date).getMonth();
-    const currentMonth = new Date().getMonth();
-    if (expenseMonth === currentMonth) {
+    // Dividimos la fecha "AAAA-MM-DD" manualmente para evitar desfases de zona horaria
+    const [anio, mes] = expense.date.split('-').map(Number);
+    
+    // mes - 1 porque en JavaScript los meses van de 0 a 11
+    if (anio === anioActual && (mes - 1) === mesActual) {
       return total + expense.amount;
     }
     return total;

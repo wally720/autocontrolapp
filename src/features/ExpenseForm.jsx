@@ -9,7 +9,15 @@ const ExpenseForm = () => {
 
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('Combustible');
-  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  // Función para obtener la fecha local en formato YYYY-MM-DD
+  const getLocalDate = () => {
+    const d = new Date();
+    const offset = d.getTimezoneOffset();
+    const localDate = new Date(d.getTime() - (offset * 60 * 1000));
+    return localDate.toISOString().split('T')[0];
+  };
+
+  const [date, setDate] = useState(getLocalDate());
   const [notes, setNotes] = useState('');
   const [odometer, setOdometer] = useState(''); // Estado para Kilometraje
   const [gallons, setGallons] = useState('');   // Estado para Galones
@@ -47,7 +55,7 @@ const ExpenseForm = () => {
     // Limpiar el formulario
     setAmount('');
     setCategory('Combustible');
-    setDate(new Date().toISOString().slice(0, 10));
+    setDate(getLocalDate());
     setNotes('');
     setOdometer('');
     setGallons('');

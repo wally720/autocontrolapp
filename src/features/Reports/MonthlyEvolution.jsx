@@ -9,7 +9,10 @@ const MonthlyEvolution = () => {
 
   // Procesar los datos para agruparlos por mes
   const data = expenses.reduce((acc, expense) => {
-    const month = new Date(expense.date).toLocaleString(undefined, { month: 'short', year: '2-digit' });
+    // Parseamos la fecha manualmente y creamos un objeto Date local para obtener el nombre del mes
+    const [year, monthNum] = expense.date.split('-').map(Number);
+    const dateObj = new Date(year, monthNum - 1, 1);
+    const month = dateObj.toLocaleString(undefined, { month: 'short', year: '2-digit' });
     const existingMonth = acc.find(item => item.month === month);
 
     if (existingMonth) {

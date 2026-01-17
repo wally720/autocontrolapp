@@ -192,3 +192,44 @@
         transform: translateY(0);
     }
 }
+
+@media (max-width: 768px) {
+    .admin-container {
+        padding: 1rem 10px;
+    }
+
+    .admin-tabs {
+        flex-wrap: wrap;
+    }
+
+    .tab-btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        flex: 1;
+        justify-content: center;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .action-btns {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .admin-btn {
+        margin-right: 0;
+        width: 100%;
+    }
+
+    .add-access-form {
+        flex-direction: column;
+    }
+
+    .add-access-form input {
+        width: 100%;
+    }
+}

@@ -13,7 +13,8 @@
     flex-wrap: wrap;
 }
 
-.report-buttons button, .export-button {
+.report-buttons button,
+.export-button {
     background-color: #3a3a3a;
     border: 1px solid #555;
     color: #e0e0e0;
@@ -39,7 +40,8 @@
 }
 
 .export-button {
-    background-color: #1c6b31; /* Verde oscuro */
+    background-color: #1c6b31;
+    /* Verde oscuro */
     color: white;
     border: none;
 }
@@ -55,4 +57,22 @@
 /* Estilos para los textos de los gráficos de Recharts */
 .recharts-text {
     fill: #e0e0e0;
+}
+
+@media (max-width: 768px) {
+    .report-buttons {
+        gap: 0.5rem;
+    }
+
+    .report-buttons button {
+        flex: 1 1 calc(50% - 0.5rem);
+        padding: 8px 10px;
+        font-size: 0.85rem;
+        justify-content: center;
+    }
+
+    .report-buttons button span {
+        display: block;
+        /* Asegurar que se vea el texto si se oculta en otros lados */
+    }
 }

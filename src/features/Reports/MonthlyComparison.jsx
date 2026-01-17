@@ -19,9 +19,9 @@ const MonthlyComparison = () => {
     let previousMonthTotal = 0;
 
     expenses.forEach(expense => {
-      const expenseDate = new Date(expense.date);
-      const expenseMonth = expenseDate.getMonth();
-      const expenseYear = expenseDate.getFullYear();
+      const [year, month] = expense.date.split('-').map(Number);
+      const expenseMonth = month - 1;
+      const expenseYear = year;
 
       if (expenseYear === currentYear && expenseMonth === currentMonth) {
         currentMonthTotal += expense.amount;
