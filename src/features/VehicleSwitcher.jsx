@@ -1,5 +1,6 @@
 // src/features/VehicleSwitcher.jsx
 import React, { useContext, useState } from 'react';
+import './VehicleSwitcher.css';
 import VehicleContext from '../context/VehicleContext';
 import { useAuth } from '../context/AuthContext';
 import { firestore } from '../config/firebase';
@@ -65,13 +66,13 @@ const VehicleSwitcher = () => {
 
 
   return (
-    <div className="vehicle-switcher-container" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <label htmlFor="vehicle-select" style={{ fontWeight: 'bold', color: 'white' }}>Vehículo:</label>
+    <div className="vehicle-switcher-container">
+      <label htmlFor="vehicle-select" className="vehicle-switcher-label">Vehículo:</label>
       <select
         id="vehicle-select"
         value={selectedVehicle}
         onChange={handleVehicleChange}
-        style={{ padding: '8px 12px', borderRadius: '4px', border: '1px solid #ccc' }}
+        className="vehicle-select"
       >
         {vehicles.length === 0 && <option value="">Sin vehículos</option>}
         {vehicles.map(plate => (
@@ -86,30 +87,24 @@ const VehicleSwitcher = () => {
           {!isAdding ? (
             <button
               onClick={() => setIsAdding(true)}
-              style={{ padding: '8px', borderRadius: '4px', background: '#2563eb', color: 'white', border: 'none', cursor: 'pointer' }}
+              className="add-vehicle-button"
               title="Agregar nueva placa"
             >
               <FaPlus />
             </button>
           ) : (
-            <form onSubmit={handleAddPlate} style={{ display: 'flex', gap: '5px' }}>
+            <form onSubmit={handleAddPlate} className="add-vehicle-form">
               <input
                 type="text"
                 placeholder="Placa"
                 value={newPlate}
                 onChange={(e) => setNewPlate(e.target.value.toUpperCase())}
                 maxLength={10}
-                style={{
-                  padding: '8px',
-                  width: '100px',
-                  borderRadius: '4px',
-                  border: '1px solid #ccc',
-                  textTransform: 'uppercase'
-                }}
+                className="add-vehicle-input"
                 required
               />
-              <button type="submit" style={{ padding: '8px', background: '#22c55e', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>✓</button>
-              <button type="button" onClick={() => setIsAdding(false)} style={{ padding: '8px', background: '#94a3b8', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>✕</button>
+              <button type="submit" className="submit-vehicle-button">✓</button>
+              <button type="button" onClick={() => setIsAdding(false)} className="cancel-vehicle-button">✕</button>
             </form>
 
           )}
