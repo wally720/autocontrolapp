@@ -1,6 +1,7 @@
 // src/features/Reports/index.jsx
 import React, { useState } from 'react';
 import { useExpenses } from '../../hooks/useExpenses';
+import { getLocalDate } from '../../utils/dateUtils';
 import MonthlyEvolution from './MonthlyEvolution';
 import CategoryDistribution from './CategoryDistribution';
 import MaintenanceLog from './MaintenanceLog';
@@ -16,14 +17,6 @@ import './Reports.css';
 const Reports = () => {
   const { expenses, loading } = useExpenses();
   const [activeReport, setActiveReport] = useState('efficiency'); // Default to new report
-
-  // Función para obtener la fecha local en formato YYYY-MM-DD
-  const getLocalDate = () => {
-    const d = new Date();
-    const offset = d.getTimezoneOffset();
-    const localDate = new Date(d.getTime() - (offset * 60 * 1000));
-    return localDate.toISOString().split('T')[0];
-  };
 
   const handleExportCSV = () => {
     if (loading || expenses.length === 0) {
