@@ -1,0 +1,56 @@
+.vehicle-switcher-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.vehicle-switcher-label {
+  font-weight: bold;
+  color: white;
+}
+
+.vehicle-select {
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.add-vehicle-button {
+  padding: 8px;
+  border-radius: 4px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.add-vehicle-form {
+  display: flex;
+  gap: 5px;
+}
+
+.add-vehicle-input {
+  padding: 8px;
+  width: 100px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  text-transform: uppercase;
+}
+
+.submit-vehicle-button {
+  padding: 8px;
+  background: #22c55e;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancel-vehicle-button {
+  padding: 8px;
+  background: #94a3b8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
