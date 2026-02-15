@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useExpenses } from '../../hooks/useExpenses';
 import { getLocalDate } from '../../utils/dateUtils';
+import { sanitizeForCSV } from '../../utils/csvUtils';
 import MonthlyEvolution from './MonthlyEvolution';
 import CategoryDistribution from './CategoryDistribution';
 import MaintenanceLog from './MaintenanceLog';
@@ -28,16 +29,15 @@ const Reports = () => {
     const csvRows = [headers.join(',')];
 
     expenses.forEach(expense => {
-      const notes = expense.notes ? `"${expense.notes.replace(/"/g, '""')}"` : '';
       const row = [
-        expense.id,
-        expense.vehicleId,
-        expense.date,
-        expense.category,
-        expense.amount,
-        notes,
-        expense.odometer || '', // Añadir si existe
-        expense.gallons || ''     // Añadir si existe
+        sanitizeForCSV(expense.id),
+        sanitizeForCSV(expense.vehicleId),
+        sanitizeForCSV(expense.date),
+        sanitizeForCSV(expense.category),
+        sanitizeForCSV(expense.amount),
+        sanitizeForCSV(expense.notes),
+        sanitizeForCSV(expense.odometer),
+        sanitizeForCSV(expense.gallons)
       ];
       csvRows.push(row.join(','));
     });
