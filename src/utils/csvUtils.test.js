@@ -1,35 +1,56 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { sanitizeForCSV } from './csvUtils.js';
+import { sanitizeForCSV, generateCSV } from './csvUtils.js';
 
-test('sanitizeForCSV handles normal strings', () => {
+test('sanitizeForCSV maneja cadenas normales', () => {
   assert.equal(sanitizeForCSV('test'), '"test"');
 });
 
-test('sanitizeForCSV handles strings with commas', () => {
+test('sanitizeForCSV maneja cadenas con comas', () => {
   assert.equal(sanitizeForCSV('test,1'), '"test,1"');
 });
 
-test('sanitizeForCSV handles strings with quotes', () => {
+test('sanitizeForCSV maneja cadenas con comillas', () => {
   assert.equal(sanitizeForCSV('test"1'), '"test""1"');
 });
 
-test('sanitizeForCSV handles CSV injection characters', () => {
+test('sanitizeForCSV maneja caracteres de inyección CSV', () => {
   assert.equal(sanitizeForCSV('=1+1'), '"\'=1+1"');
   assert.equal(sanitizeForCSV('+1+1'), '"\'+1+1"');
   assert.equal(sanitizeForCSV('-1+1'), '"\'-1+1"');
   assert.equal(sanitizeForCSV('@SUM(1,2)'), '"\'@SUM(1,2)"');
 });
 
-test('sanitizeForCSV handles numbers', () => {
+test('sanitizeForCSV maneja números', () => {
   assert.equal(sanitizeForCSV(123), '"123"');
 });
 
-test('sanitizeForCSV handles null and undefined', () => {
+test('sanitizeForCSV maneja null y undefined', () => {
   assert.equal(sanitizeForCSV(null), '""');
   assert.equal(sanitizeForCSV(undefined), '""');
 });
 
-test('sanitizeForCSV handles injection with commas', () => {
+test('sanitizeForCSV maneja inyección con comas', () => {
   assert.equal(sanitizeForCSV('=SUM(A1,A2)'), '"\'=SUM(A1,A2)"');
+});
+
+test('generateCSV agrega BOM y formatea correctamente', () => {
+  const headers = ['Col1', 'Col2'];
+  const data = [['Val1', 'Val2'], ['Val3', 'Val4']];
+  const expected = '\ufeff"Col1","Col2"\n"Val1","Val2"\n"Val3","Val4"';
+  assert.equal(generateCSV(headers, data), expected);
+});
+
+test('generateCSV sanitiza datos', () => {
+  const headers = ['Formula', 'Normal'];
+  const data = [['=1+1', 'Test'], ['@SUM', 'Data']];
+  const expected = '\ufeff"Formula","Normal"\n"\'=1+1","Test"\n"\'@SUM","Data"';
+  assert.equal(generateCSV(headers, data), expected);
+});
+
+test('generateCSV sanitiza encabezados', () => {
+  const headers = ['Col,1', 'Col"2'];
+  const data = [['Val1', 'Val2']];
+  const expected = '\ufeff"Col,1","Col""2"\n"Val1","Val2"';
+  assert.equal(generateCSV(headers, data), expected);
 });

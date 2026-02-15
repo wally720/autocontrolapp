@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useExpenses } from '../../hooks/useExpenses';
 import { getLocalDate } from '../../utils/dateUtils';
-import { sanitizeForCSV } from '../../utils/csvUtils';
+import { generateCSV, downloadCSV } from '../../utils/csvUtils';
 import MonthlyEvolution from './MonthlyEvolution';
 import CategoryDistribution from './CategoryDistribution';
 import MaintenanceLog from './MaintenanceLog';
@@ -26,35 +26,23 @@ const Reports = () => {
     }
 
     const headers = ["ID", "Vehículo", "Fecha", "Categoría", "Monto", "Notas", "Kilometraje", "Galones"];
-    const csvRows = [headers.join(',')];
 
-    expenses.forEach(expense => {
-      const row = [
-        sanitizeForCSV(expense.id),
-        sanitizeForCSV(expense.vehicleId),
-        sanitizeForCSV(expense.date),
-        sanitizeForCSV(expense.category),
-        sanitizeForCSV(expense.amount),
-        sanitizeForCSV(expense.notes),
-        sanitizeForCSV(expense.odometer),
-        sanitizeForCSV(expense.gallons)
-      ];
-      csvRows.push(row.join(','));
-    });
+    // Preparar el array de datos sin procesar
+    const data = expenses.map(expense => [
+      expense.id,
+      expense.vehicleId,
+      expense.date,
+      expense.category,
+      expense.amount,
+      expense.notes,
+      expense.odometer,
+      expense.gallons
+    ]);
 
-    const csvString = csvRows.join('\n');
-    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const csvString = generateCSV(headers, data);
+    const fileName = `gastos_${expenses.length > 0 ? expenses[0].vehicleId : 'export'}_${getLocalDate()}.csv`;
 
-    const link = document.createElement("a");
-    if (link.download !== undefined) {
-      const url = URL.createObjectURL(blob);
-      link.setAttribute("href", url);
-      link.setAttribute("download", `gastos_${expenses.length > 0 ? expenses[0].vehicleId : 'export'}_${getLocalDate()}.csv`);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+    downloadCSV(csvString, fileName);
   };
 
   const renderReport = () => {
