@@ -35,7 +35,7 @@
 .date-filters {
   display: flex;
   gap: 1rem;
-  align-items: center;
+  align-items: flex-end;
   flex-wrap: wrap;
 }
 
@@ -62,6 +62,47 @@
 .date-input-group input:focus {
   border-color: #448aff;
   outline: none;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.filter-btn {
+    background-color: #3a3a3a;
+    border: 1px solid #555;
+    color: #c0c0c0;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    height: 38px; /* Match height of date inputs approximately */
+}
+
+.filter-btn:hover {
+    background-color: #4a4a4a;
+    color: #e0e0e0;
+    border-color: #666;
+}
+
+.filter-btn svg {
+    font-size: 0.8rem;
+}
+
+.filter-btn.reset:hover {
+    color: #ff8a80; /* Light red for reset */
+    border-color: #ff8a80;
+}
+
+.filter-btn.range-3m:hover {
+    color: #82b1ff; /* Light blue for range */
+    border-color: #82b1ff;
 }
 
 /* Table Styles - Copied and adapted from ExpenseHistory.css to match look */
@@ -170,5 +211,19 @@
   .expense-detail-table td {
     padding: 10px 8px;
     font-size: 0.85rem;
+  }
+
+  .date-filters {
+      width: 100%;
+  }
+
+  .filter-actions {
+      margin-top: 8px;
+      width: 100%;
+  }
+
+  .filter-btn {
+      flex: 1;
+      justify-content: center;
   }
 }
