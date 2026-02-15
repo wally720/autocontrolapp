@@ -34,6 +34,11 @@ const ExpenseForm = () => {
       return;
     }
 
+    if (notes.length > 500) {
+      alert('Las notas no pueden exceder los 500 caracteres.');
+      return;
+    }
+
     const newExpense = {
       amount: parseFloat(amount),
       category,
@@ -130,7 +135,11 @@ const ExpenseForm = () => {
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Ej: Gasolina Extra en Esso"
           rows="3"
+          maxLength={500}
         ></textarea>
+        <div className="char-counter">
+          {notes.length}/500
+        </div>
       </div>
       <button type="submit" className="submit-button">
         <FaPlus style={{ marginRight: '8px' }} />
