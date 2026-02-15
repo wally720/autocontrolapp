@@ -1,6 +1,7 @@
 // src/features/ExpenseForm.jsx
 import React, { useState } from 'react';
 import { useExpenses } from '../hooks/useExpenses';
+import { getLocalDate } from '../utils/dateUtils';
 import { FaPlus } from 'react-icons/fa';
 import './ExpenseForm.css';
 
@@ -9,13 +10,6 @@ const ExpenseForm = () => {
 
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('Combustible');
-  // Función para obtener la fecha local en formato YYYY-MM-DD
-  const getLocalDate = () => {
-    const d = new Date();
-    const offset = d.getTimezoneOffset();
-    const localDate = new Date(d.getTime() - (offset * 60 * 1000));
-    return localDate.toISOString().split('T')[0];
-  };
 
   const [date, setDate] = useState(getLocalDate());
   const [notes, setNotes] = useState('');
