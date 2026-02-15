@@ -7,8 +7,9 @@ import MaintenanceLog from './MaintenanceLog';
 import AverageByCategory from './AverageByCategory';
 import MonthlyComparison from './MonthlyComparison';
 import FuelEfficiency from './FuelEfficiency';
+import ExpenseDetail from './ExpenseDetail';
 import {
-  FaChartLine, FaChartPie, FaTools, FaFileCsv, FaCalculator, FaExchangeAlt, FaGasPump
+  FaChartLine, FaChartPie, FaTools, FaFileCsv, FaCalculator, FaExchangeAlt, FaGasPump, FaFileInvoiceDollar
 } from 'react-icons/fa';
 import './Reports.css';
 
@@ -67,6 +68,8 @@ const Reports = () => {
     switch (activeReport) {
       case 'efficiency':
         return <FuelEfficiency />;
+      case 'detail':
+        return <ExpenseDetail />;
       case 'comparison':
         return <MonthlyComparison />;
       case 'monthly':
@@ -92,6 +95,13 @@ const Reports = () => {
         >
           <FaGasPump />
           <span>Eficiencia</span>
+        </button>
+        <button
+          className={activeReport === 'detail' ? 'active' : ''}
+          onClick={() => setActiveReport('detail')}
+        >
+          <FaFileInvoiceDollar />
+          <span>Detalle</span>
         </button>
         <button
           className={activeReport === 'comparison' ? 'active' : ''}
