@@ -1,5 +1,5 @@
 // src/features/Reports/CategoryDistribution.jsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useExpenses } from '../../hooks/useExpenses';
 
@@ -9,22 +9,30 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'
 const CategoryDistribution = () => {
   const { expenses, loading } = useExpenses();
 
-  // Procesar los datos para agruparlos por categoría
-  const data = expenses.reduce((acc, expense) => {
-    const existingCategory = acc.find(item => item.name === expense.category);
-    if (existingCategory) {
-      existingCategory.value += expense.amount;
-    } else {
-      acc.push({ name: expense.category, value: expense.amount });
-    }
-    return acc;
-  }, []);
+  // Procesar los datos para agruparlos por categoría de forma eficiente O(N)
+  // Se utiliza useMemo para evitar cálculos innecesarios en cada renderizado
+  const data = useMemo(() => {
+    if (!expenses || expenses.length === 0) return [];
+
+    return Array.from(
+      expenses.reduce((acc, expense) => {
+        const { category, amount } = expense;
+        const existing = acc.get(category);
+        if (existing) {
+          existing.value += amount;
+        } else {
+          acc.set(category, { name: category, value: amount });
+        }
+        return acc;
+      }, new Map()).values()
+    );
+  }, [expenses]);
 
   if (loading) {
     return <p>Cargando datos del reporte...</p>;
   }
 
-  if (expenses.length === 0) {
+  if (data.length === 0) {
     return <p>No hay datos suficientes para este reporte.</p>;
   }
 
