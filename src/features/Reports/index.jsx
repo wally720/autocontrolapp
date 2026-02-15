@@ -24,6 +24,17 @@ const Reports = () => {
     return localDate.toISOString().split('T')[0];
   };
 
+  const sanitizeCSVField = (value) => {
+    if (value === null || value === undefined) return '""';
+    let stringValue = String(value);
+    // CSV Injection prevention: prefix with ' if it starts with =, +, -, @
+    if (['=', '+', '-', '@'].some(char => stringValue.startsWith(char))) {
+      stringValue = `'${stringValue}`;
+    }
+    // Double quotes are escaped by doubling them and wrapping the field in double quotes
+    return `"${stringValue.replace(/"/g, '""')}"`;
+  };
+
   const handleExportCSV = () => {
     if (loading || expenses.length === 0) {
       alert("No hay datos para exportar o los datos aún se están cargando.");
@@ -31,20 +42,19 @@ const Reports = () => {
     }
 
     const headers = ["ID", "Vehículo", "Fecha", "Categoría", "Monto", "Notas", "Kilometraje", "Galones"];
-    const csvRows = [headers.join(',')];
+    const csvRows = [headers.map(sanitizeCSVField).join(',')];
 
     expenses.forEach(expense => {
-      const notes = expense.notes ? `"${expense.notes.replace(/"/g, '""')}"` : '';
       const row = [
         expense.id,
         expense.vehicleId,
         expense.date,
         expense.category,
         expense.amount,
-        notes,
-        expense.odometer || '', // Añadir si existe
-        expense.gallons || ''     // Añadir si existe
-      ];
+        expense.notes || '',
+        expense.odometer || '',
+        expense.gallons || ''
+      ].map(sanitizeCSVField);
       csvRows.push(row.join(','));
     });
 
