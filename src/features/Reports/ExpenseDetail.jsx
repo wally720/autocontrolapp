@@ -3,7 +3,8 @@ import { useExpenses } from '../../hooks/useExpenses';
 import { formatCurrency } from '../ExpenseHistory';
 import {
   FaGasPump, FaWrench, FaFileContract, FaUniversity, FaShower,
-  FaParking, FaRoad, FaDotCircle, FaQuestionCircle, FaStickyNote
+  FaParking, FaRoad, FaDotCircle, FaQuestionCircle, FaStickyNote,
+  FaUndo, FaCalendarAlt
 } from 'react-icons/fa';
 import './ExpenseDetail.css';
 
@@ -26,28 +27,48 @@ const parseDate = (dateStr) => {
   return new Date(y, m - 1, d);
 };
 
+// Helper to format date object to YYYY-MM-DD
+const formatDate = (date) => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+};
+
 const ExpenseDetail = () => {
   const { expenses, loading } = useExpenses();
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
-  // Set default dates to previous month on mount
-  useEffect(() => {
+  // Function to set default dates (Previous Month)
+  const setPreviousMonth = () => {
     const today = new Date();
     // Previous month: current month index - 1.
     // Example: Feb (1) -> Jan (0). Jan (0) -> Dec (-1, handles year automatically)
     const firstDayPrevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
     const lastDayPrevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
 
-    const formatDate = (date) => {
-      const y = date.getFullYear();
-      const m = String(date.getMonth() + 1).padStart(2, '0');
-      const d = String(date.getDate()).padStart(2, '0');
-      return `${y}-${m}-${d}`;
-    };
-
     setStartDate(formatDate(firstDayPrevMonth));
     setEndDate(formatDate(lastDayPrevMonth));
+  };
+
+  // Function to set Last 3 Months (90 days)
+  const setLast3Months = () => {
+    const today = new Date();
+    const ninetyDaysAgo = new Date();
+    ninetyDaysAgo.setDate(today.getDate() - 90);
+
+    // Enforce min date of 2024-01-01
+    const minDate = new Date(2024, 0, 1);
+    const effectiveStartDate = ninetyDaysAgo < minDate ? minDate : ninetyDaysAgo;
+
+    setStartDate(formatDate(effectiveStartDate));
+    setEndDate(formatDate(today));
+  };
+
+  // Set default dates on mount
+  useEffect(() => {
+    setPreviousMonth();
   }, []);
 
   const handleDateChange = (type, value) => {
@@ -139,6 +160,15 @@ const ExpenseDetail = () => {
               onChange={(e) => handleDateChange('end', e.target.value)}
               min="2024-01-01"
             />
+          </div>
+
+          <div className="filter-actions">
+            <button className="filter-btn reset" onClick={setPreviousMonth} title="Volver al mes anterior">
+                <FaUndo /> Reset
+            </button>
+            <button className="filter-btn range-3m" onClick={setLast3Months} title="Últimos 90 días">
+                <FaCalendarAlt /> 3 Meses
+            </button>
           </div>
         </div>
 
