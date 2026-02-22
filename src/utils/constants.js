@@ -36,3 +36,7 @@ export const CATEGORY_LIST = [
   CATEGORY_TIRES,
   CATEGORY_OTHER,
 ];
+
+// Constantes de límites de la aplicación
+export const MAX_VEHICLES_PER_USER = 2;
+export const MAX_VEHICLES_ERROR_MSG = "Solo puedes tener un máximo de 2 placas.";
