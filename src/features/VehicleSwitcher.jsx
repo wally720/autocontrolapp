@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { firestore } from '../config/firebase';
 import { doc, updateDoc, arrayUnion, getDoc, setDoc } from 'firebase/firestore';
 import { FaPlus } from 'react-icons/fa';
+import { isValidPlate } from '../utils/validationUtils';
 
 const VehicleSwitcher = () => {
   const { vehicles, selectedVehicle, setSelectedVehicle } = useContext(VehicleContext);
@@ -21,6 +22,11 @@ const VehicleSwitcher = () => {
     e.preventDefault();
     const plate = newPlate.trim().toUpperCase();
     if (!plate) return;
+
+    if (!isValidPlate(plate)) {
+      alert("La placa ingresada no es válida. Solo se permiten letras y números.");
+      return;
+    }
 
     if (vehicles.length >= 2) {
       alert("Solo puedes tener un máximo de 2 placas.");
