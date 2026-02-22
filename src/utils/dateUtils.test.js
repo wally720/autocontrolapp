@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { getLocalDate } from './dateUtils.js';
+import { getLocalDate, parseLocalDate } from './dateUtils.js';
 
 test('getLocalDate returns a string in YYYY-MM-DD format', () => {
   const result = getLocalDate();
@@ -57,4 +57,23 @@ test('getLocalDate correctly adjusts for timezone offset (Mocked UTC+9)', () => 
   } finally {
     Date.prototype.getTimezoneOffset = originalGetTimezoneOffset;
   }
+});
+
+test('parseLocalDate returns correct Date object for valid string', () => {
+  const dateStr = '2023-10-27';
+  const result = parseLocalDate(dateStr);
+
+  assert.strictEqual(result.getFullYear(), 2023);
+  assert.strictEqual(result.getMonth(), 9); // Oct is 9
+  assert.strictEqual(result.getDate(), 27);
+  assert.strictEqual(result.getHours(), 0);
+  assert.strictEqual(result.getMinutes(), 0);
+  assert.strictEqual(result.getSeconds(), 0);
+  assert.strictEqual(result.getMilliseconds(), 0);
+});
+
+test('parseLocalDate returns null for empty string or null', () => {
+  assert.strictEqual(parseLocalDate(''), null);
+  assert.strictEqual(parseLocalDate(null), null);
+  assert.strictEqual(parseLocalDate(undefined), null);
 });
