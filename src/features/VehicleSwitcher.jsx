@@ -7,6 +7,7 @@ import { firestore } from '../config/firebase';
 import { doc, updateDoc, arrayUnion, getDoc, setDoc } from 'firebase/firestore';
 import { FaPlus } from 'react-icons/fa';
 import { isValidPlate } from '../utils/validationUtils';
+import { MAX_VEHICLES_PER_USER, MAX_VEHICLES_ERROR_MSG } from '../utils/constants';
 
 const VehicleSwitcher = () => {
   const { vehicles, selectedVehicle, setSelectedVehicle } = useContext(VehicleContext);
@@ -28,8 +29,8 @@ const VehicleSwitcher = () => {
       return;
     }
 
-    if (vehicles.length >= 2) {
-      alert("Solo puedes tener un máximo de 2 placas.");
+    if (vehicles.length >= MAX_VEHICLES_PER_USER) {
+      alert(MAX_VEHICLES_ERROR_MSG);
       return;
     }
 
