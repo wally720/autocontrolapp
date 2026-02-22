@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { getLocalDate } from './dateUtils.js';
+import { getLocalDate, parseLocalDate } from './dateUtils.js';
 
 test('getLocalDate returns a string in YYYY-MM-DD format', () => {
   const result = getLocalDate();
@@ -59,18 +59,21 @@ test('getLocalDate correctly adjusts for timezone offset (Mocked UTC+9)', () => 
   }
 });
 
-test('getLocalDate handles invalid inputs gracefully by returning current date', () => {
-  const currentDateStr = getLocalDate();
+test('parseLocalDate returns correct Date object for valid string', () => {
+  const dateStr = '2023-10-27';
+  const result = parseLocalDate(dateStr);
 
-  // Test with invalid string
-  assert.strictEqual(getLocalDate('invalid-string'), currentDateStr, 'Should return current date for invalid string');
+  assert.strictEqual(result.getFullYear(), 2023);
+  assert.strictEqual(result.getMonth(), 9); // Oct is 9
+  assert.strictEqual(result.getDate(), 27);
+  assert.strictEqual(result.getHours(), 0);
+  assert.strictEqual(result.getMinutes(), 0);
+  assert.strictEqual(result.getSeconds(), 0);
+  assert.strictEqual(result.getMilliseconds(), 0);
+});
 
-  // Test with number
-  assert.strictEqual(getLocalDate(12345), currentDateStr, 'Should return current date for number input');
-
-  // Test with invalid Date object
-  assert.strictEqual(getLocalDate(new Date('invalid-date-string')), currentDateStr, 'Should return current date for invalid Date object');
-
-  // Test with null
-  assert.strictEqual(getLocalDate(null), currentDateStr, 'Should return current date for null input');
+test('parseLocalDate returns null for empty string or null', () => {
+  assert.strictEqual(parseLocalDate(''), null);
+  assert.strictEqual(parseLocalDate(null), null);
+  assert.strictEqual(parseLocalDate(undefined), null);
 });

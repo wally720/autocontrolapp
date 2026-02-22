@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useExpenses } from '../../hooks/useExpenses';
 import { formatCurrency } from '../ExpenseHistory';
+import { getLocalDate, parseLocalDate } from '../../utils/dateUtils';
 import {
   FaQuestionCircle, FaStickyNote,
   FaUndo, FaCalendarAlt
@@ -9,19 +10,16 @@ import { categoryIcons } from '../../utils/categoryIcons';
 import { CATEGORY_FUEL } from '../../utils/constants';
 import './ExpenseDetail.css';
 
-// Helper to parse "YYYY-MM-DD" to Local Date object
-const parseDate = (dateStr) => {
-  if (!dateStr) return null;
-  const [y, m, d] = dateStr.split('-').map(Number);
-  return new Date(y, m - 1, d);
-};
-
-// Helper to format date object to YYYY-MM-DD
-const formatDate = (date) => {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
+const categoryIcons = {
+  'Combustible': <FaGasPump />,
+  'Mantenimiento': <FaWrench />,
+  'Seguros/Papeles': <FaFileContract />,
+  'Impuestos': <FaUniversity />,
+  'Lavado': <FaShower />,
+  'Parqueadero': <FaParking />,
+  'Peajes': <FaRoad />,
+  'Llantas': <FaDotCircle />,
+  'Otros': <FaQuestionCircle />,
 };
 
 const ExpenseDetail = () => {
@@ -37,8 +35,8 @@ const ExpenseDetail = () => {
     const firstDayPrevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
     const lastDayPrevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
 
-    setStartDate(formatDate(firstDayPrevMonth));
-    setEndDate(formatDate(lastDayPrevMonth));
+    setStartDate(getLocalDate(firstDayPrevMonth));
+    setEndDate(getLocalDate(lastDayPrevMonth));
   };
 
   // Function to set Last 3 Months (90 days)
@@ -51,8 +49,8 @@ const ExpenseDetail = () => {
     const minDate = new Date(2024, 0, 1);
     const effectiveStartDate = ninetyDaysAgo < minDate ? minDate : ninetyDaysAgo;
 
-    setStartDate(formatDate(effectiveStartDate));
-    setEndDate(formatDate(today));
+    setStartDate(getLocalDate(effectiveStartDate));
+    setEndDate(getLocalDate(today));
   };
 
   // Set default dates on mount
@@ -68,7 +66,7 @@ const ExpenseDetail = () => {
       return;
     }
 
-    const newDate = parseDate(value);
+    const newDate = parseLocalDate(value);
     const minDate = new Date(2024, 0, 1); // Jan 1, 2024 Local
 
     if (newDate < minDate) {
@@ -82,8 +80,8 @@ const ExpenseDetail = () => {
 
     // Only validate range if both are present
     if (nextStartStr && nextEndStr) {
-      const start = parseDate(nextStartStr);
-      const end = parseDate(nextEndStr);
+      const start = parseLocalDate(nextStartStr);
+      const end = parseLocalDate(nextEndStr);
 
       // Validate date order
       if (start > end) {
