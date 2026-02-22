@@ -1,3 +1,5 @@
+import { CATEGORY_FUEL } from '../../utils/constants.js';
+
 /**
  * Calculates fuel efficiency based on a list of expenses.
  * @param {Array} expenses - List of expense objects.
@@ -5,7 +7,7 @@
  */
 export const calculateEfficiency = (expenses) => {
   const fuelStops = expenses
-    .filter(e => e.category === 'Combustible' && e.odometer && e.gallons > 0)
+    .filter(e => e.category === CATEGORY_FUEL && e.odometer && e.gallons > 0)
     .sort((a, b) => a.odometer - b.odometer);
 
   if (fuelStops.length < 2) return { periods: [], averages: {} };
