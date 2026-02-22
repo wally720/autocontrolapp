@@ -2,23 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useExpenses } from '../../hooks/useExpenses';
 import { formatCurrency } from '../ExpenseHistory';
 import {
-  FaGasPump, FaWrench, FaFileContract, FaUniversity, FaShower,
-  FaParking, FaRoad, FaDotCircle, FaQuestionCircle, FaStickyNote,
+  FaQuestionCircle, FaStickyNote,
   FaUndo, FaCalendarAlt
 } from 'react-icons/fa';
+import { categoryIcons } from '../../utils/categoryIcons';
+import { CATEGORY_FUEL } from '../../utils/constants';
 import './ExpenseDetail.css';
-
-const categoryIcons = {
-  'Combustible': <FaGasPump />,
-  'Mantenimiento': <FaWrench />,
-  'Seguros/Papeles': <FaFileContract />,
-  'Impuestos': <FaUniversity />,
-  'Lavado': <FaShower />,
-  'Parqueadero': <FaParking />,
-  'Peajes': <FaRoad />,
-  'Llantas': <FaDotCircle />,
-  'Otros': <FaQuestionCircle />,
-};
 
 // Helper to parse "YYYY-MM-DD" to Local Date object
 const parseDate = (dateStr) => {
@@ -196,7 +185,7 @@ const ExpenseDetail = () => {
                       {categoryIcons[expense.category] || <FaQuestionCircle />}
                       <span>{expense.category}</span>
                     </div>
-                    {expense.category === 'Combustible' && expense.odometer && (
+                    {expense.category === CATEGORY_FUEL && expense.odometer && (
                       <div className="fuel-details">
                         <span>{expense.odometer.toLocaleString()} km</span>
                         <span>{expense.gallons ? expense.gallons.toFixed(2) + ' Gal' : ''}</span>

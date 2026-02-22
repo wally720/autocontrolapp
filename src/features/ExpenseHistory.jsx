@@ -2,9 +2,10 @@
 import React, { useState } from 'react';
 import { useExpenses } from '../hooks/useExpenses';
 import {
-  FaGasPump, FaWrench, FaFileContract, FaUniversity, FaShower,
-  FaParking, FaRoad, FaDotCircle, FaQuestionCircle, FaStickyNote, FaTrash
+  FaStickyNote, FaTrash, FaQuestionCircle
 } from 'react-icons/fa';
+import { categoryIcons } from '../utils/categoryIcons';
+import { CATEGORY_FUEL } from '../utils/constants';
 import './ExpenseHistory.css';
 
 export const formatCurrency = (value) => {
@@ -15,18 +16,6 @@ export const formatCurrency = (value) => {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2
   }).format(value);
-};
-
-const categoryIcons = {
-  'Combustible': <FaGasPump />,
-  'Mantenimiento': <FaWrench />,
-  'Seguros/Papeles': <FaFileContract />,
-  'Impuestos': <FaUniversity />,
-  'Lavado': <FaShower />,
-  'Parqueadero': <FaParking />,
-  'Peajes': <FaRoad />,
-  'Llantas': <FaDotCircle />,
-  'Otros': <FaQuestionCircle />,
 };
 
 const ExpenseHistory = () => {
@@ -78,7 +67,7 @@ const ExpenseHistory = () => {
                     {categoryIcons[expense.category] || <FaQuestionCircle />}
                     <span>{expense.category}</span>
                   </div>
-                  {expense.category === 'Combustible' && expense.odometer && (
+                  {expense.category === CATEGORY_FUEL && expense.odometer && (
                     <div className="fuel-details">
                       <span>{expense.odometer.toLocaleString()} km</span>
                       <span>{expense.gallons ? expense.gallons.toFixed(2) + ' Gal' : ''}</span>
