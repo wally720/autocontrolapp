@@ -3,10 +3,11 @@ import { useExpenses } from '../../hooks/useExpenses';
 import { formatCurrency } from '../ExpenseHistory';
 import { getLocalDate, parseLocalDate } from '../../utils/dateUtils';
 import {
-  FaGasPump, FaWrench, FaFileContract, FaUniversity, FaShower,
-  FaParking, FaRoad, FaDotCircle, FaQuestionCircle, FaStickyNote,
+  FaQuestionCircle, FaStickyNote,
   FaUndo, FaCalendarAlt
 } from 'react-icons/fa';
+import { categoryIcons } from '../../utils/categoryIcons';
+import { CATEGORY_FUEL } from '../../utils/constants';
 import './ExpenseDetail.css';
 
 const categoryIcons = {
@@ -182,7 +183,7 @@ const ExpenseDetail = () => {
                       {categoryIcons[expense.category] || <FaQuestionCircle />}
                       <span>{expense.category}</span>
                     </div>
-                    {expense.category === 'Combustible' && expense.odometer && (
+                    {expense.category === CATEGORY_FUEL && expense.odometer && (
                       <div className="fuel-details">
                         <span>{expense.odometer.toLocaleString()} km</span>
                         <span>{expense.gallons ? expense.gallons.toFixed(2) + ' Gal' : ''}</span>

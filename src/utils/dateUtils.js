@@ -5,8 +5,13 @@
  * @returns {string} The formatted date string.
  */
 export const getLocalDate = (d = new Date()) => {
-  const offset = d.getTimezoneOffset();
-  const localDate = new Date(d.getTime() - (offset * 60 * 1000));
+  let dateToUse = d;
+  if (!(dateToUse instanceof Date) || isNaN(dateToUse.getTime())) {
+    dateToUse = new Date();
+  }
+
+  const offset = dateToUse.getTimezoneOffset();
+  const localDate = new Date(dateToUse.getTime() - (offset * 60 * 1000));
   return localDate.toISOString().split('T')[0];
 };
 

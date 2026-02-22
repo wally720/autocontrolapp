@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { calculateEfficiency } from './fuelUtils.js';
+import { CATEGORY_FUEL } from '../../utils/constants.js';
 
 test('calculateEfficiency returns empty periods and averages when expenses list is empty', () => {
   const expenses = [];
@@ -10,7 +11,7 @@ test('calculateEfficiency returns empty periods and averages when expenses list 
 
 test('calculateEfficiency returns empty periods when there is only one fuel stop', () => {
   const expenses = [
-    { id: '1', category: 'Combustible', odometer: 1000, gallons: 10, date: '2023-01-01', amount: 50 }
+    { id: '1', category: CATEGORY_FUEL, odometer: 1000, gallons: 10, date: '2023-01-01', amount: 50 }
   ];
   const result = calculateEfficiency(expenses);
   assert.deepEqual(result, { periods: [], averages: {} });
@@ -18,8 +19,8 @@ test('calculateEfficiency returns empty periods when there is only one fuel stop
 
 test('calculateEfficiency calculates efficiency correctly for multiple fuel stops', () => {
   const expenses = [
-    { id: '1', category: 'Combustible', odometer: 1000, gallons: 10, date: '2023-01-01', amount: 50 },
-    { id: '2', category: 'Combustible', odometer: 1500, gallons: 10, date: '2023-01-10', amount: 60 },
+    { id: '1', category: CATEGORY_FUEL, odometer: 1000, gallons: 10, date: '2023-01-01', amount: 50 },
+    { id: '2', category: CATEGORY_FUEL, odometer: 1500, gallons: 10, date: '2023-01-10', amount: 60 },
   ];
   const result = calculateEfficiency(expenses);
 
@@ -35,9 +36,9 @@ test('calculateEfficiency calculates efficiency correctly for multiple fuel stop
 
 test('calculateEfficiency filters out non-combustible expenses', () => {
   const expenses = [
-    { id: '1', category: 'Combustible', odometer: 1000, gallons: 10, date: '2023-01-01', amount: 50 },
+    { id: '1', category: CATEGORY_FUEL, odometer: 1000, gallons: 10, date: '2023-01-01', amount: 50 },
     { id: '2', category: 'Lavado', odometer: 1200, gallons: 0, date: '2023-01-05', amount: 15 },
-    { id: '3', category: 'Combustible', odometer: 1500, gallons: 10, date: '2023-01-10', amount: 60 },
+    { id: '3', category: CATEGORY_FUEL, odometer: 1500, gallons: 10, date: '2023-01-10', amount: 60 },
   ];
   const result = calculateEfficiency(expenses);
 
@@ -47,10 +48,10 @@ test('calculateEfficiency filters out non-combustible expenses', () => {
 
 test('calculateEfficiency filters out stops with zero or missing gallons/odometer', () => {
   const expenses = [
-    { id: '1', category: 'Combustible', odometer: 1000, gallons: 10, date: '2023-01-01', amount: 50 },
-    { id: '2', category: 'Combustible', odometer: 1200, gallons: 0, date: '2023-01-05', amount: 20 }, // zero gallons
-    { id: '3', category: 'Combustible', date: '2023-01-06', amount: 20 }, // missing odometer
-    { id: '4', category: 'Combustible', odometer: 1500, gallons: 10, date: '2023-01-10', amount: 60 },
+    { id: '1', category: CATEGORY_FUEL, odometer: 1000, gallons: 10, date: '2023-01-01', amount: 50 },
+    { id: '2', category: CATEGORY_FUEL, odometer: 1200, gallons: 0, date: '2023-01-05', amount: 20 }, // zero gallons
+    { id: '3', category: CATEGORY_FUEL, date: '2023-01-06', amount: 20 }, // missing odometer
+    { id: '4', category: CATEGORY_FUEL, odometer: 1500, gallons: 10, date: '2023-01-10', amount: 60 },
   ];
   const result = calculateEfficiency(expenses);
 
@@ -60,8 +61,8 @@ test('calculateEfficiency filters out stops with zero or missing gallons/odomete
 
 test('calculateEfficiency sorts stops by odometer', () => {
   const expenses = [
-    { id: '2', category: 'Combustible', odometer: 1500, gallons: 10, date: '2023-01-10', amount: 60 },
-    { id: '1', category: 'Combustible', odometer: 1000, gallons: 10, date: '2023-01-01', amount: 50 },
+    { id: '2', category: CATEGORY_FUEL, odometer: 1500, gallons: 10, date: '2023-01-10', amount: 60 },
+    { id: '1', category: CATEGORY_FUEL, odometer: 1000, gallons: 10, date: '2023-01-01', amount: 50 },
   ];
   const result = calculateEfficiency(expenses);
 
@@ -71,9 +72,9 @@ test('calculateEfficiency sorts stops by odometer', () => {
 
 test('calculateEfficiency handles non-increasing odometer values by skipping them', () => {
   const expenses = [
-    { id: '1', category: 'Combustible', odometer: 1000, gallons: 10, date: '2023-01-01', amount: 50 },
-    { id: '2', category: 'Combustible', odometer: 900, gallons: 10, date: '2023-01-05', amount: 50 },
-    { id: '3', category: 'Combustible', odometer: 1500, gallons: 10, date: '2023-01-10', amount: 60 },
+    { id: '1', category: CATEGORY_FUEL, odometer: 1000, gallons: 10, date: '2023-01-01', amount: 50 },
+    { id: '2', category: CATEGORY_FUEL, odometer: 900, gallons: 10, date: '2023-01-05', amount: 50 },
+    { id: '3', category: CATEGORY_FUEL, odometer: 1500, gallons: 10, date: '2023-01-10', amount: 60 },
   ];
   const result = calculateEfficiency(expenses);
 
@@ -87,9 +88,9 @@ test('calculateEfficiency handles non-increasing odometer values by skipping the
 
 test('calculateEfficiency calculates averages correctly for multiple periods', () => {
   const expenses = [
-    { id: '1', category: 'Combustible', odometer: 1000, gallons: 10, date: '2023-01-01', amount: 50 },
-    { id: '2', category: 'Combustible', odometer: 1500, gallons: 10, date: '2023-01-10', amount: 60 },
-    { id: '3', category: 'Combustible', odometer: 2100, gallons: 12, date: '2023-01-20', amount: 72 },
+    { id: '1', category: CATEGORY_FUEL, odometer: 1000, gallons: 10, date: '2023-01-01', amount: 50 },
+    { id: '2', category: CATEGORY_FUEL, odometer: 1500, gallons: 10, date: '2023-01-10', amount: 60 },
+    { id: '3', category: CATEGORY_FUEL, odometer: 2100, gallons: 12, date: '2023-01-20', amount: 72 },
   ];
   const result = calculateEfficiency(expenses);
 
