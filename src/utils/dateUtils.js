@@ -5,7 +5,24 @@
  * @returns {string} The formatted date string.
  */
 export const getLocalDate = (d = new Date()) => {
-  const offset = d.getTimezoneOffset();
-  const localDate = new Date(d.getTime() - (offset * 60 * 1000));
+  let dateToUse = d;
+  if (!(dateToUse instanceof Date) || isNaN(dateToUse.getTime())) {
+    dateToUse = new Date();
+  }
+
+  const offset = dateToUse.getTimezoneOffset();
+  const localDate = new Date(dateToUse.getTime() - (offset * 60 * 1000));
   return localDate.toISOString().split('T')[0];
+};
+
+/**
+ * Parses a "YYYY-MM-DD" string into a local Date object.
+ * @param {string} dateStr - The date string to parse.
+ * @returns {Date|null} The local Date object or null if dateStr is invalid.
+ */
+export const parseLocalDate = (dateStr) => {
+  if (!dateStr) return null;
+  const [y, m, d] = dateStr.split('-').map(Number);
+  // Note: Month is 0-indexed in Date constructor (0=Jan, 11=Dec)
+  return new Date(y, m - 1, d);
 };

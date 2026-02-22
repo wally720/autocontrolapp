@@ -88,7 +88,7 @@ const VehicleSwitcher = () => {
         ))}
       </select>
 
-      {vehicles.length < 2 && (
+      {vehicles.length < MAX_VEHICLES_PER_USER && (
         <div className="add-vehicle-section">
           {!isAdding ? (
             <button
