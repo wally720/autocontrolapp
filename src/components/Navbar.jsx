@@ -3,6 +3,8 @@ import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { FaTachometerAlt, FaChartPie, FaUserShield, FaSignOutAlt } from 'react-icons/fa';
 import VehicleSwitcher from '../features/VehicleSwitcher';
+import { APP_VERSION } from '../utils/constants';
+
 import { useAuth } from '../context/AuthContext';
 import { auth } from '../config/firebase';
 import { signOut } from 'firebase/auth';
@@ -30,6 +32,8 @@ const Navbar = () => {
           className="navbar-logo-placeholder"
         />
         <span style={{ color: 'white', fontWeight: 'bold', marginLeft: '10px' }}>Auto Gasto PRO</span>
+        <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.7rem', marginLeft: '8px', alignSelf: 'flex-end', marginBottom: '2px' }}>v{APP_VERSION}</span>
+
       </div>
 
       {currentUser && userProfile?.status === 'approved' && (
