@@ -10,17 +10,6 @@ import { categoryIcons } from '../../utils/categoryIcons';
 import { CATEGORY_FUEL } from '../../utils/constants';
 import './ExpenseDetail.css';
 
-const categoryIcons = {
-  'Combustible': <FaGasPump />,
-  'Mantenimiento': <FaWrench />,
-  'Seguros/Papeles': <FaFileContract />,
-  'Impuestos': <FaUniversity />,
-  'Lavado': <FaShower />,
-  'Parqueadero': <FaParking />,
-  'Peajes': <FaRoad />,
-  'Llantas': <FaDotCircle />,
-  'Otros': <FaQuestionCircle />,
-};
 
 const ExpenseDetail = () => {
   const { expenses, loading } = useExpenses();
@@ -151,10 +140,10 @@ const ExpenseDetail = () => {
 
           <div className="filter-actions">
             <button className="filter-btn reset" onClick={setPreviousMonth} title="Volver al mes anterior">
-                <FaUndo /> Reset
+              <FaUndo /> Reset
             </button>
             <button className="filter-btn range-3m" onClick={setLast3Months} title="Últimos 90 días">
-                <FaCalendarAlt /> 3 Meses
+              <FaCalendarAlt /> 3 Meses
             </button>
           </div>
         </div>
