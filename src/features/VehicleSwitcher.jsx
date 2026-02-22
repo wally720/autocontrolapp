@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { firestore } from '../config/firebase';
 import { doc, updateDoc, arrayUnion, getDoc, setDoc } from 'firebase/firestore';
 import { FaPlus } from 'react-icons/fa';
+import { MAX_VEHICLES_PER_USER, MAX_VEHICLES_ERROR_MSG } from '../utils/constants';
 
 const VehicleSwitcher = () => {
   const { vehicles, selectedVehicle, setSelectedVehicle } = useContext(VehicleContext);
@@ -22,8 +23,8 @@ const VehicleSwitcher = () => {
     const plate = newPlate.trim().toUpperCase();
     if (!plate) return;
 
-    if (vehicles.length >= 2) {
-      alert("Solo puedes tener un máximo de 2 placas.");
+    if (vehicles.length >= MAX_VEHICLES_PER_USER) {
+      alert(MAX_VEHICLES_ERROR_MSG);
       return;
     }
 
@@ -82,7 +83,7 @@ const VehicleSwitcher = () => {
         ))}
       </select>
 
-      {vehicles.length < 2 && (
+      {vehicles.length < MAX_VEHICLES_PER_USER && (
         <div className="add-vehicle-section">
           {!isAdding ? (
             <button

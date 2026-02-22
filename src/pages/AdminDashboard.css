@@ -233,3 +233,61 @@
         width: 100%;
     }
 }
+/* --- Filters & Pagination --- */
+.filters-bar {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+    color: #4b5563;
+}
+
+.status-filter {
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    background-color: white;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.status-filter:focus {
+    outline: 2px solid #2563eb;
+    border-color: transparent;
+}
+
+.load-more-btn {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    margin-top: 1.5rem;
+    background-color: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    color: #374151;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-align: center;
+}
+
+.load-more-btn:hover {
+    background-color: #e5e7eb;
+}
+
+.no-data {
+    padding: 2rem;
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+    background: #f9fafb;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.loading-indicator {
+    padding: 1rem;
+    text-align: center;
+    color: #6b7280;
+}

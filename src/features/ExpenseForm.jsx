@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useExpenses } from '../hooks/useExpenses';
 import { getLocalDate } from '../utils/dateUtils';
+import { CATEGORY_FUEL, CATEGORY_LIST } from '../utils/constants';
 import { FaPlus } from 'react-icons/fa';
 import './ExpenseForm.css';
 
@@ -9,17 +10,14 @@ const ExpenseForm = () => {
   const { addExpense } = useExpenses();
 
   const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState('Combustible');
+  const [category, setCategory] = useState(CATEGORY_FUEL);
 
   const [date, setDate] = useState(getLocalDate());
   const [notes, setNotes] = useState('');
   const [odometer, setOdometer] = useState(''); // Estado para Kilometraje
   const [gallons, setGallons] = useState('');   // Estado para Galones
 
-  const categories = [
-    'Combustible', 'Mantenimiento', 'Seguros/Papeles', 'Impuestos',
-    'Lavado', 'Parqueadero', 'Peajes', 'Llantas', 'Otros'
-  ];
+  const categories = CATEGORY_LIST;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,7 +38,7 @@ const ExpenseForm = () => {
       notes: notes,
     };
 
-    if (category === 'Combustible') {
+    if (category === CATEGORY_FUEL) {
       if (!odometer || !gallons) {
         alert('Para gastos de combustible, por favor ingrese el kilometraje y los galones.');
         return;
@@ -53,7 +51,7 @@ const ExpenseForm = () => {
 
     // Limpiar el formulario
     setAmount('');
-    setCategory('Combustible');
+    setCategory(CATEGORY_FUEL);
     setDate(getLocalDate());
     setNotes('');
     setOdometer('');
@@ -71,7 +69,7 @@ const ExpenseForm = () => {
         </select>
       </div>
 
-      {category === 'Combustible' && (
+      {category === CATEGORY_FUEL && (
         <div className="fuel-fields">
           <div className="form-group">
             <label htmlFor="odometer">Kilometraje (Odómetro)</label>

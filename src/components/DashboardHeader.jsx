@@ -1,5 +1,5 @@
 // src/components/DashboardHeader.jsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useExpenses } from '../hooks/useExpenses';
 import { formatCurrency } from '../features/ExpenseHistory';
 import { FaCalendarAlt, FaDollarSign } from 'react-icons/fa';
@@ -14,16 +14,18 @@ const DashboardHeader = () => {
   const mesActual = ahora.getMonth();
   const anioActual = ahora.getFullYear();
 
-  const monthlyTotal = expenses.reduce((total, expense) => {
-    // Dividimos la fecha "AAAA-MM-DD" manualmente para evitar desfases de zona horaria
-    const [anio, mes] = expense.date.split('-').map(Number);
-    
-    // mes - 1 porque en JavaScript los meses van de 0 a 11
-    if (anio === anioActual && (mes - 1) === mesActual) {
-      return total + expense.amount;
-    }
-    return total;
-  }, 0);
+  const monthlyTotal = useMemo(() => {
+    return expenses.reduce((total, expense) => {
+      // Dividimos la fecha "AAAA-MM-DD" manualmente para evitar desfases de zona horaria
+      const [anio, mes] = expense.date.split('-').map(Number);
+
+      // mes - 1 porque en JavaScript los meses van de 0 a 11
+      if (anio === anioActual && (mes - 1) === mesActual) {
+        return total + expense.amount;
+      }
+      return total;
+    }, 0);
+  }, [expenses, mesActual, anioActual]);
 
   return (
     <div className="dashboard-header">
