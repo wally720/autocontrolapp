@@ -58,3 +58,19 @@ test('getLocalDate correctly adjusts for timezone offset (Mocked UTC+9)', () => 
     Date.prototype.getTimezoneOffset = originalGetTimezoneOffset;
   }
 });
+
+test('getLocalDate handles invalid inputs gracefully by returning current date', () => {
+  const currentDateStr = getLocalDate();
+
+  // Test with invalid string
+  assert.strictEqual(getLocalDate('invalid-string'), currentDateStr, 'Should return current date for invalid string');
+
+  // Test with number
+  assert.strictEqual(getLocalDate(12345), currentDateStr, 'Should return current date for number input');
+
+  // Test with invalid Date object
+  assert.strictEqual(getLocalDate(new Date('invalid-date-string')), currentDateStr, 'Should return current date for invalid Date object');
+
+  // Test with null
+  assert.strictEqual(getLocalDate(null), currentDateStr, 'Should return current date for null input');
+});
