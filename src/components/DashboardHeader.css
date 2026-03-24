@@ -51,6 +51,34 @@
   font-weight: 700;
 }
 
+.prev-month-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  opacity: 0.85;
+  margin-top: 5px;
+}
+
+.prev-month-amount {
+  font-weight: 600;
+}
+
+.prev-month-link {
+  color: #fff;
+  text-decoration: none;
+  transition: opacity 0.2s;
+  cursor: pointer;
+}
+
+.prev-month-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+
+
 /* --- Responsive Design for Mobile --- */
 @media (max-width: 768px) {
   .dashboard-header {
@@ -76,5 +104,9 @@
 
   .total-amount {
     font-size: 1.8rem;
+  }
+
+  .prev-month-container {
+    justify-content: center;
   }
 }

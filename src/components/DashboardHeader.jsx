@@ -2,6 +2,7 @@
 import React, { useMemo } from 'react';
 import { useExpenses } from '../hooks/useExpenses';
 import { formatCurrency } from '../features/ExpenseHistory';
+import { Link } from 'react-router-dom';
 import { FaCalendarAlt, FaDollarSign } from 'react-icons/fa';
 import './DashboardHeader.css';
 
@@ -14,18 +15,27 @@ const DashboardHeader = () => {
   const mesActual = ahora.getMonth();
   const anioActual = ahora.getFullYear();
 
-  const monthlyTotal = useMemo(() => {
-    return expenses.reduce((total, expense) => {
+  const mesAnterior = mesActual === 0 ? 11 : mesActual - 1;
+  const anioAnterior = mesActual === 0 ? anioActual - 1 : anioActual;
+
+  const { monthlyTotal, prevMonthlyTotal } = useMemo(() => {
+    let current = 0;
+    let previous = 0;
+    
+    expenses.forEach((expense) => {
       // Dividimos la fecha "AAAA-MM-DD" manualmente para evitar desfases de zona horaria
       const [anio, mes] = expense.date.split('-').map(Number);
-
+      
       // mes - 1 porque en JavaScript los meses van de 0 a 11
       if (anio === anioActual && (mes - 1) === mesActual) {
-        return total + expense.amount;
+        current += expense.amount;
+      } else if (anio === anioAnterior && (mes - 1) === mesAnterior) {
+        previous += expense.amount;
       }
-      return total;
-    }, 0);
-  }, [expenses, mesActual, anioActual]);
+    });
+    
+    return { monthlyTotal: current, prevMonthlyTotal: previous };
+  }, [expenses, mesActual, anioActual, mesAnterior, anioAnterior]);
 
   return (
     <div className="dashboard-header">
@@ -44,6 +54,10 @@ const DashboardHeader = () => {
         <div className="total-amount">
           {loading ? 'Calculando...' : formatCurrency(monthlyTotal)}
         </div>
+        <Link to="/reports" className="prev-month-container prev-month-link">
+          <span className="prev-month-label">Mes anterior:</span>
+          <span className="prev-month-amount">{loading ? '...' : formatCurrency(prevMonthlyTotal)}</span>
+        </Link>
       </div>
     </div>
   );
