@@ -1,35 +1,42 @@
 // src/features/Reports/MonthlyComparison.jsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useExpenses } from '../../hooks/useExpenses';
 import { formatCurrency } from '../ExpenseHistory';
+import { getLocalDate } from '../../utils/dateUtils';
 import { FaArrowUp, FaArrowDown, FaEquals } from 'react-icons/fa';
 import './ComparisonCard.css';
 
 const MonthlyComparison = () => {
   const { expenses, loading } = useExpenses();
 
-  const calculateTotals = () => {
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-    const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-    const previousMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+  const { currentMonthTotal, previousMonthTotal, percentageChange } = useMemo(() => {
+    // Usamos getLocalDate para obtener la fecha de hoy, evitando problemas de timezone.
+    const todayStr = getLocalDate();
+    const currentYear = parseInt(todayStr.substring(0, 4), 10);
+    const currentMonth = parseInt(todayStr.substring(5, 7), 10); // 1-12
+
+    let previousMonth = currentMonth - 1;
+    let previousMonthYear = currentYear;
+
+    if (previousMonth === 0) {
+      previousMonth = 12;
+      previousMonthYear = currentYear - 1;
+    }
+
+    const currentMonthPrefix = `${currentYear}-${String(currentMonth).padStart(2, '0')}-`;
+    const previousMonthPrefix = `${previousMonthYear}-${String(previousMonth).padStart(2, '0')}-`;
 
     let currentMonthTotal = 0;
     let previousMonthTotal = 0;
 
-    expenses.forEach(expense => {
-      const [year, month] = expense.date.split('-').map(Number);
-      const expenseMonth = month - 1;
-      const expenseYear = year;
-
-      if (expenseYear === currentYear && expenseMonth === currentMonth) {
+    for (let i = 0; i < expenses.length; i++) {
+      const expense = expenses[i];
+      if (expense.date.startsWith(currentMonthPrefix)) {
         currentMonthTotal += expense.amount;
-      }
-      if (expenseYear === previousMonthYear && expenseMonth === previousMonth) {
+      } else if (expense.date.startsWith(previousMonthPrefix)) {
         previousMonthTotal += expense.amount;
       }
-    });
+    }
 
     let percentageChange = 0;
     if (previousMonthTotal > 0) {
@@ -39,9 +46,7 @@ const MonthlyComparison = () => {
     }
 
     return { currentMonthTotal, previousMonthTotal, percentageChange };
-  };
-
-  const { currentMonthTotal, previousMonthTotal, percentageChange } = calculateTotals();
+  }, [expenses]);
 
   const renderIcon = () => {
     if (percentageChange > 0) return <FaArrowUp className="icon-up" />;
