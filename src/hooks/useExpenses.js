@@ -40,7 +40,7 @@ export const useExpenses = () => {
       setExpenses(expensesData);
       setLoading(false);
     }, (error) => {
-      console.error("Error al obtener los gastos:", error);
+      console.error("Error al obtener los gastos:", error?.code || 'unknown');
       setLoading(false);
     });
 
@@ -59,7 +59,7 @@ export const useExpenses = () => {
         userId: currentUser.uid // Guardar ID del usuario
       });
     } catch (error) {
-      console.error("Error al agregar el gasto:", error);
+      console.error("Error al agregar el gasto:", error?.code || 'unknown');
     }
   };
 
@@ -68,7 +68,7 @@ export const useExpenses = () => {
       const expenseDoc = doc(firestore, "expenses", id);
       await deleteDoc(expenseDoc);
     } catch (error) {
-      console.error("Error al eliminar el gasto:", error);
+      console.error("Error al eliminar el gasto:", error?.code || 'unknown');
     }
   };
 
