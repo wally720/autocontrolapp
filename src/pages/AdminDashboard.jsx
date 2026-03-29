@@ -17,6 +17,7 @@ import {
 } from 'firebase/firestore';
 import { FaUsers, FaCar, FaPlus, FaTrash } from 'react-icons/fa';
 import './AdminDashboard.css';
+import ConfirmModal from '../components/Modal/ConfirmModal';
 
 const AdminDashboard = () => {
     // Estado para Usuarios (Paginado y Filtrado)
@@ -34,6 +35,8 @@ const AdminDashboard = () => {
     // UI State
     const [activeTab, setActiveTab] = useState('users'); // 'users' o 'vehicles'
     const [newUserEmail, setNewUserEmail] = useState({}); // { plate: email }
+    const [isRevokeModalOpen, setIsRevokeModalOpen] = useState(false);
+    const [pendingRevoke, setPendingRevoke] = useState(null); // { plate, userId }
 
     // Constantes
     const USERS_PER_PAGE = 20;
@@ -212,8 +215,14 @@ const AdminDashboard = () => {
         }
     };
 
-    const handleRevokeAccess = async (plate, userId) => {
-        if (!window.confirm("¿Seguro que quieres revocar el acceso a este usuario?")) return;
+    const handleRevokeAccess = (plate, userId) => {
+        setPendingRevoke({ plate, userId });
+        setIsRevokeModalOpen(true);
+    };
+
+    const confirmRevokeAccess = async () => {
+        if (!pendingRevoke) return;
+        const { plate, userId } = pendingRevoke;
 
         try {
             // 1. Quitar del Vehículo
@@ -225,10 +234,17 @@ const AdminDashboard = () => {
             await updateDoc(doc(firestore, 'users', userId), {
                 vehicles: arrayRemove(plate)
             });
+            setIsRevokeModalOpen(false);
+            setPendingRevoke(null);
         } catch (error) {
             console.error("Error al revocar acceso:", error);
             alert("Error al revocar el acceso.");
         }
+    };
+
+    const cancelRevokeAccess = () => {
+        setIsRevokeModalOpen(false);
+        setPendingRevoke(null);
     };
 
     const getUserEmail = (uid) => {
@@ -240,6 +256,14 @@ const AdminDashboard = () => {
     return (
         <div className="admin-container">
             <h1>Panel de Administración</h1>
+
+            <ConfirmModal
+                isOpen={isRevokeModalOpen}
+                title="Revocar acceso"
+                message="¿Seguro que quieres revocar el acceso a este usuario?"
+                onConfirm={confirmRevokeAccess}
+                onCancel={cancelRevokeAccess}
+            />
 
             <div className="admin-tabs">
                 <button
