@@ -6,6 +6,8 @@ import {
 } from 'react-icons/fa';
 import { categoryIcons } from '../utils/categoryIcons';
 import { CATEGORY_FUEL } from '../utils/constants';
+import ConfirmModal from '../components/Modal/ConfirmModal';
+import { useNotification } from '../context/NotificationContext';
 import './ExpenseHistory.css';
 
 export const formatCurrency = (value) => {
@@ -20,7 +22,9 @@ export const formatCurrency = (value) => {
 
 const ExpenseHistory = () => {
   const { expenses, loading, deleteExpense } = useExpenses();
+  const { showNotification } = useNotification();
   const [currentPage, setCurrentPage] = useState(1);
+  const [pendingDelete, setPendingDelete] = useState(null);
   const recordsPerPage = 10;
 
   const lastIndex = currentPage * recordsPerPage;
@@ -37,9 +41,23 @@ const ExpenseHistory = () => {
 
   const handleDelete = (id, amount) => {
     const formattedAmount = formatCurrency(amount);
-    if (window.confirm(`¿Estás seguro de que quieres eliminar el gasto de ${formattedAmount}?`)) {
-      deleteExpense(id);
+    setPendingDelete({ id, formattedAmount });
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDelete) return;
+
+    const deleted = await deleteExpense(pendingDelete.id);
+
+    if (deleted) {
+      showNotification(`Gasto de ${pendingDelete.formattedAmount} eliminado correctamente.`, 'success');
     }
+
+    setPendingDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setPendingDelete(null);
   };
 
   if (loading) return <div className="loading">Cargando historial...</div>;
@@ -48,6 +66,13 @@ const ExpenseHistory = () => {
 
   return (
     <div className="history-container">
+      <ConfirmModal
+        isOpen={Boolean(pendingDelete)}
+        title="Eliminar gasto"
+        message={pendingDelete ? `¿Estás seguro de que querés eliminar el gasto de ${pendingDelete.formattedAmount}?` : ''}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
       <h3>Historial de Gastos</h3>
       <div className="table-container">
         <table className="expenses-table">

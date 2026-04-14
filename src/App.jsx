@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import DashboardPage from './pages/DashboardPage';
 import ReportsPage from './pages/ReportsPage';
 import Login from './components/Auth/Login';
+import NotificationToast from './components/Notification/NotificationToast';
 
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import PendingAccess from './pages/PendingAccess';
@@ -15,6 +16,7 @@ import './App.css';
 function App() {
   return (
     <div>
+      <NotificationToast />
       <Navbar />
       <main>
         <Routes>

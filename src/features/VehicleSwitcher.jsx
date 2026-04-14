@@ -8,10 +8,12 @@ import { doc, updateDoc, arrayUnion, getDoc, setDoc } from 'firebase/firestore';
 import { FaPlus } from 'react-icons/fa';
 import { isValidPlate } from '../utils/validationUtils';
 import { MAX_VEHICLES_PER_USER, MAX_VEHICLES_ERROR_MSG } from '../utils/constants';
+import { useNotification } from '../context/NotificationContext';
 
 const VehicleSwitcher = () => {
   const { vehicles, selectedVehicle, setSelectedVehicle } = useContext(VehicleContext);
   const { currentUser } = useAuth();
+  const { showNotification } = useNotification();
   const [isAdding, setIsAdding] = useState(false);
   const [newPlate, setNewPlate] = useState('');
 
@@ -25,12 +27,12 @@ const VehicleSwitcher = () => {
     if (!plate) return;
 
     if (!isValidPlate(plate)) {
-      alert("La placa ingresada no es válida. Solo se permiten letras y números.");
+      showNotification('La placa ingresada no es válida. Solo se permiten letras y números.', 'error');
       return;
     }
 
     if (vehicles.length >= MAX_VEHICLES_PER_USER) {
-      alert(MAX_VEHICLES_ERROR_MSG);
+      showNotification(MAX_VEHICLES_ERROR_MSG, 'error');
       return;
     }
 
@@ -43,7 +45,7 @@ const VehicleSwitcher = () => {
         const data = vehicleDoc.data();
         // Si ya existe pero el usuario NO está en la lista de autorizados
         if (!data.authorizedUsers.includes(currentUser.uid)) {
-          alert("Este vehículo ya está registrado por otro usuario. Contacta al administrador para solicitar acceso compartido.");
+          showNotification('Este vehículo ya está registrado por otro usuario. Contactá al administrador para solicitar acceso compartido.', 'error');
           return;
         }
         // Si existe y ya estaba autorizado, solo sigue adelante
@@ -65,9 +67,10 @@ const VehicleSwitcher = () => {
 
       setNewPlate('');
       setIsAdding(false);
+      showNotification(`Vehículo ${plate} agregado correctamente.`, 'success');
     } catch (error) {
       console.error("Error al gestionar placa:", error);
-      alert("Error al procesar la placa. Por favor, intenta de nuevo.");
+      showNotification('Error al procesar la placa. Por favor, intentá de nuevo.', 'error');
     }
   };
 

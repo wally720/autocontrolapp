@@ -8,11 +8,13 @@ import {
 } from 'react-icons/fa';
 import { categoryIcons } from '../../utils/categoryIcons';
 import { CATEGORY_FUEL } from '../../utils/constants';
+import { useNotification } from '../../context/NotificationContext';
 import './ExpenseDetail.css';
 
 
 const ExpenseDetail = () => {
   const { expenses, loading } = useExpenses();
+  const { showNotification } = useNotification();
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
@@ -59,7 +61,7 @@ const ExpenseDetail = () => {
     const minDate = new Date(2024, 0, 1); // Jan 1, 2024 Local
 
     if (newDate < minDate) {
-      alert('La fecha no puede ser anterior al 2024.');
+      showNotification('La fecha no puede ser anterior al 2024.', 'error');
       return; // Do not update state
     }
 
@@ -74,7 +76,7 @@ const ExpenseDetail = () => {
 
       // Validate date order
       if (start > end) {
-        alert('La fecha de inicio no puede ser mayor que la fecha final.');
+        showNotification('La fecha de inicio no puede ser mayor que la fecha final.', 'error');
         return;
       }
 
@@ -83,7 +85,7 @@ const ExpenseDetail = () => {
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
       if (diffDays > 90) {
-        alert('El rango de fechas no puede exceder los 90 días.');
+        showNotification('El rango de fechas no puede exceder los 90 días.', 'error');
         return;
       }
     }

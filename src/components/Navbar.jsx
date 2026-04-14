@@ -8,10 +8,12 @@ import { APP_VERSION } from '../utils/constants';
 import { useAuth } from '../context/AuthContext';
 import { auth } from '../config/firebase';
 import { signOut } from 'firebase/auth';
+import { useNotification } from '../context/NotificationContext';
 import './Navbar.css';
 
 const Navbar = () => {
   const { userProfile, currentUser } = useAuth();
+  const { showNotification } = useNotification();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -20,6 +22,7 @@ const Navbar = () => {
       navigate('/login');
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
+      showNotification('No se pudo cerrar sesión. Intentá de nuevo.', 'error');
     }
   };
 

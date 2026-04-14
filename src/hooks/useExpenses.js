@@ -4,6 +4,7 @@ import { firestore } from '../config/firebase';
 import { collection, addDoc, query, where, onSnapshot, orderBy, doc, deleteDoc } from 'firebase/firestore';
 import VehicleContext from '../context/VehicleContext';
 import { useAuth } from '../context/AuthContext';
+import { useNotification } from '../context/NotificationContext';
 
 /**
  * Hook personalizado para gestionar los gastos de un vehículo específico.
@@ -11,6 +12,7 @@ import { useAuth } from '../context/AuthContext';
 export const useExpenses = () => {
   const { selectedVehicle } = useContext(VehicleContext);
   const { currentUser } = useAuth();
+  const { showNotification } = useNotification();
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -41,6 +43,7 @@ export const useExpenses = () => {
       setLoading(false);
     }, (error) => {
       console.error("Error al obtener los gastos:", error?.code || 'unknown');
+      showNotification('No se pudieron cargar los gastos del vehículo seleccionado.', 'error');
       setLoading(false);
     });
 
@@ -50,7 +53,8 @@ export const useExpenses = () => {
   const addExpense = async (expense) => {
     if (!selectedVehicle || !currentUser) {
       console.error("No se puede agregar el gasto: falta vehículo o usuario.");
-      return;
+      showNotification('No se puede agregar el gasto sin un vehículo y un usuario activos.', 'error');
+      return false;
     }
     try {
       await addDoc(collection(firestore, "expenses"), {
@@ -58,8 +62,11 @@ export const useExpenses = () => {
         vehicleId: selectedVehicle,
         userId: currentUser.uid // Guardar ID del usuario
       });
+      return true;
     } catch (error) {
       console.error("Error al agregar el gasto:", error?.code || 'unknown');
+      showNotification('No se pudo agregar el gasto. Intentá de nuevo.', 'error');
+      return false;
     }
   };
 
@@ -67,8 +74,11 @@ export const useExpenses = () => {
     try {
       const expenseDoc = doc(firestore, "expenses", id);
       await deleteDoc(expenseDoc);
+      return true;
     } catch (error) {
       console.error("Error al eliminar el gasto:", error?.code || 'unknown');
+      showNotification('No se pudo eliminar el gasto. Intentá de nuevo.', 'error');
+      return false;
     }
   };
 
