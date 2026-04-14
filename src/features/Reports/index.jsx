@@ -10,6 +10,7 @@ import AverageByCategory from './AverageByCategory';
 import MonthlyComparison from './MonthlyComparison';
 import FuelEfficiency from './FuelEfficiency';
 import ExpenseDetail from './ExpenseDetail';
+import { useNotification } from '../../context/NotificationContext';
 import {
   FaChartLine, FaChartPie, FaTools, FaFileCsv, FaCalculator, FaExchangeAlt, FaGasPump, FaFileInvoiceDollar
 } from 'react-icons/fa';
@@ -17,11 +18,12 @@ import './Reports.css';
 
 const Reports = () => {
   const { expenses, loading } = useExpenses();
+  const { showNotification } = useNotification();
   const [activeReport, setActiveReport] = useState('efficiency'); // Default to new report
 
   const handleExportCSV = () => {
     if (loading || expenses.length === 0) {
-      alert("No hay datos para exportar o los datos aún se están cargando.");
+      showNotification('No hay datos para exportar o los datos aún se están cargando.', 'error');
       return;
     }
 
@@ -43,6 +45,7 @@ const Reports = () => {
     const fileName = `gastos_${expenses.length > 0 ? expenses[0].vehicleId : 'export'}_${getLocalDate()}.csv`;
 
     downloadCSV(csvString, fileName);
+    showNotification('CSV exportado correctamente.', 'success');
   };
 
   const renderReport = () => {

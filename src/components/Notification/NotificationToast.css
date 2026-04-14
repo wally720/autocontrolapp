@@ -1,0 +1,53 @@
+.notification-toast {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 280px;
+  max-width: 420px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  color: #e0e0e0;
+  background-color: #242424;
+  border: 1px solid #3a3a3a;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.notification-info {
+  border-left: 4px solid #448aff;
+}
+
+.notification-success {
+  border-left: 4px solid #00c853;
+}
+
+.notification-error {
+  border-left: 4px solid #ff5252;
+}
+
+.notification-close {
+  background: transparent;
+  border: none;
+  color: #bdbdbd;
+  font-size: 1.25rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.notification-close:hover {
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .notification-toast {
+    top: 16px;
+    right: 16px;
+    left: 16px;
+    min-width: auto;
+    max-width: none;
+  }
+}

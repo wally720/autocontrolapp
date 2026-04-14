@@ -1,6 +1,7 @@
 // src/features/ExpenseForm.jsx
 import React, { useState } from 'react';
 import { useExpenses } from '../hooks/useExpenses';
+import { useNotification } from '../context/NotificationContext';
 import { getLocalDate } from '../utils/dateUtils';
 import { CATEGORY_FUEL, CATEGORY_LIST } from '../utils/constants';
 import { FaPlus } from 'react-icons/fa';
@@ -8,6 +9,7 @@ import './ExpenseForm.css';
 
 const ExpenseForm = () => {
   const { addExpense } = useExpenses();
+  const { showNotification } = useNotification();
 
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState(CATEGORY_FUEL);
@@ -22,12 +24,12 @@ const ExpenseForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!amount || !category || !date) {
-      alert('Por favor complete todos los campos obligatorios.');
+      showNotification('Por favor completá todos los campos obligatorios.', 'error');
       return;
     }
 
     if (notes.length > 500) {
-      alert('Las notas no pueden exceder los 500 caracteres.');
+      showNotification('Las notas no pueden exceder los 500 caracteres.', 'error');
       return;
     }
 
@@ -40,14 +42,20 @@ const ExpenseForm = () => {
 
     if (category === CATEGORY_FUEL) {
       if (!odometer || !gallons) {
-        alert('Para gastos de combustible, por favor ingrese el kilometraje y los galones.');
+        showNotification('Para gastos de combustible tenés que ingresar kilometraje y galones.', 'error');
         return;
       }
       newExpense.odometer = parseFloat(odometer);
       newExpense.gallons = parseFloat(gallons);
     }
 
-    await addExpense(newExpense);
+    const created = await addExpense(newExpense);
+
+    if (!created) {
+      return;
+    }
+
+    showNotification('Gasto agregado correctamente.', 'success');
 
     // Limpiar el formulario
     setAmount('');

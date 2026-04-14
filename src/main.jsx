@@ -6,17 +6,20 @@ import './index.css'
 import { HashRouter } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { VehicleProvider } from './context/VehicleContext'
+import { NotificationProvider } from './context/NotificationContext'
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     {/* 2. Envuelve tu App con HashRouter en lugar de BrowserRouter */}
     <HashRouter>
-      <AuthProvider>
-        <VehicleProvider>
-          <App />
-        </VehicleProvider>
-      </AuthProvider>
+      <NotificationProvider>
+        <AuthProvider>
+          <VehicleProvider>
+            <App />
+          </VehicleProvider>
+        </AuthProvider>
+      </NotificationProvider>
     </HashRouter>
 
   </React.StrictMode>,

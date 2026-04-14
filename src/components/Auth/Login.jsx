@@ -3,23 +3,23 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { FaGoogle, FaCar } from 'react-icons/fa';
+import { useNotification } from '../../context/NotificationContext';
 import './Auth.css';
 
 const Login = () => {
     const { loginWithGoogle } = useAuth();
-    const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const { showNotification } = useNotification();
     const navigate = useNavigate();
 
     const handleGoogleSignIn = async () => {
-        setError('');
         setLoading(true);
         try {
             await loginWithGoogle();
             navigate('/');
         } catch (err) {
-            setError('Error al iniciar sesión con Google. Inténtalo de nuevo.');
             console.error(err);
+            showNotification('Error al iniciar sesión con Google. Intentá de nuevo.', 'error');
         } finally {
             setLoading(false);
         }
@@ -37,9 +37,6 @@ const Login = () => {
                 <p style={{ color: '#64748b', marginBottom: '2rem' }}>
                     Inicia sesión de forma segura con tu cuenta de Google para gestionar tus vehículos.
                 </p>
-
-                {error && <p className="error-message">{error}</p>}
-
                 <button
                     onClick={handleGoogleSignIn}
                     className="google-button"

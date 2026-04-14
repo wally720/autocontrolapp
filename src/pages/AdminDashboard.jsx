@@ -18,8 +18,10 @@ import {
 import { FaUsers, FaCar, FaPlus, FaTrash } from 'react-icons/fa';
 import './AdminDashboard.css';
 import ConfirmModal from '../components/Modal/ConfirmModal';
+import { useNotification } from '../context/NotificationContext';
 
 const AdminDashboard = () => {
+    const { showNotification } = useNotification();
     // Estado para Usuarios (Paginado y Filtrado)
     const [users, setUsers] = useState([]);
     const [lastVisible, setLastVisible] = useState(null);
@@ -87,7 +89,7 @@ const AdminDashboard = () => {
 
         } catch (error) {
             console.error("Error al cargar usuarios:", error);
-            alert("Error al cargar la lista de usuarios.");
+            showNotification('Error al cargar la lista de usuarios.', 'error');
         } finally {
             setLoadingUsers(false);
         }
@@ -173,7 +175,7 @@ const AdminDashboard = () => {
 
         } catch (error) {
             console.error("Error al actualizar estado:", error);
-            alert("Error al actualizar el estado del usuario.");
+            showNotification('Error al actualizar el estado del usuario.', 'error');
         }
     };
 
@@ -187,7 +189,7 @@ const AdminDashboard = () => {
             const querySnapshot = await getDocs(q);
 
             if (querySnapshot.empty) {
-                alert("Usuario no encontrado.");
+                showNotification('Usuario no encontrado.', 'error');
                 return;
             }
 
@@ -208,10 +210,10 @@ const AdminDashboard = () => {
             setUserCache(prev => ({ ...prev, [targetUser.id]: targetUser.email }));
 
             setNewUserEmail(prev => ({ ...prev, [plate]: '' }));
-            alert(`Acceso concedido a ${email} para la placa ${plate}`);
+            showNotification(`Acceso concedido a ${email} para la placa ${plate}.`, 'success');
         } catch (error) {
             console.error("Error al autorizar:", error);
-            alert("Error al conceder acceso.");
+            showNotification('Error al conceder acceso.', 'error');
         }
     };
 
@@ -236,9 +238,10 @@ const AdminDashboard = () => {
             });
             setIsRevokeModalOpen(false);
             setPendingRevoke(null);
+            showNotification('Acceso revocado correctamente.', 'success');
         } catch (error) {
             console.error("Error al revocar acceso:", error);
-            alert("Error al revocar el acceso.");
+            showNotification('Error al revocar el acceso.', 'error');
         }
     };
 
