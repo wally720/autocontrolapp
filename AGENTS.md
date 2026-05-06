@@ -26,6 +26,7 @@
 
 ## Gotchas de entorno
 - `.env.example` define las claves `VITE_FIREBASE_*`, incluyendo `VITE_FIREBASE_RECAPTCHA_KEY` para App Check.
-- App Check puede requerir debug token en local; revisá `src/config/firebase.js` antes de diagnosticar errores Firebase genéricos.
+- Para probar local, abrí `http://localhost:5173/autocontrolapp/`; Firebase Auth puede bloquear `127.0.0.1` si no está autorizado.
+- App Check local soporta `VITE_FIREBASE_APPCHECK_DEBUG_TOKEN`; registrá el token de depuración en Firebase antes de diagnosticar errores genéricos.
 - Reportes usan `recharts`; cambios en `src/features/Reports/` deben cuidar compatibilidad con ese stack.
 - `package.json` y `package-lock.json` pueden tener versiones de app distintas; no uses eso como señal de cambios funcionales sin verificar.

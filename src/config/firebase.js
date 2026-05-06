@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check";
 import { getFirestore } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
@@ -12,13 +13,19 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check";
-
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 
+const appCheckDebugToken = import.meta.env.VITE_FIREBASE_APPCHECK_DEBUG_TOKEN;
+
+if (import.meta.env.DEV && appCheckDebugToken) {
+  globalThis.FIREBASE_APPCHECK_DEBUG_TOKEN = appCheckDebugToken === 'true'
+    ? true
+    : appCheckDebugToken;
+}
+
 // Inicializar App Check con reCAPTCHA Enterprise
-// Nota: En desarrollo local, podrías necesitar activar el debug token en la consola de Firebase
+// En desarrollo local, VITE_FIREBASE_APPCHECK_DEBUG_TOKEN permite usar un token de depuración registrado en Firebase.
 const appCheck = initializeAppCheck(app, {
   provider: new ReCaptchaEnterpriseProvider(import.meta.env.VITE_FIREBASE_RECAPTCHA_KEY),
   isTokenAutoRefreshEnabled: true
