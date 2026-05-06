@@ -1,26 +1,31 @@
 # Guía para Agentes - Auto Gasto PRO
 
-## Comandos Críticos
-- **Tests:** `npm test` (Usa el runner nativo de Node `node --test`, NO Vitest/Jest).
-- **Test Individual:** `node --test path/to/file.test.js`.
-- **Despliegue:** `npm run deploy` (Limpia, buildea y sube a `gh-pages` sobre la carpeta `dist`).
-- **Validación:** `npm run lint` antes de cualquier commit (estricto: 0 warnings).
+## Comandos verificados
+- Dev: `npm run dev` (Vite).
+- Tests: `npm test` usa `node --test`; no asumas Vitest/Jest.
+- Test individual: `node --test ruta/al/archivo.test.js`.
+- Lint: `npm run lint` ejecuta ESLint con `--max-warnings 0`; actualmente puede fallar por deuda existente, no lo reportes como verde sin correrlo.
+- Build: `npm run build`. Preview: `npm run preview`.
+- Deploy: `npm run deploy`; `predeploy` buildea y luego `gh-pages -d dist` publica. No hay script de clean.
 
-## Arquitectura y Convenciones
-- **Stack:** Vite + React (Hooks/Context) + Firebase (Auth/Firestore).
-- **Estructura de Carpetas:**
-  - `src/features/`: Componentes lógicos de negocio (ej. `ExpenseForm`, `Reports`).
-  - `src/pages/`: Vistas de alto nivel conectadas al router.
-  - `src/context/`: Estado global (Auth, Gastos).
-- **Tests:** Se ubican junto al archivo que testean (ej. `src/utils/dateUtils.js` -> `src/utils/dateUtils.test.js`).
-- **Imports:** Usa módulos de JS (`type: module` en `package.json`).
+## Arquitectura que importa
+- SPA Vite + React 18 + Firebase, ESM (`type: module`). Entrada real: `src/main.jsx`.
+- Routing con `HashRouter`; `vite.config.js` usa `base: '/autocontrolapp/'` para GitHub Pages.
+- Providers globales en orden: `NotificationProvider > AuthProvider > VehicleProvider > App`.
+- Rutas públicas: `/login`, `/pending-access`; protegidas: `/`, `/reports`; admin: `/admin`.
+- Firebase se centraliza en `src/config/firebase.js`: Auth, Firestore, Google provider y App Check reCAPTCHA Enterprise.
+- `src/hooks/useExpenses.js` consulta gastos por `vehicleId`, no por `userId`; no cambies ese límite sin revisar reglas/modelo de Firestore.
 
-## Gotchas y Configuración
-- **Firebase:** La config está en `src/config/firebase.js`. Requiere variables de entorno de Firebase para funcionar localmente.
-- **Gráficos:** Usa `recharts`. Cualquier cambio en reportes debe verificar compatibilidad con este stack.
-- **Estilos:** CSS puro modularizado por componente (archivos `.css` junto a `.jsx`).
+## Convenciones locales
+- `src/features/`: lógica de negocio reutilizable (por ejemplo `ExpenseForm`, `Reports`).
+- `src/pages/`: vistas conectadas al router; revisá `src/features` antes de duplicar lógica en páginas.
+- `src/context/`: estado global real de Auth, Vehicle y Notification.
+- Tests junto al archivo testeado, con `node:test` + `node:assert/strict`.
+- CSS puro junto al componente (`.css` al lado de `.jsx`).
+- Antes de reimplementar fechas, moneda o cálculos de combustible, mirá `src/utils/` y `src/features/Reports/fuelUtils.js`.
 
-## Flujo de Trabajo
-1. Investigar lógica en `src/features` antes de tocar `src/pages`.
-2. Verificar utilitarios en `src/utils` para evitar duplicar lógica de fechas o monedas.
-3. Correr `npm test` para asegurar que los cambios no rompan cálculos de combustible o fechas.
+## Gotchas de entorno
+- `.env.example` define las claves `VITE_FIREBASE_*`, incluyendo `VITE_FIREBASE_RECAPTCHA_KEY` para App Check.
+- App Check puede requerir debug token en local; revisá `src/config/firebase.js` antes de diagnosticar errores Firebase genéricos.
+- Reportes usan `recharts`; cambios en `src/features/Reports/` deben cuidar compatibilidad con ese stack.
+- `package.json` y `package-lock.json` pueden tener versiones de app distintas; no uses eso como señal de cambios funcionales sin verificar.

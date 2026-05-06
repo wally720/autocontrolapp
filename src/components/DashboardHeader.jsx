@@ -1,5 +1,5 @@
 // src/components/DashboardHeader.jsx
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useExpenses } from '../hooks/useExpenses';
 import { formatCurrency } from '../features/ExpenseHistory';
 import { Link } from 'react-router-dom';
@@ -54,7 +54,7 @@ const DashboardHeader = () => {
         <div className="total-amount">
           {loading ? 'Calculando...' : formatCurrency(monthlyTotal)}
         </div>
-        <Link to="/reports" className="prev-month-container prev-month-link">
+        <Link to="/reports?report=detail" className="prev-month-container prev-month-link">
           <span className="prev-month-label">Mes anterior:</span>
           <span className="prev-month-amount">{loading ? '...' : formatCurrency(prevMonthlyTotal)}</span>
         </Link>

@@ -1,8 +1,9 @@
 // src/features/Reports/index.jsx
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useExpenses } from '../../hooks/useExpenses';
 import { getLocalDate } from '../../utils/dateUtils';
 import { generateCSV, downloadCSV } from '../../utils/csvUtils';
+import { useSearchParams } from 'react-router-dom';
 import MonthlyEvolution from './MonthlyEvolution';
 import CategoryDistribution from './CategoryDistribution';
 import MaintenanceLog from './MaintenanceLog';
@@ -19,7 +20,13 @@ import './Reports.css';
 const Reports = () => {
   const { expenses, loading } = useExpenses();
   const { showNotification } = useNotification();
-  const [activeReport, setActiveReport] = useState('efficiency'); // Default to new report
+  const [searchParams] = useSearchParams();
+  const initialReport = searchParams.get('report') === 'detail' ? 'detail' : 'efficiency';
+  const [activeReport, setActiveReport] = useState(initialReport); // Default to new report
+
+  useEffect(() => {
+    setActiveReport(initialReport);
+  }, [initialReport]);
 
   const handleExportCSV = () => {
     if (loading || expenses.length === 0) {
