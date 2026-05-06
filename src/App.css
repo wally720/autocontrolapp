@@ -1,77 +1,120 @@
 /* src/App.css */
 
+#root > div {
+  position: relative;
+  isolation: isolate;
+}
+
+#root > div::before {
+  content: '';
+  position: absolute;
+  inset: 5.5rem -1rem auto;
+  z-index: -1;
+  height: 22rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(88, 166, 255, 0.18), rgba(94, 234, 212, 0.08), transparent);
+  filter: blur(48px);
+  opacity: 0.78;
+}
+
+main {
+  width: 100%;
+}
+
 .app-header {
-  background-color: #242424;
-  /* Color de superficie oscuro */
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  border: 1px solid #3a3a3a;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  margin-bottom: clamp(1.25rem, 3vw, 2rem);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(135deg, rgba(88, 166, 255, 0.12), transparent 36%),
+    var(--color-surface);
+  box-shadow: var(--shadow-panel);
+  backdrop-filter: blur(18px);
 }
 
 .app-header h1 {
   margin: 0;
-  font-size: 1.8rem;
-  color: #448aff;
-  /* Azul profesional más brillante */
+  color: var(--color-primary-strong);
+  font-size: clamp(1.45rem, 4vw, 2.1rem);
+  letter-spacing: -0.04em;
 }
 
 .main-layout {
   display: grid;
-  grid-template-columns: 1fr 1.5fr;
-  gap: 2rem;
+  grid-template-columns: minmax(280px, 0.92fr) minmax(0, 1.5fr);
+  gap: clamp(1rem, 3vw, 2rem);
+  align-items: start;
 }
 
 .left-column,
 .right-column {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: clamp(1rem, 2.6vw, 2rem);
+  min-width: 0;
 }
 
-/* Estilos para los "contenedores" o "tarjetas" de la UI */
+/* Tarjetas base del tablero: superficies tipo panel del cockpit financiero. */
 .feature-card {
-  background: #242424;
-  /* Color de superficie oscuro */
-  padding: 25px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   text-align: left;
-  border: 1px solid #3a3a3a;
+  min-width: 0;
+  padding: clamp(1rem, 2.8vw, 1.6rem);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), transparent 42%),
+    var(--color-surface);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(16px);
 }
 
 .feature-card h3 {
   margin-top: 0;
-  margin-bottom: 1.5rem;
-  color: #e0e0e0;
-  border-bottom: 1px solid #3a3a3a;
-  padding-bottom: 10px;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-size: clamp(1.05rem, 2.6vw, 1.25rem);
+  letter-spacing: -0.02em;
 }
 
 /* Título de la sección principal */
 h2 {
   text-align: left;
   margin-bottom: 1rem;
+  color: var(--color-text);
+  letter-spacing: -0.035em;
 }
 
-/* --- Responsive Design for Mobile --- */
 @media (max-width: 768px) {
+  #root > div::before {
+    inset: 4rem -1rem auto;
+    height: 16rem;
+  }
+
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .main-layout {
     grid-template-columns: 1fr;
-    /* Cambia a una sola columna */
-    gap: 1.5rem;
+    gap: 1rem;
   }
 
   .feature-card {
-    padding: 20px 15px;
+    border-radius: var(--radius-md);
   }
 }
 
 .table-container {
   width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }

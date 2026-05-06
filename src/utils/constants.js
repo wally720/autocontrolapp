@@ -40,5 +40,5 @@ export const CATEGORY_LIST = [
 // Constantes de límites de la aplicación
 export const MAX_VEHICLES_PER_USER = 2;
 export const MAX_VEHICLES_ERROR_MSG = "Solo puedes tener un máximo de 2 placas.";
-export const APP_VERSION = '1.5.24';
+export const APP_VERSION = '1.6.0';
 

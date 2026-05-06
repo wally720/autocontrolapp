@@ -1,26 +1,123 @@
 /* src/index.css */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  color-scheme: dark;
+
+  /* Tokens del cockpit financiero oscuro. */
+  --color-bg: #070b10;
+  --color-bg-elevated: #0c121a;
+  --color-surface: rgba(14, 22, 32, 0.86);
+  --color-surface-strong: rgba(19, 31, 45, 0.94);
+  --color-surface-soft: rgba(255, 255, 255, 0.055);
+  --color-border: rgba(135, 166, 199, 0.2);
+  --color-border-strong: rgba(94, 234, 212, 0.34);
+  --color-text: #edf6ff;
+  --color-text-muted: #a9b7c8;
+  --color-text-soft: #6f8197;
+  --color-primary: #58a6ff;
+  --color-primary-strong: #7dd3fc;
+  --color-accent: #5eead4;
+  --color-warning: #f8c86b;
+  --color-success: #5ef0a3;
+  --color-danger: #ff7a90;
+
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+  --space-page: clamp(0.85rem, 2.4vw, 2rem);
+  --touch-target: 44px;
+  --shadow-soft: 0 18px 50px rgba(0, 0, 0, 0.32);
+  --shadow-panel: 0 24px 80px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --focus-ring: 0 0 0 3px rgba(94, 234, 212, 0.24);
+  --page-max-width: 1280px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  background: var(--color-bg);
+}
 
 body {
   margin: 0;
-  font-family: 'Inter', sans-serif;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #1a1a1a;
-  background-image: linear-gradient(180deg, #1a1a1a 0%, #121212 100%);
-  color: #e0e0e0;
-  min-height: 100vh;
+  background:
+    radial-gradient(circle at 18% -10%, rgba(88, 166, 255, 0.24), transparent 34rem),
+    radial-gradient(circle at 92% 8%, rgba(94, 234, 212, 0.15), transparent 30rem),
+    linear-gradient(145deg, #07101a 0%, #070b10 46%, #030507 100%);
+  color: var(--color-text);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent 76%);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+}
+
+img,
+svg {
+  max-width: 100%;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+::selection {
+  background: rgba(94, 234, 212, 0.32);
+  color: var(--color-text);
 }
 
 #root {
-  max-width: 1280px;
+  width: min(100%, var(--page-max-width));
   margin: 0 auto;
-  padding: 2rem;
+  padding: var(--space-page);
   text-align: center;
 }
 
 @media (max-width: 768px) {
   #root {
-    padding: 1rem 10px;
+    padding: 0.85rem;
   }
 }

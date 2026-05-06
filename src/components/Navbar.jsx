@@ -1,5 +1,4 @@
 // src/components/Navbar.jsx
-import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { FaTachometerAlt, FaChartPie, FaUserShield, FaSignOutAlt } from 'react-icons/fa';
 import VehicleSwitcher from '../features/VehicleSwitcher';
@@ -34,9 +33,8 @@ const Navbar = () => {
           alt="AutoGasto Pro Logo"
           className="navbar-logo-placeholder"
         />
-        <span style={{ color: 'white', fontWeight: 'bold', marginLeft: '10px' }}>Auto Gasto PRO</span>
-        <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.7rem', marginLeft: '8px', alignSelf: 'flex-end', marginBottom: '2px' }}>v{APP_VERSION}</span>
-
+        <span className="navbar-title">Auto Gasto PRO</span>
+        <span className="navbar-version">v{APP_VERSION}</span>
       </div>
 
       {currentUser && userProfile?.status === 'approved' && (
@@ -57,28 +55,25 @@ const Navbar = () => {
               </NavLink>
             )}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <div className="navbar-controls">
             <VehicleSwitcher />
-            <div className="user-profile-nav" style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'white', borderLeft: '1px solid rgba(255,255,255,0.2)', paddingLeft: '15px' }}>
+            <div className="user-profile-nav">
               {currentUser.photoURL ? (
                 <img
                   src={currentUser.photoURL}
-                  alt="Profile"
+                  alt="Perfil"
                   referrerPolicy="no-referrer"
-                  style={{ width: '32px', height: '32px', borderRadius: '50%', border: '2px solid #448aff', objectFit: 'cover' }}
+                  className="user-profile-avatar"
                 />
-
               ) : (
-                <span style={{ fontSize: '0.85rem', opacity: '0.9' }}>{currentUser.email}</span>
+                <span className="user-profile-email">{currentUser.email}</span>
               )}
-              <button onClick={handleLogout} className="logout-btn" style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', padding: '6px 10px', borderRadius: '4px' }}>
+              <button onClick={handleLogout} className="logout-btn" type="button">
                 <FaSignOutAlt />
                 <span>Salir</span>
               </button>
             </div>
-
           </div>
-
         </>
       )}
     </nav>
