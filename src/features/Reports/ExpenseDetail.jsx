@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useExpenses } from '../../hooks/useExpenses';
 import { formatCurrency } from '../ExpenseHistory';
 import { getLocalDate, parseLocalDate } from '../../utils/dateUtils';
@@ -17,6 +17,7 @@ const ExpenseDetail = () => {
   const { showNotification } = useNotification();
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
   // Function to set default dates (Previous Month)
   const setPreviousMonth = () => {
@@ -94,15 +95,34 @@ const ExpenseDetail = () => {
     else setEndDate(value);
   };
 
-  // Memoize filtered expenses and total amount
-  const { filteredExpenses, totalAmount } = useMemo(() => {
+  const expensesInPeriod = useMemo(() => {
     if (!startDate || !endDate) {
-      return { filteredExpenses: [], totalAmount: 0 };
+      return [];
     }
 
     // Filter expenses based on date string comparison (YYYY-MM-DD works lexicographically)
-    const filtered = expenses.filter(expense => {
+    return expenses.filter(expense => {
       return expense.date >= startDate && expense.date <= endDate;
+    });
+  }, [expenses, startDate, endDate]);
+
+  const categoryOptions = useMemo(() => {
+    return [...new Set(expensesInPeriod
+      .map(expense => expense.category)
+      .filter(Boolean))]
+      .sort((a, b) => a.localeCompare(b));
+  }, [expensesInPeriod]);
+
+  useEffect(() => {
+    if (selectedCategory !== 'all' && !categoryOptions.includes(selectedCategory)) {
+      setSelectedCategory('all');
+    }
+  }, [categoryOptions, selectedCategory]);
+
+  // Memoize filtered expenses and total amount
+  const { filteredExpenses, totalAmount } = useMemo(() => {
+    const filtered = expensesInPeriod.filter(expense => {
+      return selectedCategory === 'all' || expense.category === selectedCategory;
     });
 
     // Sort by date descending
@@ -111,7 +131,7 @@ const ExpenseDetail = () => {
     const total = filtered.reduce((sum, item) => sum + item.amount, 0);
 
     return { filteredExpenses: filtered, totalAmount: total };
-  }, [expenses, startDate, endDate]);
+  }, [expensesInPeriod, selectedCategory]);
 
   if (loading) return <div className="loading">Cargando reporte...</div>;
 
@@ -138,6 +158,19 @@ const ExpenseDetail = () => {
               onChange={(e) => handleDateChange('end', e.target.value)}
               min="2024-01-01"
             />
+          </div>
+          <div className="date-input-group category-input-group">
+            <label htmlFor="categoryFilter">Categoría:</label>
+            <select
+              id="categoryFilter"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <option value="all">Todas las categorías</option>
+              {categoryOptions.map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
           </div>
 
           <div className="filter-actions">

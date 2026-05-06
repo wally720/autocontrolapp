@@ -1,105 +1,220 @@
 /* src/components/Navbar.css */
 .navbar {
-  background-color: #242424;
-  padding: 15px 30px;
-  border-radius: 12px;
-  margin-bottom: 2.5rem;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  border: 1px solid #3a3a3a;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  margin-bottom: clamp(1rem, 3vw, 2.25rem);
+  padding: clamp(0.85rem, 2.2vw, 1.1rem);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(135deg, rgba(94, 234, 212, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025)),
+    rgba(8, 15, 23, 0.86);
+  box-shadow: var(--shadow-panel);
+  backdrop-filter: blur(20px);
 }
 
 .navbar-logo-placeholder {
-  height: 80px;
-  /* Aumentado para un logo más grande */
+  height: clamp(52px, 7vw, 74px);
   width: auto;
-  /* Asegura que el ancho se ajuste para no deformar la imagen */
+  flex: 0 0 auto;
+  filter: drop-shadow(0 12px 22px rgba(88, 166, 255, 0.24));
 }
 
 .navbar-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 0.75rem;
+  min-width: max-content;
+}
+
+.navbar-title {
+  color: var(--color-text);
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+}
+
+.navbar-version {
+  align-self: flex-end;
+  margin-bottom: 0.45rem;
+  padding: 0.18rem 0.45rem;
+  border: 1px solid rgba(94, 234, 212, 0.22);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-muted);
+  background: rgba(94, 234, 212, 0.08);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 .navbar-links {
   display: flex;
-  gap: 1rem;
-  background-color: #1a1a1a;
-  padding: 8px;
-  border-radius: 8px;
+  flex: 1 1 auto;
+  justify-content: center;
+  gap: 0.45rem;
+  min-width: 0;
+  padding: 0.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: var(--radius-pill);
+  background: rgba(3, 7, 11, 0.46);
 }
 
 .navbar-links a {
-  color: #c0c0c0;
-  text-decoration: none;
-  font-weight: 500;
-  padding: 10px 20px;
-  border-radius: 6px;
-  transition: all 0.2s ease-in-out;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: var(--touch-target);
+  padding: 0.65rem 0.95rem;
+  border-radius: var(--radius-pill);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .navbar-links a:hover {
-  background-color: #3a3a3a;
-  color: #fff;
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
 }
 
 .navbar-links a.active {
-  background-color: #448aff;
-  color: #121212;
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(68, 138, 255, 0.3);
+  color: #031018;
+  background: linear-gradient(135deg, var(--color-primary-strong), var(--color-accent));
+  box-shadow: 0 10px 26px rgba(94, 234, 212, 0.24);
 }
 
-/* --- Responsive Design for Mobile --- */
-@media (max-width: 768px) {
+.navbar-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.user-profile-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  padding-left: 0.85rem;
+  border-left: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.user-profile-avatar {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border: 2px solid var(--color-accent);
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 4px rgba(94, 234, 212, 0.1);
+}
+
+.user-profile-email {
+  max-width: 13rem;
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logout-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: var(--touch-target);
+  padding: 0.6rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: var(--radius-pill);
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  font-weight: 800;
+  transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.logout-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 122, 144, 0.36);
+  background: rgba(255, 122, 144, 0.16);
+}
+
+@media (max-width: 1020px) {
   .navbar {
-    flex-direction: column;
-    gap: 15px;
-    padding: 15px;
-    text-align: center;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   .navbar-brand {
-    flex-direction: column;
-    gap: 5px;
-  }
-
-  .navbar-logo-placeholder {
-    height: 60px;
+    flex: 1 1 100%;
+    justify-content: center;
   }
 
   .navbar-links {
-    width: 100%;
+    order: 3;
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    border-radius: var(--radius-lg);
+  }
+
+  .navbar-controls {
+    flex: 1 1 100%;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 5px;
-    padding: 5px;
+  }
+}
+
+@media (max-width: 640px) {
+  .navbar-brand {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .navbar-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    width: 100%;
+    gap: 0.4rem;
+    padding: 0.45rem;
   }
 
   .navbar-links a {
-    padding: 8px 12px;
-    font-size: 0.9rem;
+    width: 100%;
+    padding-inline: 0.75rem;
   }
 
-  /* Contenedor de Switcher y Perfil */
-  .navbar>div:last-child {
-    flex-direction: column;
+  .navbar-controls,
+  .user-profile-nav {
     width: 100%;
-    gap: 15px !important;
+    justify-content: center;
   }
 
   .user-profile-nav {
-    border-left: none !important;
-    padding-left: 0 !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 10px;
-    width: 100%;
-    justify-content: center;
+    flex-wrap: wrap;
+    padding-left: 0;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--color-border);
+    border-left: 0;
+  }
+
+  .user-profile-email {
+    max-width: min(100%, 18rem);
+  }
+
+  .logout-btn {
+    flex: 1 1 9rem;
   }
 }

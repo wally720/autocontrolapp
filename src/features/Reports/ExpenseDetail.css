@@ -50,7 +50,8 @@
   color: #aaa;
 }
 
-.date-input-group input {
+.date-input-group input,
+.date-input-group select {
   background-color: #3a3a3a;
   border: 1px solid #555;
   color: #e0e0e0;
@@ -59,7 +60,12 @@
   font-family: inherit;
 }
 
-.date-input-group input:focus {
+.date-input-group select {
+  min-width: 180px;
+}
+
+.date-input-group input:focus,
+.date-input-group select:focus {
   border-color: #448aff;
   outline: none;
 }
