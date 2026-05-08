@@ -29,8 +29,10 @@ El rediseño adopta un estilo **cockpit financiero oscuro**: una interfaz de con
 
 ## Capa 4 — Reportes y visualización
 
-- **Implementada**: `Reports` ahora funciona como cockpit analítico con hero de estado, tabs tipo consola con scroll móvil y exportación CSV integrada visualmente sin tocar la lógica de exportación.
+- **Implementada**: `Reports` ahora funciona con tabs tipo consola con scroll móvil y exportación CSV integrada visualmente sin tocar la lógica de exportación.
+- **Implementada**: `Reports` suma filtro global por periodo, KPIs contextuales solo en Detalle, Distribución y Promedios, y propaga gastos filtrados a los reportes hijos sin cambiar rutas, Firebase ni modelo de datos.
 - **Implementada**: `ExpenseDetail` normaliza filtros de fechas/categoría, total del periodo, contador de registros, chip de filtro activo y tabla con overflow horizontal controlado.
+- **Implementada**: `MaintenanceLog` agrega resumen accionable de eventos, total, últimos mantenimientos/llantas y odómetro disponible usando categorías constantes.
 - **Implementada parcialmente**: visualizaciones Recharts ajustadas a tema oscuro en evolución mensual y distribución por categoría mediante ejes, grillas, leyendas, tooltips y paleta compatibles con tokens.
 - **Implementada**: tablas y estados de reportes secundarios usan paneles oscuros, tokens globales, montos alineados y contenedores responsive.
 

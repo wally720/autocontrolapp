@@ -11,44 +11,66 @@ import { CATEGORY_FUEL } from '../../utils/constants';
 import { useNotification } from '../../context/NotificationContext';
 import './ExpenseDetail.css';
 
+const getPreviousMonthRange = () => {
+  const today = new Date();
+  const firstDayPrevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+  const lastDayPrevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
 
-const ExpenseDetail = () => {
+  return {
+    startDate: getLocalDate(firstDayPrevMonth),
+    endDate: getLocalDate(lastDayPrevMonth)
+  };
+};
+
+const getLast3MonthsRange = () => {
+  const today = new Date();
+  const ninetyDaysAgo = new Date();
+  ninetyDaysAgo.setDate(today.getDate() - 90);
+
+  const minDate = new Date(2024, 0, 1);
+  const effectiveStartDate = ninetyDaysAgo < minDate ? minDate : ninetyDaysAgo;
+
+  return {
+    startDate: getLocalDate(effectiveStartDate),
+    endDate: getLocalDate(today)
+  };
+};
+
+const ExpenseDetail = ({ expenses: controlledExpenses, loading: externalLoading, globalRange } = {}) => {
   const { expenses, loading } = useExpenses();
+  const reportExpenses = controlledExpenses || expenses;
+  const isLoading = externalLoading ?? loading;
   const { showNotification } = useNotification();
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  // Function to set default dates (Previous Month)
   const setPreviousMonth = () => {
-    const today = new Date();
-    // Previous month: current month index - 1.
-    // Example: Feb (1) -> Jan (0). Jan (0) -> Dec (-1, handles year automatically)
-    const firstDayPrevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-    const lastDayPrevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+    const range = getPreviousMonthRange();
 
-    setStartDate(getLocalDate(firstDayPrevMonth));
-    setEndDate(getLocalDate(lastDayPrevMonth));
+    setStartDate(range.startDate);
+    setEndDate(range.endDate);
   };
 
-  // Function to set Last 3 Months (90 days)
   const setLast3Months = () => {
-    const today = new Date();
-    const ninetyDaysAgo = new Date();
-    ninetyDaysAgo.setDate(today.getDate() - 90);
+    const range = getLast3MonthsRange();
 
-    // Enforce min date of 2024-01-01
-    const minDate = new Date(2024, 0, 1);
-    const effectiveStartDate = ninetyDaysAgo < minDate ? minDate : ninetyDaysAgo;
-
-    setStartDate(getLocalDate(effectiveStartDate));
-    setEndDate(getLocalDate(today));
+    setStartDate(range.startDate);
+    setEndDate(range.endDate);
   };
 
   // Set default dates on mount
   useEffect(() => {
-    setPreviousMonth();
-  }, []);
+    if (globalRange?.startDate && globalRange?.endDate) {
+      setStartDate(globalRange.startDate);
+      setEndDate(globalRange.endDate);
+      return;
+    }
+
+    const range = getPreviousMonthRange();
+    setStartDate(range.startDate);
+    setEndDate(range.endDate);
+  }, [globalRange]);
 
   const handleDateChange = (type, value) => {
     // If user clears the input
@@ -101,10 +123,10 @@ const ExpenseDetail = () => {
     }
 
     // Filter expenses based on date string comparison (YYYY-MM-DD works lexicographically)
-    return expenses.filter(expense => {
+    return reportExpenses.filter(expense => {
       return expense.date >= startDate && expense.date <= endDate;
     });
-  }, [expenses, startDate, endDate]);
+  }, [reportExpenses, startDate, endDate]);
 
   const categoryOptions = useMemo(() => {
     return [...new Set(expensesInPeriod
@@ -133,7 +155,7 @@ const ExpenseDetail = () => {
     return { filteredExpenses: filtered, totalAmount: total };
   }, [expensesInPeriod, selectedCategory]);
 
-  if (loading) return <div className="loading">Cargando reporte...</div>;
+  if (isLoading) return <div className="loading">Cargando reporte...</div>;
 
   return (
     <div className="expense-detail-container">
@@ -201,7 +223,7 @@ const ExpenseDetail = () => {
       </div>
 
       <div className="active-filter-chip" aria-live="polite">
-        Categoría activa: <strong>{selectedCategory === 'all' ? 'Todas' : selectedCategory}</strong>
+        Periodo global aplicado. Categoría activa: <strong>{selectedCategory === 'all' ? 'Todas' : selectedCategory}</strong>
       </div>
 
       <div className="table-wrapper">
@@ -245,7 +267,7 @@ const ExpenseDetail = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="3" className="no-data">No se encontraron gastos en el rango seleccionado.</td>
+                <td colSpan="3" className="no-data">No se encontraron gastos para el periodo y categoría seleccionados. Probá ampliar el filtro global o elegir otra categoría.</td>
               </tr>
             )}
           </tbody>

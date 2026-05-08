@@ -12,16 +12,18 @@ const TOOLTIP_STYLE = {
   color: '#edf6ff'
 };
 
-const CategoryDistribution = () => {
+const CategoryDistribution = ({ expenses: filteredExpenses, loading: externalLoading } = {}) => {
   const { expenses, loading } = useExpenses();
+  const reportExpenses = filteredExpenses || expenses;
+  const isLoading = externalLoading ?? loading;
 
   // Procesar los datos para agruparlos por categoría de forma eficiente O(N)
   // Se utiliza useMemo para evitar cálculos innecesarios en cada renderizado
   const data = useMemo(() => {
-    if (!expenses || expenses.length === 0) return [];
+    if (!reportExpenses || reportExpenses.length === 0) return [];
 
     return Array.from(
-      expenses.reduce((acc, expense) => {
+      reportExpenses.reduce((acc, expense) => {
         const { category, amount } = expense;
         const existing = acc.get(category);
         if (existing) {
@@ -32,14 +34,14 @@ const CategoryDistribution = () => {
         return acc;
       }, new Map()).values()
     );
-  }, [expenses]);
+  }, [reportExpenses]);
 
-  if (loading) {
+  if (isLoading) {
     return <p className="report-state">Cargando datos del reporte...</p>;
   }
 
   if (data.length === 0) {
-    return <p className="report-state">No hay datos suficientes para este reporte.</p>;
+    return <p className="report-state">No hay gastos en el periodo seleccionado para distribuir por categoría.</p>;
   }
 
   return (

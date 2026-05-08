@@ -4,15 +4,17 @@ import { formatCurrency } from '../ExpenseHistory';
 import { calculateEfficiency } from './fuelUtils';
 import './ReportTable.css';
 
-const FuelEfficiency = () => {
+const FuelEfficiency = ({ expenses: filteredExpenses, loading: externalLoading } = {}) => {
   const { expenses, loading } = useExpenses();
+  const reportExpenses = filteredExpenses || expenses;
+  const isLoading = externalLoading ?? loading;
 
-  const { periods, averages } = calculateEfficiency(expenses);
+  const { periods, averages } = calculateEfficiency(reportExpenses);
 
-  if (loading) return <p className="report-state">Cargando datos del reporte...</p>;
+  if (isLoading) return <p className="report-state">Cargando datos del reporte...</p>;
 
   if (periods.length === 0) {
-    return <p className="report-state">No hay suficientes datos para este reporte. Se necesitan al menos dos registros de combustible con kilometraje y galones.</p>;
+    return <p className="report-state">No hay suficientes cargas dentro del periodo seleccionado. Se necesitan al menos dos registros de combustible con kilometraje y galones.</p>;
   }
 
   return (

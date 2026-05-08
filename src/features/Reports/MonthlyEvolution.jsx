@@ -11,11 +11,13 @@ const CHART_THEME = {
   primary: '#58a6ff'
 };
 
-const MonthlyEvolution = () => {
+const MonthlyEvolution = ({ expenses: filteredExpenses, loading: externalLoading } = {}) => {
   const { expenses, loading } = useExpenses();
+  const reportExpenses = filteredExpenses || expenses;
+  const isLoading = externalLoading ?? loading;
 
   // Procesar los datos para agruparlos por mes
-  const data = expenses.reduce((acc, expense) => {
+  const data = reportExpenses.reduce((acc, expense) => {
     // Parseamos la fecha manualmente y creamos un objeto Date local para obtener el nombre del mes
     const [year, monthNum] = expense.date.split('-').map(Number);
     const dateObj = new Date(year, monthNum - 1, 1);
@@ -31,12 +33,12 @@ const MonthlyEvolution = () => {
     return acc;
   }, []).reverse(); // Revertir para mostrar los meses más recientes primero
 
-  if (loading) {
+  if (isLoading) {
     return <p className="report-state">Cargando datos del reporte...</p>;
   }
 
-  if (expenses.length === 0) {
-    return <p className="report-state">No hay datos suficientes para este reporte.</p>;
+  if (reportExpenses.length === 0) {
+    return <p className="report-state">No hay gastos dentro del periodo seleccionado para construir la evolución mensual.</p>;
   }
 
   return (

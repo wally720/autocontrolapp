@@ -1,5 +1,5 @@
 // src/features/Reports/index.jsx
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useExpenses } from '../../hooks/useExpenses';
 import { getLocalDate } from '../../utils/dateUtils';
 import { generateCSV, downloadCSV } from '../../utils/csvUtils';
@@ -15,6 +15,7 @@ import { useNotification } from '../../context/NotificationContext';
 import {
   FaChartLine, FaChartPie, FaTools, FaFileCsv, FaCalculator, FaExchangeAlt, FaGasPump, FaFileInvoiceDollar
 } from 'react-icons/fa';
+import { formatCurrency } from '../ExpenseHistory';
 import './Reports.css';
 
 const REPORT_TABS = [
@@ -27,12 +28,104 @@ const REPORT_TABS = [
   { id: 'log', label: 'Mantenimiento', icon: FaTools }
 ];
 
+const REPORTS_WITH_KPIS = new Set(['detail', 'category', 'average']);
+
+const PERIOD_OPTIONS = [
+  { value: 'current-month', label: 'Este mes' },
+  { value: 'previous-month', label: 'Mes anterior' },
+  { value: 'last-3-months', label: 'Últimos 3 meses' },
+  { value: 'current-year', label: 'Año actual' },
+  { value: 'custom', label: 'Rango personalizado' }
+];
+
+const toDateInputValue = (date) => getLocalDate(date);
+
+const getPeriodRange = (period) => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+
+  if (period === 'previous-month') {
+    return {
+      startDate: toDateInputValue(new Date(year, month - 1, 1)),
+      endDate: toDateInputValue(new Date(year, month, 0))
+    };
+  }
+
+  if (period === 'last-3-months') {
+    const start = new Date(today);
+    start.setMonth(start.getMonth() - 2, 1);
+    return {
+      startDate: toDateInputValue(start),
+      endDate: toDateInputValue(today)
+    };
+  }
+
+  if (period === 'current-year') {
+    return {
+      startDate: toDateInputValue(new Date(year, 0, 1)),
+      endDate: toDateInputValue(today)
+    };
+  }
+
+  return {
+    startDate: toDateInputValue(new Date(year, month, 1)),
+    endDate: toDateInputValue(today)
+  };
+};
+
+const getMonthSpan = (startDate, endDate) => {
+  if (!startDate || !endDate) return 1;
+
+  const [startYear, startMonth] = startDate.split('-').map(Number);
+  const [endYear, endMonth] = endDate.split('-').map(Number);
+  const span = ((endYear - startYear) * 12) + endMonth - startMonth + 1;
+
+  return Math.max(span, 1);
+};
+
+const buildReportKpis = (filteredExpenses, startDate, endDate) => {
+  const total = filteredExpenses.reduce((sum, expense) => sum + (Number(expense.amount) || 0), 0);
+  const categoryTotals = filteredExpenses.reduce((acc, expense) => {
+    if (!expense.category) return acc;
+
+    acc[expense.category] = (acc[expense.category] || 0) + (Number(expense.amount) || 0);
+    return acc;
+  }, {});
+  const topCategory = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1])[0];
+  const monthSpan = getMonthSpan(startDate, endDate);
+
+  return {
+    total,
+    count: filteredExpenses.length,
+    topCategory,
+    averageMonthly: total / monthSpan
+  };
+};
+
 const Reports = () => {
   const { expenses, loading } = useExpenses();
   const { showNotification } = useNotification();
   const [searchParams] = useSearchParams();
   const initialReport = searchParams.get('report') === 'detail' ? 'detail' : 'efficiency';
   const [activeReport, setActiveReport] = useState(initialReport); // Default to new report
+  const [selectedPeriod, setSelectedPeriod] = useState('current-month');
+  const [customRange, setCustomRange] = useState(() => getPeriodRange('current-month'));
+
+  const activeRange = useMemo(() => {
+    if (selectedPeriod === 'custom') return customRange;
+
+    return getPeriodRange(selectedPeriod);
+  }, [customRange, selectedPeriod]);
+
+  const filteredExpenses = useMemo(() => {
+    if (!activeRange.startDate || !activeRange.endDate) return [];
+
+    return expenses.filter(expense => expense.date >= activeRange.startDate && expense.date <= activeRange.endDate);
+  }, [activeRange, expenses]);
+
+  const kpis = useMemo(() => buildReportKpis(filteredExpenses, activeRange.startDate, activeRange.endDate), [activeRange, filteredExpenses]);
+  const shouldShowKpis = REPORTS_WITH_KPIS.has(activeReport);
 
   useEffect(() => {
     setActiveReport(initialReport);
@@ -65,41 +158,49 @@ const Reports = () => {
     showNotification('CSV exportado correctamente.', 'success');
   };
 
+  const handlePeriodChange = (event) => {
+    const nextPeriod = event.target.value;
+    setSelectedPeriod(nextPeriod);
+
+    if (nextPeriod !== 'custom') {
+      setCustomRange(getPeriodRange(nextPeriod));
+    }
+  };
+
+  const handleCustomDateChange = (field, value) => {
+    setSelectedPeriod('custom');
+    setCustomRange(previous => ({ ...previous, [field]: value }));
+  };
+
+  const sharedReportProps = {
+    expenses: filteredExpenses,
+    loading,
+    globalRange: activeRange
+  };
+
   const renderReport = () => {
     switch (activeReport) {
       case 'efficiency':
-        return <FuelEfficiency />;
+        return <FuelEfficiency {...sharedReportProps} />;
       case 'detail':
-        return <ExpenseDetail />;
+        return <ExpenseDetail {...sharedReportProps} />;
       case 'comparison':
-        return <MonthlyComparison />;
+        return <MonthlyComparison {...sharedReportProps} />;
       case 'monthly':
-        return <MonthlyEvolution />;
+        return <MonthlyEvolution {...sharedReportProps} />;
       case 'category':
-        return <CategoryDistribution />;
+        return <CategoryDistribution {...sharedReportProps} />;
       case 'average':
-        return <AverageByCategory />;
+        return <AverageByCategory {...sharedReportProps} />;
       case 'log':
-        return <MaintenanceLog />;
+        return <MaintenanceLog {...sharedReportProps} />;
       default:
-        return <FuelEfficiency />;
+        return <FuelEfficiency {...sharedReportProps} />;
     }
   };
 
   return (
     <div className="reports-container">
-      <header className="reports-hero" aria-labelledby="reports-title">
-        <div className="reports-hero__copy">
-          <span className="reports-eyebrow">Centro analítico</span>
-          <h3 id="reports-title">Reportes Inteligentes</h3>
-          <p>Lectura financiera del vehículo con paneles, comparativas y detalle exportable.</p>
-        </div>
-        <div className="reports-hero__status" aria-label="Estado de datos del reporte">
-          <span className="reports-status-label">Registros cargados</span>
-          <strong>{loading ? '...' : expenses.length}</strong>
-        </div>
-      </header>
-
       <div className="report-buttons" role="tablist" aria-label="Tipos de reporte">
         {REPORT_TABS.map(({ id, label, icon: Icon }) => (
           <button
@@ -115,6 +216,72 @@ const Reports = () => {
           </button>
         ))}
       </div>
+
+      <section className="reports-period-panel" aria-labelledby="period-title">
+        <div className="reports-period-panel__header">
+          <div>
+            <span className="reports-eyebrow">Periodo global</span>
+            <h4 id="period-title">Filtro de análisis</h4>
+            <p>Todos los reportes usan este rango como base del cálculo.</p>
+          </div>
+          <div className="reports-period-summary" aria-live="polite">
+            {activeRange.startDate || 'Sin inicio'} <span>→</span> {activeRange.endDate || 'Sin cierre'}
+          </div>
+        </div>
+
+        <div className="reports-period-controls">
+          <label className="reports-filter-field" htmlFor="report-period">
+            <span>Vista rápida</span>
+            <select id="report-period" value={selectedPeriod} onChange={handlePeriodChange}>
+              {PERIOD_OPTIONS.map(option => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </label>
+
+          <label className="reports-filter-field" htmlFor="report-start-date">
+            <span>Desde</span>
+            <input
+              id="report-start-date"
+              type="date"
+              value={activeRange.startDate}
+              onChange={(event) => handleCustomDateChange('startDate', event.target.value)}
+            />
+          </label>
+
+          <label className="reports-filter-field" htmlFor="report-end-date">
+            <span>Hasta</span>
+            <input
+              id="report-end-date"
+              type="date"
+              value={activeRange.endDate}
+              onChange={(event) => handleCustomDateChange('endDate', event.target.value)}
+            />
+          </label>
+        </div>
+      </section>
+
+      {shouldShowKpis && (
+        <section className="reports-kpi-grid" aria-label="Indicadores del periodo seleccionado">
+          <article className="reports-kpi-card reports-kpi-card--primary">
+            <span>Total del periodo</span>
+            <strong>{loading ? '...' : formatCurrency(kpis.total)}</strong>
+          </article>
+          <article className="reports-kpi-card">
+            <span>Gastos registrados</span>
+            <strong>{loading ? '...' : kpis.count}</strong>
+          </article>
+          <article className="reports-kpi-card">
+            <span>Categoría mayor</span>
+            <strong>{kpis.topCategory ? kpis.topCategory[0] : 'Sin datos'}</strong>
+            <small>{kpis.topCategory ? formatCurrency(kpis.topCategory[1]) : 'No hay gastos en el rango'}</small>
+          </article>
+          <article className="reports-kpi-card">
+            <span>Promedio mensual aprox.</span>
+            <strong>{loading ? '...' : formatCurrency(kpis.averageMonthly)}</strong>
+          </article>
+        </section>
+      )}
 
       <div className="report-content">
         {renderReport()}

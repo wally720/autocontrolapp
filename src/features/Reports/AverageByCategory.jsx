@@ -3,16 +3,18 @@ import { useExpenses } from '../../hooks/useExpenses';
 import { formatCurrency } from '../ExpenseHistory';
 import './ReportTable.css';
 
-const AverageByCategory = () => {
+const AverageByCategory = ({ expenses: filteredExpenses, loading: externalLoading } = {}) => {
   const { expenses, loading } = useExpenses();
+  const reportExpenses = filteredExpenses || expenses;
+  const isLoading = externalLoading ?? loading;
 
   const calculateAverages = () => {
-    if (expenses.length === 0) return [];
+    if (reportExpenses.length === 0) return [];
 
     const categoryCounts = {};
     const categoryTotals = {};
 
-    expenses.forEach(expense => {
+    reportExpenses.forEach(expense => {
       if (categoryTotals[expense.category]) {
         categoryTotals[expense.category] += expense.amount;
         categoryCounts[expense.category] += 1;
@@ -31,12 +33,12 @@ const AverageByCategory = () => {
 
   const averageData = calculateAverages();
 
-  if (loading) {
+  if (isLoading) {
     return <p className="report-state">Cargando datos del reporte...</p>;
   }
 
   if (averageData.length === 0) {
-    return <p className="report-state">No hay datos suficientes para este reporte.</p>;
+    return <p className="report-state">No hay gastos en el periodo seleccionado para calcular promedios por categoría.</p>;
   }
 
   return (
