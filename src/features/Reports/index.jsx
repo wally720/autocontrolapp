@@ -17,6 +17,16 @@ import {
 } from 'react-icons/fa';
 import './Reports.css';
 
+const REPORT_TABS = [
+  { id: 'efficiency', label: 'Eficiencia', icon: FaGasPump },
+  { id: 'detail', label: 'Detalle', icon: FaFileInvoiceDollar },
+  { id: 'comparison', label: 'Comparativa', icon: FaExchangeAlt },
+  { id: 'monthly', label: 'Evolución Mensual', icon: FaChartLine },
+  { id: 'category', label: 'Distribución', icon: FaChartPie },
+  { id: 'average', label: 'Promedios', icon: FaCalculator },
+  { id: 'log', label: 'Mantenimiento', icon: FaTools }
+];
+
 const Reports = () => {
   const { expenses, loading } = useExpenses();
   const { showNotification } = useNotification();
@@ -78,73 +88,49 @@ const Reports = () => {
 
   return (
     <div className="reports-container">
-      <h3>Reportes Inteligentes</h3>
-      <div className="report-buttons">
-        <button
-          className={activeReport === 'efficiency' ? 'active' : ''}
-          onClick={() => setActiveReport('efficiency')}
-        >
-          <FaGasPump />
-          <span>Eficiencia</span>
-        </button>
-        <button
-          className={activeReport === 'detail' ? 'active' : ''}
-          onClick={() => setActiveReport('detail')}
-        >
-          <FaFileInvoiceDollar />
-          <span>Detalle</span>
-        </button>
-        <button
-          className={activeReport === 'comparison' ? 'active' : ''}
-          onClick={() => setActiveReport('comparison')}
-        >
-          <FaExchangeAlt />
-          <span>Comparativa</span>
-        </button>
-        <button
-          className={activeReport === 'monthly' ? 'active' : ''}
-          onClick={() => setActiveReport('monthly')}
-        >
-          <FaChartLine />
-          <span>Evolución Mensual</span>
-        </button>
-        <button
-          className={activeReport === 'category' ? 'active' : ''}
-          onClick={() => setActiveReport('category')}
-        >
-          <FaChartPie />
-          <span>Distribución</span>
-        </button>
-        <button
-          className={activeReport === 'average' ? 'active' : ''}
-          onClick={() => setActiveReport('average')}
-        >
-          <FaCalculator />
-          <span>Promedios</span>
-        </button>
-        <button
-          className={activeReport === 'log' ? 'active' : ''}
-          onClick={() => setActiveReport('log')}
-        >
-          <FaTools />
-          <span>Mantenimiento</span>
-        </button>
+      <header className="reports-hero" aria-labelledby="reports-title">
+        <div className="reports-hero__copy">
+          <span className="reports-eyebrow">Centro analítico</span>
+          <h3 id="reports-title">Reportes Inteligentes</h3>
+          <p>Lectura financiera del vehículo con paneles, comparativas y detalle exportable.</p>
+        </div>
+        <div className="reports-hero__status" aria-label="Estado de datos del reporte">
+          <span className="reports-status-label">Registros cargados</span>
+          <strong>{loading ? '...' : expenses.length}</strong>
+        </div>
+      </header>
+
+      <div className="report-buttons" role="tablist" aria-label="Tipos de reporte">
+        {REPORT_TABS.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            aria-selected={activeReport === id}
+            className={activeReport === id ? 'active' : ''}
+            onClick={() => setActiveReport(id)}
+          >
+            <Icon />
+            <span>{label}</span>
+          </button>
+        ))}
       </div>
 
       <div className="report-content">
         {renderReport()}
       </div>
 
-      <hr style={{ margin: '2rem 0', borderColor: '#3a3a3a' }} />
-
-      <div>
-        <h4>Exportar Datos</h4>
-        <p style={{ color: '#aaa' }}>Descargue todos los gastos del vehículo seleccionado en formato CSV.</p>
+      <section className="report-export-panel" aria-labelledby="export-title">
+        <div>
+          <span className="reports-eyebrow">Salida de datos</span>
+          <h4 id="export-title">Exportar Datos</h4>
+          <p>Descargue todos los gastos del vehículo seleccionado en formato CSV.</p>
+        </div>
         <button className="export-button" onClick={handleExportCSV} disabled={loading}>
-          <FaFileCsv style={{ marginRight: '8px' }} />
+          <FaFileCsv />
           {loading ? 'Cargando datos...' : 'Descargar CSV'}
         </button>
-      </div>
+      </section>
     </div>
   );
 };

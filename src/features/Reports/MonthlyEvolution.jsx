@@ -1,8 +1,15 @@
 // src/features/Reports/MonthlyEvolution.jsx
-import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useExpenses } from '../../hooks/useExpenses';
 import { formatCurrency } from '../ExpenseHistory'; // Reutilizamos la función de formato
+
+const CHART_THEME = {
+  grid: 'rgba(135, 166, 199, 0.18)',
+  axis: '#a9b7c8',
+  tooltipBg: 'rgba(7, 11, 16, 0.96)',
+  tooltipBorder: 'rgba(94, 234, 212, 0.34)',
+  primary: '#58a6ff'
+};
 
 const MonthlyEvolution = () => {
   const { expenses, loading } = useExpenses();
@@ -25,31 +32,35 @@ const MonthlyEvolution = () => {
   }, []).reverse(); // Revertir para mostrar los meses más recientes primero
 
   if (loading) {
-    return <p>Cargando datos del reporte...</p>;
+    return <p className="report-state">Cargando datos del reporte...</p>;
   }
 
   if (expenses.length === 0) {
-    return <p>No hay datos suficientes para este reporte.</p>;
+    return <p className="report-state">No hay datos suficientes para este reporte.</p>;
   }
 
   return (
-    <div>
+    <section className="report-panel">
       <h4>Evolución de Gastos Mensuales</h4>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#4a4a4a" />
-          <XAxis dataKey="month" stroke="#e0e0e0" />
-          <YAxis stroke="#e0e0e0" tickFormatter={value => new Intl.NumberFormat(undefined).format(value)} />
-          <Tooltip
-            contentStyle={{ backgroundColor: '#2a2a2a', border: '1px solid #4a4a4a' }}
-            itemStyle={{ color: '#e0e0e0' }}
-            formatter={(value) => formatCurrency(value)}
-          />
-          <Legend wrapperStyle={{ color: '#e0e0e0' }} />
-          <Bar dataKey="total" fill="#448aff" name="Total Gastado" />
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
+      <div className="chart-shell">
+        <ResponsiveContainer width="100%" height={320}>
+          <BarChart data={data} margin={{ top: 8, right: 12, left: 8, bottom: 4 }}>
+            <CartesianGrid strokeDasharray="4 8" stroke={CHART_THEME.grid} vertical={false} />
+            <XAxis dataKey="month" stroke={CHART_THEME.axis} tickLine={false} axisLine={false} />
+            <YAxis stroke={CHART_THEME.axis} tickLine={false} axisLine={false} tickFormatter={value => new Intl.NumberFormat(undefined).format(value)} />
+            <Tooltip
+              cursor={{ fill: 'rgba(88, 166, 255, 0.08)' }}
+              contentStyle={{ backgroundColor: CHART_THEME.tooltipBg, border: `1px solid ${CHART_THEME.tooltipBorder}`, borderRadius: '12px', color: '#edf6ff' }}
+              labelStyle={{ color: '#7dd3fc', fontWeight: 800 }}
+              itemStyle={{ color: '#edf6ff' }}
+              formatter={(value) => formatCurrency(value)}
+            />
+            <Legend wrapperStyle={{ color: CHART_THEME.axis, paddingTop: '0.5rem' }} />
+            <Bar dataKey="total" fill={CHART_THEME.primary} radius={[10, 10, 3, 3]} name="Total Gastado" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </section>
   );
 };
 

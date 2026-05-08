@@ -137,6 +137,17 @@ const ExpenseDetail = () => {
 
   return (
     <div className="expense-detail-container">
+      <div className="expense-detail-heading">
+        <div>
+          <span className="detail-kicker">Detalle filtrado</span>
+          <h4>Movimientos del periodo</h4>
+        </div>
+        <div className="detail-count" aria-label="Cantidad de gastos filtrados">
+          <strong>{filteredExpenses.length}</strong>
+          <span>registros</span>
+        </div>
+      </div>
+
       <div className="summary-section">
         <div className="date-filters">
           <div className="date-input-group">
@@ -189,13 +200,17 @@ const ExpenseDetail = () => {
         </div>
       </div>
 
+      <div className="active-filter-chip" aria-live="polite">
+        Categoría activa: <strong>{selectedCategory === 'all' ? 'Todas' : selectedCategory}</strong>
+      </div>
+
       <div className="table-wrapper">
         <table className="expense-detail-table">
           <thead>
             <tr>
               <th>Categoría y Detalles</th>
               <th>Fecha</th>
-              <th style={{ textAlign: 'right' }}>Monto</th>
+              <th className="amount-heading">Monto</th>
             </tr>
           </thead>
           <tbody>

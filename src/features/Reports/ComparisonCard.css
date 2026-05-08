@@ -1,57 +1,77 @@
 /* src/features/Reports/ComparisonCard.css */
 .comparison-container {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    background-color: #2a2a2a;
-    padding: 30px;
-    border-radius: 12px;
-    margin-top: 1.5rem;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 1rem;
+  padding: clamp(1rem, 3vw, 1.6rem);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(94, 234, 212, 0.1), transparent 18rem),
+    rgba(7, 11, 16, 0.44);
+}
+
+.comparison-container--metric {
+  margin-bottom: 1.25rem;
 }
 
 .card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
+  display: flex;
+  min-width: min(16rem, 100%);
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.045);
 }
 
 .card-title {
-    font-size: 1.1rem;
-    color: #c0c0c0;
-    font-weight: 500;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .card-value {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: #e0e0e0;
+  color: var(--color-text);
+  font-size: clamp(1.65rem, 4vw, 2.45rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
 }
 
 .comparison-icon {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    font-size: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 2rem;
+  flex: 0 0 auto;
 }
 
 .percentage {
-    font-size: 1.2rem;
-    font-weight: 600;
+  font-size: 1rem;
+  font-weight: 800;
 }
 
-.percentage.up { color: #ff4d4d; }
-.percentage.down { color: #00c49f; }
-.icon-up { color: #ff4d4d; }
-.icon-down { color: #00c49f; }
-.icon-equal { color: #c0c0c0; }
+.percentage.up { color: var(--color-danger); }
+.percentage.down { color: var(--color-success); }
+.icon-up { color: var(--color-danger); }
+.icon-down { color: var(--color-success); }
+.icon-equal { color: var(--color-text-muted); }
 
 /* --- Responsive Design for Mobile --- */
 @media (max-width: 768px) {
   .comparison-container {
     flex-direction: column;
-    gap: 25px;
+    gap: 0.85rem;
+  }
+
+  .card {
+    width: 100%;
   }
 
   .comparison-icon {

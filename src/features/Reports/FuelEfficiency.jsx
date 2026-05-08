@@ -1,5 +1,4 @@
 // src/features/Reports/FuelEfficiency.jsx
-import React from 'react';
 import { useExpenses } from '../../hooks/useExpenses';
 import { formatCurrency } from '../ExpenseHistory';
 import { calculateEfficiency } from './fuelUtils';
@@ -10,16 +9,16 @@ const FuelEfficiency = () => {
 
   const { periods, averages } = calculateEfficiency(expenses);
 
-  if (loading) return <p>Cargando datos del reporte...</p>;
+  if (loading) return <p className="report-state">Cargando datos del reporte...</p>;
 
   if (periods.length === 0) {
-    return <p>No hay suficientes datos para este reporte. Se necesitan al menos dos registros de combustible con kilometraje y galones.</p>;
+    return <p className="report-state">No hay suficientes datos para este reporte. Se necesitan al menos dos registros de combustible con kilometraje y galones.</p>;
   }
 
   return (
-    <div>
+    <section className="report-panel">
       <h4>Análisis de Eficiencia de Combustible</h4>
-      <div className="comparison-container" style={{ marginBottom: '2rem' }}>
+      <div className="comparison-container comparison-container--metric">
         <div className="card">
           <span className="card-title">Rendimiento Promedio</span>
           <span className="card-value">{averages.avgEfficiency.toFixed(2)} km/Gal</span>
@@ -37,7 +36,7 @@ const FuelEfficiency = () => {
               <th>Km Recorridos</th>
               <th>Galones Usados</th>
               <th>Rendimiento (km/Gal)</th>
-              <th style={{ textAlign: 'right' }}>Costo / Km</th>
+              <th className="report-table__amount-heading">Costo / Km</th>
             </tr>
           </thead>
           <tbody>
@@ -47,13 +46,13 @@ const FuelEfficiency = () => {
                 <td>{p.kmTraveled.toLocaleString()} km</td>
                 <td>{p.gallonsUsed.toFixed(2)} Gal</td>
                 <td>{p.efficiency.toFixed(2)}</td>
-                <td style={{ textAlign: 'right' }}>{formatCurrency(p.costPerKm)}</td>
+                <td className="report-table__amount">{formatCurrency(p.costPerKm)}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-    </div>
+    </section>
   );
 };
 

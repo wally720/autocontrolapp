@@ -29,9 +29,15 @@ El rediseño adopta un estilo **cockpit financiero oscuro**: una interfaz de con
 
 ## Capa 4 — Reportes y visualización
 
-- Llevar `Reports` a tarjetas analíticas con tabs tipo consola y jerarquía clara de KPIs.
-- Ajustar colores de Recharts desde componentes para ejes, tooltips y leyendas compatibles con el tema oscuro.
-- Normalizar tablas y estados vacíos de reportes para que hereden los tokens globales.
+- **Implementada**: `Reports` ahora funciona como cockpit analítico con hero de estado, tabs tipo consola con scroll móvil y exportación CSV integrada visualmente sin tocar la lógica de exportación.
+- **Implementada**: `ExpenseDetail` normaliza filtros de fechas/categoría, total del periodo, contador de registros, chip de filtro activo y tabla con overflow horizontal controlado.
+- **Implementada parcialmente**: visualizaciones Recharts ajustadas a tema oscuro en evolución mensual y distribución por categoría mediante ejes, grillas, leyendas, tooltips y paleta compatibles con tokens.
+- **Implementada**: tablas y estados de reportes secundarios usan paneles oscuros, tokens globales, montos alineados y contenedores responsive.
+
+### Pendientes posteriores a Capa 4
+
+- Validar visualmente en navegador real los labels largos del gráfico de distribución para decidir si conviene una leyenda más compacta en móvil.
+- Revisar capturas desktop/móvil antes de Capa 5 para ajustar densidad fina de tablas si aparecen categorías o notas extremadamente largas.
 
 ## Capa 5 — Superficies secundarias
 

@@ -1,5 +1,5 @@
 // src/features/Reports/MonthlyComparison.jsx
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useExpenses } from '../../hooks/useExpenses';
 import { formatCurrency } from '../ExpenseHistory';
 import { getLocalDate } from '../../utils/dateUtils';
@@ -55,11 +55,11 @@ const MonthlyComparison = () => {
   };
 
   if (loading) {
-    return <p>Cargando datos del reporte...</p>;
+    return <p className="report-state">Cargando datos del reporte...</p>;
   }
 
   return (
-    <div>
+    <section className="report-panel">
       <h4>Comparativa Mes a Mes</h4>
       <div className="comparison-container">
         <div className="card">
@@ -77,7 +77,7 @@ const MonthlyComparison = () => {
           <span className="card-value">{formatCurrency(currentMonthTotal)}</span>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
