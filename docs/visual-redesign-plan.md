@@ -41,9 +41,15 @@ El rediseño adopta un estilo **cockpit financiero oscuro**: una interfaz de con
 
 ## Capa 5 — Superficies secundarias
 
-- Adaptar Login, Pending Access, Admin Dashboard y modales para eliminar superficies claras aisladas.
-- Unificar botones, inputs, alerts y estados de error/éxito con los tokens globales.
-- Revisar contraste, navegación por teclado y comportamiento en pantallas estrechas.
+- **Implementada**: `Login` y `PendingAccess` usan paneles oscuros, CTA táctiles, foco por tokens y textos existentes sin cambiar autenticación.
+- **Implementada**: `AdminDashboard` adopta hero de consola, tabs oscuros, tablas dentro de contenedores con overflow horizontal y estados/badges alineados al cockpit.
+- **Implementada**: `ConfirmModal` y `NotificationToast` eliminan superficies claras, usan blur, bordes luminosos, radios/touch targets globales y estados cromáticos del sistema.
+- **Pendiente**: validar visualmente en navegador real el ancho de correos largos en la tabla de administración y la posición de toasts sobre pantallas muy pequeñas.
+
+### Pendientes posteriores a Capa 5
+
+- Revisar capturas móvil de Admin Dashboard con listas reales de usuarios/vehículos para ajustar densidad si aparecen emails extremadamente largos.
+- Hacer una pasada final de contraste/foco en navegación por teclado antes de cerrar el rediseño visual completo.
 
 ## Criterios de continuidad
 

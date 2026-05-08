@@ -1,81 +1,97 @@
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  min-height: 100vh;
+  padding: 1rem;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(94, 234, 212, 0.14), transparent 28rem),
+    rgba(3, 7, 11, 0.76);
+  backdrop-filter: blur(10px);
 }
 
 .modal-content {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 24px;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    animation: fadeIn 0.2s ease-in-out;
+  width: min(100%, 420px);
+  padding: clamp(1.1rem, 4vw, 1.5rem);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(145deg, rgba(255, 122, 144, 0.1), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), transparent 48%),
+    var(--color-surface-strong);
+  box-shadow: var(--shadow-panel);
+  animation: modalFadeIn 0.2s ease-out;
 }
 
 .modal-header h2 {
-    margin: 0 0 16px 0;
-    font-size: 1.25rem;
-    color: #333;
+  margin: 0 0 0.85rem;
+  color: var(--color-text);
+  font-size: clamp(1.15rem, 4vw, 1.35rem);
+  letter-spacing: -0.035em;
 }
 
 .modal-body p {
-    margin: 0 0 24px 0;
-    color: #666;
-    line-height: 1.5;
+  margin: 0 0 1.35rem;
+  color: var(--color-text-muted);
+  line-height: 1.55;
 }
 
 .modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.btn-cancel,
+.btn-confirm {
+  min-height: var(--touch-target);
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  font-weight: 800;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
 
 .btn-cancel {
-    padding: 8px 16px;
-    background-color: #f3f4f6;
-    color: #374151;
-    border: 1px solid #d1d5db;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.2s;
-}
-
-.btn-cancel:hover {
-    background-color: #e5e7eb;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .btn-confirm {
-    padding: 8px 16px;
-    background-color: #ef4444;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.2s;
+  color: var(--color-text);
+  border: 1px solid rgba(255, 122, 144, 0.42);
+  background: linear-gradient(135deg, rgba(255, 122, 144, 0.92), rgba(239, 68, 68, 0.82));
 }
 
+.btn-cancel:hover,
 .btn-confirm:hover {
-    background-color: #dc2626;
+  transform: translateY(-1px);
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .btn-cancel,
+  .btn-confirm {
+    width: 100%;
+  }
 }

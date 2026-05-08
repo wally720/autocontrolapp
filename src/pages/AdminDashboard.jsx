@@ -1,5 +1,5 @@
 // src/pages/AdminDashboard.jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { firestore } from '../config/firebase';
 import {
     collection,
@@ -156,7 +156,8 @@ const AdminDashboard = () => {
         };
 
         loadMissingUsers();
-    }, [vehicles, loadingVehicles]); // Intentionally omitting userCache to avoid infinite loop if user not found
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Se omite userCache para evitar ciclos al resolver usuarios faltantes.
+    }, [vehicles, loadingVehicles]);
 
     const handleUpdateStatus = async (userId, newStatus) => {
         try {
@@ -258,7 +259,11 @@ const AdminDashboard = () => {
 
     return (
         <div className="admin-container">
-            <h1>Panel de Administración</h1>
+            <header className="admin-hero">
+                <p className="admin-kicker">Consola de control</p>
+                <h1>Panel de Administración</h1>
+                <p>Supervisá accesos, estados de usuarios y permisos vehiculares desde una superficie segura.</p>
+            </header>
 
             <ConfirmModal
                 isOpen={isRevokeModalOpen}
@@ -299,7 +304,8 @@ const AdminDashboard = () => {
                         </select>
                     </div>
 
-                    <table className="admin-table">
+                    <div className="admin-table-shell">
+                        <table className="admin-table">
                         <thead>
                             <tr>
                                 <th>Email</th>
@@ -334,7 +340,8 @@ const AdminDashboard = () => {
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
+                        </table>
+                    </div>
 
                     {users.length === 0 && !loadingUsers && (
                         <div className="no-data">No se encontraron usuarios con este estado.</div>
@@ -350,7 +357,8 @@ const AdminDashboard = () => {
                 </div>
             ) : (
                 <div className="tab-content transition-in">
-                    <table className="admin-table">
+                    <div className="admin-table-shell">
+                        <table className="admin-table">
                         <thead>
                             <tr>
                                 <th>Placa</th>
@@ -394,7 +402,8 @@ const AdminDashboard = () => {
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
+                        </table>
+                    </div>
                 </div>
             )}
         </div>
