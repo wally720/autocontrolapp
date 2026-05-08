@@ -7,6 +7,10 @@
   border-collapse: collapse;
 }
 
+.maintenance-log-table {
+  min-width: 720px;
+}
+
 .report-table th,
 .report-table td {
   padding: 0.9rem 1rem;
@@ -41,6 +45,12 @@
   color: var(--color-primary-strong);
   font-weight: 800;
   white-space: nowrap;
+}
+
+.report-table__notes {
+  max-width: 18rem;
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
 }
 
 .table-container {
@@ -89,6 +99,10 @@
 @media (max-width: 768px) {
   .report-table {
     min-width: 560px;
+  }
+
+  .maintenance-log-table {
+    min-width: 680px;
   }
 
   .report-table th,

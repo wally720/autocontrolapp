@@ -1,7 +1,7 @@
 {
   "name": "autogasto-pro",
   "private": true,
-  "version": "1.6.2",
+  "version": "1.6.3",
   "homepage": "https://wally720.github.io/autocontrolapp",
   "type": "module",
   "scripts": {

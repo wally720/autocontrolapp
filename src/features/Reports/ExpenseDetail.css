@@ -94,7 +94,7 @@
   text-transform: uppercase;
 }
 
-.date-filters {
+.detail-filters {
   display: flex;
   gap: 0.75rem;
   align-items: flex-end;
@@ -102,14 +102,14 @@
   min-width: 0;
 }
 
-.date-input-group {
+.detail-input-group {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
   min-width: min(12rem, 100%);
 }
 
-.date-input-group label {
+.detail-input-group label {
   color: var(--color-text-muted);
   font-size: 0.74rem;
   font-weight: 800;
@@ -117,8 +117,7 @@
   text-transform: uppercase;
 }
 
-.date-input-group input,
-.date-input-group select {
+.detail-input-group select {
   min-height: var(--touch-target);
   background: rgba(7, 11, 16, 0.72);
   border: 1px solid var(--color-border);
@@ -128,57 +127,13 @@
   font-family: inherit;
 }
 
-.date-input-group select {
+.detail-input-group select {
   min-width: min(14rem, 100%);
 }
 
-.date-input-group input:focus,
-.date-input-group select:focus {
+.detail-input-group select:focus {
   border-color: var(--color-border-strong);
   outline: none;
-}
-
-.filter-actions {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.filter-btn {
-  min-height: var(--touch-target);
-  background: rgba(255, 255, 255, 0.055);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-muted);
-  padding: 0.65rem 0.85rem;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-size: 0.86rem;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  transition: transform 0.18s ease, border-color 0.18s ease, color 0.18s ease, background 0.18s ease;
-}
-
-.filter-btn:hover {
-  transform: translateY(-1px);
-  background: var(--color-surface-soft);
-  color: var(--color-text);
-  border-color: var(--color-border-strong);
-}
-
-.filter-btn svg {
-  font-size: 0.8rem;
-}
-
-.filter-btn.reset:hover {
-  color: var(--color-danger);
-  border-color: rgba(255, 122, 144, 0.66);
-}
-
-.filter-btn.range-3m:hover {
-  color: var(--color-primary-strong);
-  border-color: rgba(125, 211, 252, 0.66);
 }
 
 .active-filter-chip {
@@ -335,23 +290,14 @@
     font-size: 0.85rem;
   }
 
-  .date-filters {
+  .detail-filters {
     width: 100%;
   }
 
-  .date-input-group,
-  .date-input-group select {
+  .detail-input-group,
+  .detail-input-group select {
     width: 100%;
     min-width: 0;
-  }
-
-  .filter-actions {
-    width: 100%;
-  }
-
-  .filter-btn {
-    flex: 1;
-    justify-content: center;
   }
 
   .expense-detail-table {

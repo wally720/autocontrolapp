@@ -7,6 +7,11 @@ import './ReportTable.css';
 const MAINTENANCE_CATEGORIES = [CATEGORY_MAINTENANCE, CATEGORY_TIRES];
 
 const formatMaintenanceDate = (expense) => expense?.date || 'Sin fecha';
+const formatMaintenanceNotes = (notes) => {
+  const value = typeof notes === 'string' ? notes.trim() : '';
+
+  return value || '—';
+};
 
 const MaintenanceLog = ({ expenses: filteredExpenses, loading: externalLoading } = {}) => {
   const { expenses, loading } = useExpenses();
@@ -58,12 +63,13 @@ const MaintenanceLog = ({ expenses: filteredExpenses, loading: externalLoading }
         </article>
       </div>
       <div className="table-container">
-        <table className="report-table">
+        <table className="report-table maintenance-log-table">
           <thead>
             <tr>
               <th>Fecha</th>
               <th>Categoría</th>
               <th>Odómetro</th>
+              <th>Notas</th>
               <th className="report-table__amount-heading">Monto</th>
             </tr>
           </thead>
@@ -73,6 +79,7 @@ const MaintenanceLog = ({ expenses: filteredExpenses, loading: externalLoading }
                 <td>{expense.date}</td>
                 <td>{expense.category}</td>
                 <td>{expense.odometer ? `${Number(expense.odometer).toLocaleString()} km` : '—'}</td>
+                <td className="report-table__notes">{formatMaintenanceNotes(expense.notes)}</td>
                 <td className="report-table__amount">{formatCurrency(expense.amount)}</td>
               </tr>
             ))}
