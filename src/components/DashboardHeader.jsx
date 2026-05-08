@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { useExpenses } from '../hooks/useExpenses';
 import { formatCurrency } from '../features/ExpenseHistory';
 import { Link } from 'react-router-dom';
-import { FaCalendarAlt, FaDollarSign } from 'react-icons/fa';
+import { FaCalendarAlt, FaChartLine, FaChevronRight, FaDollarSign } from 'react-icons/fa';
 import './DashboardHeader.css';
 
 const DashboardHeader = () => {
@@ -38,28 +38,33 @@ const DashboardHeader = () => {
   }, [expenses, mesActual, anioActual, mesAnterior, anioAnterior]);
 
   return (
-    <div className="dashboard-header">
+    <section className="dashboard-header" aria-labelledby="dashboard-header-title">
       <div className="header-left">
-        <h2 className="header-title">Resumen Mensual</h2>
+        <p className="header-eyebrow">Panel operativo</p>
+        <h2 id="dashboard-header-title" className="header-title">Resumen Mensual</h2>
         <div className="header-subtitle">
-          <FaCalendarAlt />
+          <FaCalendarAlt aria-hidden="true" />
           <span>{currentMonthName}</span>
         </div>
       </div>
       <div className="header-right">
-        <div className="total-label">
-          <FaDollarSign />
-          <span>Total Gastado este Mes</span>
+        <div className="total-panel">
+          <div className="total-label">
+            <FaDollarSign aria-hidden="true" />
+            <span>Total gastado este mes</span>
+          </div>
+          <div className="total-amount" aria-live="polite">
+            {loading ? 'Calculando...' : formatCurrency(monthlyTotal)}
+          </div>
         </div>
-        <div className="total-amount">
-          {loading ? 'Calculando...' : formatCurrency(monthlyTotal)}
-        </div>
-        <Link to="/reports?report=detail" className="prev-month-container prev-month-link">
-          <span className="prev-month-label">Mes anterior:</span>
+        <Link to="/reports?report=detail" className="prev-month-container prev-month-link" aria-label="Ver detalle de reportes del mes anterior">
+          <span className="prev-month-icon" aria-hidden="true"><FaChartLine /></span>
+          <span className="prev-month-label">Mes anterior</span>
           <span className="prev-month-amount">{loading ? '...' : formatCurrency(prevMonthlyTotal)}</span>
+          <FaChevronRight className="prev-month-arrow" aria-hidden="true" />
         </Link>
       </div>
-    </div>
+    </section>
   );
 };
 

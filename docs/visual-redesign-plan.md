@@ -18,9 +18,14 @@ El rediseño adopta un estilo **cockpit financiero oscuro**: una interfaz de con
 
 ## Capa 3 — Dashboard operativo
 
-- Revestir `DashboardHeader` como panel de instrumentos con métrica principal dominante y comparativas secundarias.
-- Afinar `ExpenseForm` con campos más táctiles, foco visible, CTA fuerte y agrupación visual por tipo de dato.
-- Mejorar `ExpenseHistory` con tabla de lectura financiera: montos alineados, estados hover, badges y densidad controlada.
+- **Implementada**: `DashboardHeader` ahora funciona como panel de instrumentos con total mensual dominante, mes anterior clickeable hacia `/reports?report=detail`, fondo tipo cockpit y jerarquía responsive.
+- **Implementada**: `ExpenseForm` usa campos táctiles, foco coherente con tokens, CTA fuerte y secciones visuales por tipo de dato sin tocar validación ni lógica.
+- **Implementada**: `ExpenseHistory` suma lectura financiera con montos alineados, hover, badges por categoría, estados vacío/loading consistentes y overflow horizontal controlado en móvil.
+
+### Pendientes posteriores a Capa 3
+
+- Revisar visualmente en dispositivos reales la densidad de la tabla del historial y ajustar si hay categorías/notas especialmente largas.
+- Continuar con Capa 4 para llevar `Reports` y visualizaciones Recharts al mismo lenguaje visual oscuro.
 
 ## Capa 4 — Reportes y visualización
 
