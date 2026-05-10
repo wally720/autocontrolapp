@@ -1,5 +1,5 @@
 // src/features/ExpenseForm.jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useExpenses } from '../hooks/useExpenses';
 import { useNotification } from '../context/NotificationContext';
 import { getLocalDate } from '../utils/dateUtils';
@@ -68,17 +68,22 @@ const ExpenseForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="expense-form">
-      <h3>Registrar Nuevo Gasto</h3>
+      <div className="expense-form-heading">
+        <span className="expense-form-kicker">Nueva transacción</span>
+        <h3>Registrar Nuevo Gasto</h3>
+      </div>
 
-      <div className="form-group">
-        <label htmlFor="category">Categoría</label>
-        <select id="category" value={category} onChange={(e) => setCategory(e.target.value)} required>
-          {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-        </select>
+      <div className="form-section form-section-primary">
+        <div className="form-group">
+          <label htmlFor="category">Categoría</label>
+          <select id="category" value={category} onChange={(e) => setCategory(e.target.value)} required>
+            {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+          </select>
+        </div>
       </div>
 
       {category === CATEGORY_FUEL && (
-        <div className="fuel-fields">
+        <div className="form-section fuel-fields" aria-label="Datos de combustible">
           <div className="form-group">
             <label htmlFor="odometer">Kilometraje (Odómetro)</label>
             <input
@@ -105,29 +110,31 @@ const ExpenseForm = () => {
         </div>
       )}
 
-      <div className="form-group">
-        <label htmlFor="amount">Monto Total Pagado</label>
-        <input
-          id="amount"
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          placeholder="Ej: 95000"
-          required
-        />
-      </div>
+      <div className="form-section form-section-grid">
+        <div className="form-group">
+          <label htmlFor="amount">Monto Total Pagado</label>
+          <input
+            id="amount"
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="Ej: 95000"
+            required
+          />
+        </div>
 
-      <div className="form-group">
-        <label htmlFor="date">Fecha</label>
-        <input
-          id="date"
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          required
-        />
+        <div className="form-group">
+          <label htmlFor="date">Fecha</label>
+          <input
+            id="date"
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            required
+          />
+        </div>
       </div>
-      <div className="form-group">
+      <div className="form-section form-group">
         <label htmlFor="notes">Notas (Opcional)</label>
         <textarea
           id="notes"
@@ -142,7 +149,7 @@ const ExpenseForm = () => {
         </div>
       </div>
       <button type="submit" className="submit-button">
-        <FaPlus style={{ marginRight: '8px' }} />
+        <FaPlus className="submit-button-icon" aria-hidden="true" />
         Agregar Gasto
       </button>
     </form>

@@ -1,5 +1,6 @@
 // src/features/ExpenseHistory.jsx
-import React, { useState } from 'react';
+/* eslint-disable react-refresh/only-export-components -- formatCurrency ya es API compartida por reportes y dashboard. */
+import { useState } from 'react';
 import { useExpenses } from '../hooks/useExpenses';
 import {
   FaStickyNote, FaTrash, FaQuestionCircle
@@ -73,23 +74,29 @@ const ExpenseHistory = () => {
         onConfirm={confirmDelete}
         onCancel={cancelDelete}
       />
-      <h3>Historial de Gastos</h3>
+      <div className="history-header">
+        <div>
+          <span className="history-kicker">Ledger vehicular</span>
+          <h3>Historial de Gastos</h3>
+        </div>
+        <span className="history-count">{expenses.length} registros</span>
+      </div>
       <div className="table-container">
         <table className="expenses-table">
           <thead>
             <tr>
               <th>Categoría y Detalles</th>
               <th>Fecha</th>
-              <th style={{ textAlign: 'right' }}>Monto</th>
-              <th style={{ textAlign: 'center' }}>Acciones</th>
+              <th className="amount-heading">Monto</th>
+              <th className="actions-heading">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {currentRecords.map(expense => (
               <tr key={expense.id}>
                 <td className="category-cell">
-                  <div className="category-main">
-                    {categoryIcons[expense.category] || <FaQuestionCircle />}
+                  <div className="category-main category-badge">
+                    <span className="category-icon" aria-hidden="true">{categoryIcons[expense.category] || <FaQuestionCircle />}</span>
                     <span>{expense.category}</span>
                   </div>
                   {expense.category === CATEGORY_FUEL && expense.odometer && (
@@ -109,8 +116,8 @@ const ExpenseHistory = () => {
                     </div>
                   )}
                 </td>
-                <td>{expense.date}</td>
-                <td className="amount" style={{ textAlign: 'right' }}>{formatCurrency(expense.amount)}</td>
+                <td className="date-cell">{expense.date}</td>
+                <td className="amount">{formatCurrency(expense.amount)}</td>
                 <td className="actions-cell">
                   <button
                     className="delete-button"
