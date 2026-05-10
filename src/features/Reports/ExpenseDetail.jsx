@@ -1,117 +1,25 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useExpenses } from '../../hooks/useExpenses';
 import { formatCurrency } from '../ExpenseHistory';
-import { getLocalDate, parseLocalDate } from '../../utils/dateUtils';
 import {
-  FaQuestionCircle, FaStickyNote,
-  FaUndo, FaCalendarAlt
+  FaQuestionCircle, FaStickyNote
 } from 'react-icons/fa';
 import { categoryIcons } from '../../utils/categoryIcons';
 import { CATEGORY_FUEL } from '../../utils/constants';
-import { useNotification } from '../../context/NotificationContext';
 import './ExpenseDetail.css';
 
-
-const ExpenseDetail = () => {
+const ExpenseDetail = ({ expenses: controlledExpenses, loading: externalLoading, globalRange } = {}) => {
   const { expenses, loading } = useExpenses();
-  const { showNotification } = useNotification();
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const reportExpenses = controlledExpenses || expenses;
+  const isLoading = externalLoading ?? loading;
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  // Function to set default dates (Previous Month)
-  const setPreviousMonth = () => {
-    const today = new Date();
-    // Previous month: current month index - 1.
-    // Example: Feb (1) -> Jan (0). Jan (0) -> Dec (-1, handles year automatically)
-    const firstDayPrevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-    const lastDayPrevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
-
-    setStartDate(getLocalDate(firstDayPrevMonth));
-    setEndDate(getLocalDate(lastDayPrevMonth));
-  };
-
-  // Function to set Last 3 Months (90 days)
-  const setLast3Months = () => {
-    const today = new Date();
-    const ninetyDaysAgo = new Date();
-    ninetyDaysAgo.setDate(today.getDate() - 90);
-
-    // Enforce min date of 2024-01-01
-    const minDate = new Date(2024, 0, 1);
-    const effectiveStartDate = ninetyDaysAgo < minDate ? minDate : ninetyDaysAgo;
-
-    setStartDate(getLocalDate(effectiveStartDate));
-    setEndDate(getLocalDate(today));
-  };
-
-  // Set default dates on mount
-  useEffect(() => {
-    setPreviousMonth();
-  }, []);
-
-  const handleDateChange = (type, value) => {
-    // If user clears the input
-    if (!value) {
-      if (type === 'start') setStartDate('');
-      else setEndDate('');
-      return;
-    }
-
-    const newDate = parseLocalDate(value);
-    const minDate = new Date(2024, 0, 1); // Jan 1, 2024 Local
-
-    if (newDate < minDate) {
-      showNotification('La fecha no puede ser anterior al 2024.', 'error');
-      return; // Do not update state
-    }
-
-    // Determine hypothetical start and end
-    const nextStartStr = type === 'start' ? value : startDate;
-    const nextEndStr = type === 'end' ? value : endDate;
-
-    // Only validate range if both are present
-    if (nextStartStr && nextEndStr) {
-      const start = parseLocalDate(nextStartStr);
-      const end = parseLocalDate(nextEndStr);
-
-      // Validate date order
-      if (start > end) {
-        showNotification('La fecha de inicio no puede ser mayor que la fecha final.', 'error');
-        return;
-      }
-
-      // Validate 90 days range
-      const diffTime = Math.abs(end - start);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-      if (diffDays > 90) {
-        showNotification('El rango de fechas no puede exceder los 90 días.', 'error');
-        return;
-      }
-    }
-
-    if (type === 'start') setStartDate(value);
-    else setEndDate(value);
-  };
-
-  const expensesInPeriod = useMemo(() => {
-    if (!startDate || !endDate) {
-      return [];
-    }
-
-    // Filter expenses based on date string comparison (YYYY-MM-DD works lexicographically)
-    return expenses.filter(expense => {
-      return expense.date >= startDate && expense.date <= endDate;
-    });
-  }, [expenses, startDate, endDate]);
-
   const categoryOptions = useMemo(() => {
-    return [...new Set(expensesInPeriod
+    return [...new Set(reportExpenses
       .map(expense => expense.category)
       .filter(Boolean))]
       .sort((a, b) => a.localeCompare(b));
-  }, [expensesInPeriod]);
+  }, [reportExpenses]);
 
   useEffect(() => {
     if (selectedCategory !== 'all' && !categoryOptions.includes(selectedCategory)) {
@@ -121,45 +29,40 @@ const ExpenseDetail = () => {
 
   // Memoize filtered expenses and total amount
   const { filteredExpenses, totalAmount } = useMemo(() => {
-    const filtered = expensesInPeriod.filter(expense => {
+    const filtered = reportExpenses.filter(expense => {
       return selectedCategory === 'all' || expense.category === selectedCategory;
     });
 
     // Sort by date descending
     filtered.sort((a, b) => b.date.localeCompare(a.date));
 
-    const total = filtered.reduce((sum, item) => sum + item.amount, 0);
+    const total = filtered.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
 
     return { filteredExpenses: filtered, totalAmount: total };
-  }, [expensesInPeriod, selectedCategory]);
+  }, [reportExpenses, selectedCategory]);
 
-  if (loading) return <div className="loading">Cargando reporte...</div>;
+  const globalRangeLabel = globalRange?.startDate && globalRange?.endDate
+    ? `${globalRange.startDate} → ${globalRange.endDate}`
+    : 'periodo global activo';
+
+  if (isLoading) return <div className="loading">Cargando reporte...</div>;
 
   return (
     <div className="expense-detail-container">
+      <div className="expense-detail-heading">
+        <div>
+          <span className="detail-kicker">Detalle filtrado</span>
+          <h4>Movimientos del periodo global</h4>
+        </div>
+        <div className="detail-count" aria-label="Cantidad de gastos filtrados">
+          <strong>{filteredExpenses.length}</strong>
+          <span>registros</span>
+        </div>
+      </div>
+
       <div className="summary-section">
-        <div className="date-filters">
-          <div className="date-input-group">
-            <label htmlFor="startDate">Desde:</label>
-            <input
-              type="date"
-              id="startDate"
-              value={startDate}
-              onChange={(e) => handleDateChange('start', e.target.value)}
-              min="2024-01-01"
-            />
-          </div>
-          <div className="date-input-group">
-            <label htmlFor="endDate">Hasta:</label>
-            <input
-              type="date"
-              id="endDate"
-              value={endDate}
-              onChange={(e) => handleDateChange('end', e.target.value)}
-              min="2024-01-01"
-            />
-          </div>
-          <div className="date-input-group category-input-group">
+        <div className="detail-filters">
+          <div className="detail-input-group category-input-group">
             <label htmlFor="categoryFilter">Categoría:</label>
             <select
               id="categoryFilter"
@@ -172,21 +75,16 @@ const ExpenseDetail = () => {
               ))}
             </select>
           </div>
-
-          <div className="filter-actions">
-            <button className="filter-btn reset" onClick={setPreviousMonth} title="Volver al mes anterior">
-              <FaUndo /> Reset
-            </button>
-            <button className="filter-btn range-3m" onClick={setLast3Months} title="Últimos 90 días">
-              <FaCalendarAlt /> 3 Meses
-            </button>
-          </div>
         </div>
 
         <div className="summary-total">
-          <span>Total en periodo:</span>
+          <span>Total del periodo global:</span>
           {formatCurrency(totalAmount)}
         </div>
+      </div>
+
+      <div className="active-filter-chip" aria-live="polite">
+        Periodo global aplicado: <strong>{globalRangeLabel}</strong>. Categoría activa: <strong>{selectedCategory === 'all' ? 'Todas' : selectedCategory}</strong>
       </div>
 
       <div className="table-wrapper">
@@ -195,7 +93,7 @@ const ExpenseDetail = () => {
             <tr>
               <th>Categoría y Detalles</th>
               <th>Fecha</th>
-              <th style={{ textAlign: 'right' }}>Monto</th>
+              <th className="amount-heading">Monto</th>
             </tr>
           </thead>
           <tbody>
@@ -230,7 +128,7 @@ const ExpenseDetail = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="3" className="no-data">No se encontraron gastos en el rango seleccionado.</td>
+                <td colSpan="3" className="no-data">No se encontraron gastos para el periodo y categoría seleccionados. Probá ampliar el filtro global o elegir otra categoría.</td>
               </tr>
             )}
           </tbody>

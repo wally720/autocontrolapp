@@ -1,13 +1,15 @@
 // src/features/Reports/MonthlyComparison.jsx
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useExpenses } from '../../hooks/useExpenses';
 import { formatCurrency } from '../ExpenseHistory';
 import { getLocalDate } from '../../utils/dateUtils';
 import { FaArrowUp, FaArrowDown, FaEquals } from 'react-icons/fa';
 import './ComparisonCard.css';
 
-const MonthlyComparison = () => {
+const MonthlyComparison = ({ expenses: filteredExpenses, loading: externalLoading } = {}) => {
   const { expenses, loading } = useExpenses();
+  const reportExpenses = filteredExpenses || expenses;
+  const isLoading = externalLoading ?? loading;
 
   const { currentMonthTotal, previousMonthTotal, percentageChange } = useMemo(() => {
     // Usamos getLocalDate para obtener la fecha de hoy, evitando problemas de timezone.
@@ -29,8 +31,8 @@ const MonthlyComparison = () => {
     let currentMonthTotal = 0;
     let previousMonthTotal = 0;
 
-    for (let i = 0; i < expenses.length; i++) {
-      const expense = expenses[i];
+    for (let i = 0; i < reportExpenses.length; i++) {
+      const expense = reportExpenses[i];
       if (expense.date.startsWith(currentMonthPrefix)) {
         currentMonthTotal += expense.amount;
       } else if (expense.date.startsWith(previousMonthPrefix)) {
@@ -46,7 +48,7 @@ const MonthlyComparison = () => {
     }
 
     return { currentMonthTotal, previousMonthTotal, percentageChange };
-  }, [expenses]);
+  }, [reportExpenses]);
 
   const renderIcon = () => {
     if (percentageChange > 0) return <FaArrowUp className="icon-up" />;
@@ -54,12 +56,12 @@ const MonthlyComparison = () => {
     return <FaEquals className="icon-equal" />;
   };
 
-  if (loading) {
-    return <p>Cargando datos del reporte...</p>;
+  if (isLoading) {
+    return <p className="report-state">Cargando datos del reporte...</p>;
   }
 
   return (
-    <div>
+    <section className="report-panel">
       <h4>Comparativa Mes a Mes</h4>
       <div className="comparison-container">
         <div className="card">
@@ -77,7 +79,7 @@ const MonthlyComparison = () => {
           <span className="card-value">{formatCurrency(currentMonthTotal)}</span>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

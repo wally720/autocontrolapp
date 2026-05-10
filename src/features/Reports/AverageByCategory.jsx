@@ -1,19 +1,20 @@
 // src/features/Reports/AverageByCategory.jsx
-import React from 'react';
 import { useExpenses } from '../../hooks/useExpenses';
 import { formatCurrency } from '../ExpenseHistory';
 import './ReportTable.css';
 
-const AverageByCategory = () => {
+const AverageByCategory = ({ expenses: filteredExpenses, loading: externalLoading } = {}) => {
   const { expenses, loading } = useExpenses();
+  const reportExpenses = filteredExpenses || expenses;
+  const isLoading = externalLoading ?? loading;
 
   const calculateAverages = () => {
-    if (expenses.length === 0) return [];
+    if (reportExpenses.length === 0) return [];
 
     const categoryCounts = {};
     const categoryTotals = {};
 
-    expenses.forEach(expense => {
+    reportExpenses.forEach(expense => {
       if (categoryTotals[expense.category]) {
         categoryTotals[expense.category] += expense.amount;
         categoryCounts[expense.category] += 1;
@@ -32,16 +33,16 @@ const AverageByCategory = () => {
 
   const averageData = calculateAverages();
 
-  if (loading) {
-    return <p>Cargando datos del reporte...</p>;
+  if (isLoading) {
+    return <p className="report-state">Cargando datos del reporte...</p>;
   }
 
   if (averageData.length === 0) {
-    return <p>No hay datos suficientes para este reporte.</p>;
+    return <p className="report-state">No hay gastos en el periodo seleccionado para calcular promedios por categoría.</p>;
   }
 
   return (
-    <div>
+    <section className="report-panel">
       <h4>Gasto Promedio por Visita (por Categoría)</h4>
       <div className="table-container">
         <table className="report-table">
@@ -49,7 +50,7 @@ const AverageByCategory = () => {
             <tr>
               <th>Categoría</th>
               <th>Número de Registros</th>
-              <th style={{ textAlign: 'right' }}>Gasto Promedio</th>
+              <th className="report-table__amount-heading">Gasto Promedio</th>
             </tr>
           </thead>
           <tbody>
@@ -57,13 +58,13 @@ const AverageByCategory = () => {
               <tr key={category}>
                 <td>{category}</td>
                 <td>{count}</td>
-                <td style={{ textAlign: 'right' }}>{formatCurrency(average)}</td>
+                <td className="report-table__amount">{formatCurrency(average)}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-    </div>
+    </section>
   );
 };
 

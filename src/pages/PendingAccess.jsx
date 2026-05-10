@@ -1,8 +1,8 @@
 // src/pages/PendingAccess.jsx
-import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { auth } from '../config/firebase';
 import { signOut } from 'firebase/auth';
+import '../components/Auth/Auth.css';
 
 const PendingAccess = () => {
     const { userProfile } = useAuth();
@@ -13,7 +13,8 @@ const PendingAccess = () => {
 
     return (
         <div className="auth-container">
-            <div className="auth-form" style={{ textAlign: 'center' }}>
+            <div className="auth-form auth-form--centered">
+                <p className="auth-kicker">Validación requerida</p>
                 <h2>Acceso Pendiente</h2>
                 <p>Hola <strong>{userProfile?.email}</strong>,</p>
                 <p>Tu cuenta ha sido registrada correctamente, pero aún está pendiente de aprobación por un administrador.</p>
@@ -21,7 +22,6 @@ const PendingAccess = () => {
                 <button
                     onClick={handleLogout}
                     className="auth-button"
-                    style={{ marginTop: '1rem' }}
                 >
                     Cerrar Sesión
                 </button>
