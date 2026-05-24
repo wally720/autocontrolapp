@@ -11,8 +11,8 @@ export const sanitizeForCSV = (value) => {
   let stringValue = String(value);
 
   // Prevenir inyección de CSV (Inyección de Fórmulas)
-  // Prefijar con comilla simple si comienza con =, +, -, o @
-  if (/^[=+\-@]/.test(stringValue)) {
+  // Prefijar con comilla simple si comienza con =, +, -, o @ (incluso precedido por espacios)
+  if (/^\s*[=+\-@]/.test(stringValue)) {
     stringValue = "'" + stringValue;
   }
 
