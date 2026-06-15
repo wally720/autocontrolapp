@@ -1,7 +1,7 @@
 // src/features/Reports/FuelEfficiency.jsx
 import React from 'react';
 import { useExpenses } from '../../hooks/useExpenses';
-import { formatCurrency } from '../ExpenseHistory';
+import { formatCurrency } from '../../utils/currencyUtils.js';
 import { calculateEfficiency } from './fuelUtils';
 import './ReportTable.css';
 

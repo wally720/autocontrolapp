@@ -1,7 +1,7 @@
 // src/components/DashboardHeader.jsx
 import React, { useMemo } from 'react';
 import { useExpenses } from '../hooks/useExpenses';
-import { formatCurrency } from '../features/ExpenseHistory';
+import { formatCurrency } from '../utils/currencyUtils.js';
 import { Link } from 'react-router-dom';
 import { FaCalendarAlt, FaDollarSign } from 'react-icons/fa';
 import './DashboardHeader.css';

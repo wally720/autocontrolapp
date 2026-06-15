@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useExpenses } from '../../hooks/useExpenses';
-import { formatCurrency } from '../ExpenseHistory';
+import { formatCurrency } from '../../utils/currencyUtils.js';
 import { getLocalDate, parseLocalDate } from '../../utils/dateUtils';
 import {
   FaQuestionCircle, FaStickyNote,

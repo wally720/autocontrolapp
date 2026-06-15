@@ -1,7 +1,7 @@
 // src/features/Reports/MonthlyComparison.jsx
 import React, { useMemo } from 'react';
 import { useExpenses } from '../../hooks/useExpenses';
-import { formatCurrency } from '../ExpenseHistory';
+import { formatCurrency } from '../../utils/currencyUtils.js';
 import { getLocalDate } from '../../utils/dateUtils';
 import { FaArrowUp, FaArrowDown, FaEquals } from 'react-icons/fa';
 import './ComparisonCard.css';

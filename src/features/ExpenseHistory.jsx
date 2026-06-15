@@ -8,17 +8,8 @@ import { categoryIcons } from '../utils/categoryIcons';
 import { CATEGORY_FUEL } from '../utils/constants';
 import ConfirmModal from '../components/Modal/ConfirmModal';
 import { useNotification } from '../context/NotificationContext';
+import { formatCurrency } from '../utils/currencyUtils.js';
 import './ExpenseHistory.css';
-
-export const formatCurrency = (value) => {
-  return new Intl.NumberFormat(undefined, {
-    style: 'currency',
-    currency: 'USD',
-    currencyDisplay: 'narrowSymbol',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2
-  }).format(value);
-};
 
 const ExpenseHistory = () => {
   const { expenses, loading, deleteExpense } = useExpenses();

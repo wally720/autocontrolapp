@@ -2,7 +2,7 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useExpenses } from '../../hooks/useExpenses';
-import { formatCurrency } from '../ExpenseHistory'; // Reutilizamos la función de formato
+import { formatCurrency } from '../../utils/currencyUtils.js'; // Reutilizamos la función de formato
 
 const MonthlyEvolution = () => {
   const { expenses, loading } = useExpenses();

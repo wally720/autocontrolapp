@@ -1,7 +1,7 @@
 // src/features/Reports/MaintenanceLog.jsx
 import React from 'react';
 import { useExpenses } from '../../hooks/useExpenses';
-import { formatCurrency } from '../ExpenseHistory';
+import { formatCurrency } from '../../utils/currencyUtils.js';
 
 const MaintenanceLog = () => {
   const { expenses, loading } = useExpenses();
