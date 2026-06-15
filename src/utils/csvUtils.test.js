@@ -21,6 +21,12 @@ test('sanitizeForCSV maneja caracteres de inyección CSV', () => {
   assert.equal(sanitizeForCSV('@SUM(1,2)'), '"\'@SUM(1,2)"');
 });
 
+test('sanitizeForCSV maneja inyección con espacios iniciales', () => {
+  assert.equal(sanitizeForCSV(' =1+1'), '"\' =1+1"');
+  assert.equal(sanitizeForCSV('\t+1+1'), '"\'\t+1+1"');
+  assert.equal(sanitizeForCSV('\n-1+1'), '"\'\n-1+1"');
+});
+
 test('sanitizeForCSV maneja números', () => {
   assert.equal(sanitizeForCSV(123), '"123"');
 });
