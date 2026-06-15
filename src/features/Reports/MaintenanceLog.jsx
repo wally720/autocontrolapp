@@ -1,14 +1,16 @@
 // src/features/Reports/MaintenanceLog.jsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useExpenses } from '../../hooks/useExpenses';
 import { formatCurrency } from '../ExpenseHistory';
 
 const MaintenanceLog = () => {
   const { expenses, loading } = useExpenses();
 
-  const maintenanceExpenses = expenses
-    .filter(e => e.category === 'Mantenimiento' || e.category === 'Llantas')
-    .sort((a, b) => new Date(b.date) - new Date(a.date));
+  const maintenanceExpenses = useMemo(() => {
+    return expenses
+      .filter(e => e.category === 'Mantenimiento' || e.category === 'Llantas')
+      .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+  }, [expenses]);
 
   if (loading) {
     return <p>Cargando datos del reporte...</p>;
