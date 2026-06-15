@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
                 });
             }
         } catch (error) {
-            console.error("Error en login con Google:", error);
+            console.error("Error en login con Google:", error?.code || 'unknown');
             throw error;
         }
     };

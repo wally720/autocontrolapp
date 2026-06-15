@@ -21,7 +21,7 @@ const Navbar = () => {
       await signOut(auth);
       navigate('/login');
     } catch (error) {
-      console.error("Error al cerrar sesión:", error);
+      console.error("Error al cerrar sesión:", error?.code || 'unknown');
       showNotification('No se pudo cerrar sesión. Intentá de nuevo.', 'error');
     }
   };

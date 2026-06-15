@@ -18,7 +18,7 @@ const Login = () => {
             await loginWithGoogle();
             navigate('/');
         } catch (err) {
-            console.error(err);
+            console.error("Error en login:", err?.code || 'unknown');
             showNotification('Error al iniciar sesión con Google. Intentá de nuevo.', 'error');
         } finally {
             setLoading(false);

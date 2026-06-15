@@ -69,7 +69,7 @@ const VehicleSwitcher = () => {
       setIsAdding(false);
       showNotification(`Vehículo ${plate} agregado correctamente.`, 'success');
     } catch (error) {
-      console.error("Error al gestionar placa:", error);
+      console.error("Error al gestionar placa:", error?.code || 'unknown');
       showNotification('Error al procesar la placa. Por favor, intentá de nuevo.', 'error');
     }
   };

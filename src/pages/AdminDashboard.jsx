@@ -88,7 +88,7 @@ const AdminDashboard = () => {
             setUserCache(prev => ({ ...prev, ...newCache }));
 
         } catch (error) {
-            console.error("Error al cargar usuarios:", error);
+            console.error("Error al cargar usuarios:", error?.code || 'unknown');
             showNotification('Error al cargar la lista de usuarios.', 'error');
         } finally {
             setLoadingUsers(false);
@@ -146,7 +146,7 @@ const AdminDashboard = () => {
                         newCache[doc.id] = doc.data().email;
                     });
                 } catch (error) {
-                    console.error("Error cargando usuarios de vehículos:", error);
+                    console.error("Error cargando usuarios de vehículos:", error?.code || 'unknown');
                 }
             }
 
@@ -174,7 +174,7 @@ const AdminDashboard = () => {
             }
 
         } catch (error) {
-            console.error("Error al actualizar estado:", error);
+            console.error("Error al actualizar estado:", error?.code || 'unknown');
             showNotification('Error al actualizar el estado del usuario.', 'error');
         }
     };
@@ -212,7 +212,7 @@ const AdminDashboard = () => {
             setNewUserEmail(prev => ({ ...prev, [plate]: '' }));
             showNotification(`Acceso concedido a ${email} para la placa ${plate}.`, 'success');
         } catch (error) {
-            console.error("Error al autorizar:", error);
+            console.error("Error al autorizar:", error?.code || 'unknown');
             showNotification('Error al conceder acceso.', 'error');
         }
     };
@@ -240,7 +240,7 @@ const AdminDashboard = () => {
             setPendingRevoke(null);
             showNotification('Acceso revocado correctamente.', 'success');
         } catch (error) {
-            console.error("Error al revocar acceso:", error);
+            console.error("Error al revocar acceso:", error?.code || 'unknown');
             showNotification('Error al revocar el acceso.', 'error');
         }
     };
