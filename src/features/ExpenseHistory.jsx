@@ -6,6 +6,7 @@ import {
 } from 'react-icons/fa';
 import { categoryIcons } from '../utils/categoryIcons';
 import { CATEGORY_FUEL } from '../utils/constants';
+import ConfirmModal from '../components/Modal/ConfirmModal';
 import './ExpenseHistory.css';
 
 export const formatCurrency = (value) => {
@@ -21,6 +22,7 @@ export const formatCurrency = (value) => {
 const ExpenseHistory = () => {
   const { expenses, loading, deleteExpense } = useExpenses();
   const [currentPage, setCurrentPage] = useState(1);
+  const [expenseToDelete, setExpenseToDelete] = useState(null);
   const recordsPerPage = 10;
 
   const lastIndex = currentPage * recordsPerPage;
@@ -35,11 +37,19 @@ const ExpenseHistory = () => {
     if (currentPage !== nPages) setCurrentPage(currentPage + 1);
   };
 
-  const handleDelete = (id, amount) => {
-    const formattedAmount = formatCurrency(amount);
-    if (window.confirm(`¿Estás seguro de que quieres eliminar el gasto de ${formattedAmount}?`)) {
-      deleteExpense(id);
+  const handleDeleteClick = (expense) => {
+    setExpenseToDelete(expense);
+  };
+
+  const handleConfirmDelete = () => {
+    if (expenseToDelete) {
+      deleteExpense(expenseToDelete.id);
+      setExpenseToDelete(null);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setExpenseToDelete(null);
   };
 
   if (loading) return <div className="loading">Cargando historial...</div>;
@@ -89,7 +99,7 @@ const ExpenseHistory = () => {
                 <td className="actions-cell">
                   <button
                     className="delete-button"
-                    onClick={() => handleDelete(expense.id, expense.amount)}
+                    onClick={() => handleDeleteClick(expense)}
                     title="Eliminar gasto"
                   >
                     <FaTrash />
@@ -108,6 +118,14 @@ const ExpenseHistory = () => {
           <button onClick={nextPage} disabled={currentPage === nPages}>Siguiente</button>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!expenseToDelete}
+        title="Confirmar eliminación"
+        message={`¿Estás seguro de que quieres eliminar el gasto de ${expenseToDelete ? formatCurrency(expenseToDelete.amount) : ''}?`}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </div>
   );
 };
