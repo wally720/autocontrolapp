@@ -21,15 +21,15 @@ const DashboardHeader = () => {
   const { monthlyTotal, prevMonthlyTotal } = useMemo(() => {
     let current = 0;
     let previous = 0;
+
+    // Pre-calculamos los prefijos de fecha (AAAA-MM-) para evitar parsing repetitivo en el loop
+    const currentPrefix = `${anioActual}-${String(mesActual + 1).padStart(2, '0')}-`;
+    const prevPrefix = `${anioAnterior}-${String(mesAnterior + 1).padStart(2, '0')}-`;
     
     expenses.forEach((expense) => {
-      // Dividimos la fecha "AAAA-MM-DD" manualmente para evitar desfases de zona horaria
-      const [anio, mes] = expense.date.split('-').map(Number);
-      
-      // mes - 1 porque en JavaScript los meses van de 0 a 11
-      if (anio === anioActual && (mes - 1) === mesActual) {
+      if (expense.date.startsWith(currentPrefix)) {
         current += expense.amount;
-      } else if (anio === anioAnterior && (mes - 1) === mesAnterior) {
+      } else if (expense.date.startsWith(prevPrefix)) {
         previous += expense.amount;
       }
     });
