@@ -2,6 +2,7 @@
 import React, { useMemo } from 'react';
 import { useExpenses } from '../hooks/useExpenses';
 import { formatCurrency } from '../features/ExpenseHistory';
+import { isValidDateString } from '../utils/validationUtils';
 import { Link } from 'react-router-dom';
 import { FaCalendarAlt, FaDollarSign } from 'react-icons/fa';
 import './DashboardHeader.css';
@@ -23,8 +24,15 @@ const DashboardHeader = () => {
     let previous = 0;
     
     expenses.forEach((expense) => {
+      // Validamos que la fecha existe y tiene el formato correcto antes de procesar
+      if (!expense.date || !isValidDateString(expense.date)) {
+        return;
+      }
+
       // Dividimos la fecha "AAAA-MM-DD" manualmente para evitar desfases de zona horaria
-      const [anio, mes] = expense.date.split('-').map(Number);
+      const parts = expense.date.split('-');
+      const anio = parseInt(parts[0], 10);
+      const mes = parseInt(parts[1], 10);
       
       // mes - 1 porque en JavaScript los meses van de 0 a 11
       if (anio === anioActual && (mes - 1) === mesActual) {
