@@ -78,6 +78,9 @@ web_modules/
 dist
 .vite
 
+# Agent local artifacts
+.atl/
+
 # IDE files
 .idea/
 .vscode/
