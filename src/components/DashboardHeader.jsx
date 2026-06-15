@@ -24,7 +24,9 @@ const DashboardHeader = () => {
     
     expenses.forEach((expense) => {
       // Dividimos la fecha "AAAA-MM-DD" manualmente para evitar desfases de zona horaria
-      const [anio, mes] = expense.date.split('-').map(Number);
+      const parts = expense.date.split('-');
+      const anio = parseInt(parts[0], 10);
+      const mes = parseInt(parts[1], 10);
       
       // mes - 1 porque en JavaScript los meses van de 0 a 11
       if (anio === anioActual && (mes - 1) === mesActual) {
