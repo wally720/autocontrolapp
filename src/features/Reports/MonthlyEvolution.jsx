@@ -30,9 +30,11 @@ const BAR_LABEL_LAYOUT = {
 
 const MONTHLY_CHART_LAYOUT = {
   margin: { top: 42, right: 16, left: 2, bottom: 8 },
-  yAxisWidth: 48,
+  yAxisWidth: 56,
   tickMargin: 8,
-  maxBarSize: 56
+  barCategoryGap: '6%',
+  barGap: 2,
+  maxBarSize: 68
 };
 
 const formatCompactChartValue = (value) => {
@@ -136,7 +138,12 @@ const MonthlyEvolution = ({ expenses: filteredExpenses, loading: externalLoading
       </div>
       <div className="chart-shell chart-shell--monthly-evolution">
         <ResponsiveContainer width="100%" height={320}>
-          <BarChart data={data} margin={MONTHLY_CHART_LAYOUT.margin}>
+          <BarChart
+            data={data}
+            margin={MONTHLY_CHART_LAYOUT.margin}
+            barCategoryGap={MONTHLY_CHART_LAYOUT.barCategoryGap}
+            barGap={MONTHLY_CHART_LAYOUT.barGap}
+          >
             <defs>
               <linearGradient id="monthlyEvolutionBarGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#7dd3fc" />
