@@ -1,5 +1,5 @@
 // src/features/Reports/MonthlyEvolution.jsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useExpenses } from '../../hooks/useExpenses';
 import { formatCurrency } from '../ExpenseHistory'; // Reutilizamos la función de formato
@@ -8,21 +8,31 @@ const MonthlyEvolution = () => {
   const { expenses, loading } = useExpenses();
 
   // Procesar los datos para agruparlos por mes
-  const data = expenses.reduce((acc, expense) => {
-    // Parseamos la fecha manualmente y creamos un objeto Date local para obtener el nombre del mes
-    const [year, monthNum] = expense.date.split('-').map(Number);
-    const dateObj = new Date(year, monthNum - 1, 1);
-    const month = dateObj.toLocaleString(undefined, { month: 'short', year: '2-digit' });
-    const existingMonth = acc.find(item => item.month === month);
+  const data = useMemo(() => {
+    const groups = {};
+    const monthsOrder = [];
+    const labelCache = {};
 
-    if (existingMonth) {
-      existingMonth.total += expense.amount;
-    } else {
-      acc.push({ month, total: expense.amount });
+    for (let i = 0; i < expenses.length; i++) {
+      const expense = expenses[i];
+      // Extraemos YYYY-MM para usar como clave de agrupación
+      const monthKey = expense.date.substring(0, 7);
+
+      if (!groups[monthKey]) {
+        if (!labelCache[monthKey]) {
+          // Parseamos la fecha manualmente y creamos un objeto Date local para obtener el nombre del mes
+          const [year, monthNum] = monthKey.split('-').map(Number);
+          const dateObj = new Date(year, monthNum - 1, 1);
+          labelCache[monthKey] = dateObj.toLocaleString(undefined, { month: 'short', year: '2-digit' });
+        }
+        groups[monthKey] = { month: labelCache[monthKey], total: 0 };
+        monthsOrder.push(monthKey);
+      }
+      groups[monthKey].total += expense.amount;
     }
 
-    return acc;
-  }, []).reverse(); // Revertir para mostrar los meses más recientes primero
+    return monthsOrder.map(key => groups[key]).reverse();
+  }, [expenses]);
 
   if (loading) {
     return <p>Cargando datos del reporte...</p>;
