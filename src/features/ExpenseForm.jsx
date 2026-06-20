@@ -42,7 +42,7 @@ const ExpenseForm = () => {
 
     if (isFuel) {
       if (!odometer || !gallons) {
-        showNotification('Para gastos de combustible tenés que ingresar kilometraje y galones.', 'error');
+        showNotification('Para gastos de combustible tenés que ingresar odómetro (kilometraje) y galones.', 'error');
         return;
       }
       newExpense.odometer = parseFloat(odometer);
@@ -155,7 +155,7 @@ const ExpenseForm = () => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="odometer">🛣️ Kilometraje</label>
+            <label htmlFor="odometer">🛣️ Odómetro (kilometraje)</label>
             <input
               id="odometer"
               type="number"
@@ -167,9 +167,9 @@ const ExpenseForm = () => {
           </div>
         </div>
       ) : (
-        <div className="form-section odometer-optional" aria-label="Kilometraje opcional">
+        <div className="form-section odometer-optional" aria-label="Odómetro (kilometraje) opcional">
           <div className="form-group">
-            <label htmlFor="odometer">🛣️ Kilometraje (Opcional)</label>
+            <label htmlFor="odometer">🛣️ Odómetro (kilometraje) opcional</label>
             <input
               id="odometer"
               type="number"

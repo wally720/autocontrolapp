@@ -6,7 +6,7 @@ import {
   FaStickyNote, FaTrash, FaQuestionCircle
 } from 'react-icons/fa';
 import { categoryIcons } from '../utils/categoryIcons';
-import { CATEGORY_FUEL } from '../utils/constants';
+import { getExpenseVehicleDetailDisplays } from '../utils/expenseDisplayUtils';
 import ConfirmModal from '../components/Modal/ConfirmModal';
 import { useNotification } from '../context/NotificationContext';
 import './ExpenseHistory.css';
@@ -92,43 +92,46 @@ const ExpenseHistory = () => {
             </tr>
           </thead>
           <tbody>
-            {currentRecords.map(expense => (
-              <tr key={expense.id}>
-                <td className="category-cell">
-                  <div className="category-main category-badge">
-                    <span className="category-icon" aria-hidden="true">{categoryIcons[expense.category] || <FaQuestionCircle />}</span>
-                    <span>{expense.category}</span>
-                  </div>
-                  {expense.category === CATEGORY_FUEL && expense.odometer && (
-                    <div className="fuel-details">
-                      <span>{expense.odometer.toLocaleString()} km</span>
-                      <span>{expense.gallons ? expense.gallons.toFixed(2) + ' Gal' : ''}</span>
+            {currentRecords.map(expense => {
+              const vehicleDetails = getExpenseVehicleDetailDisplays(expense);
+
+              return (
+                <tr key={expense.id}>
+                  <td className="category-cell">
+                    <div className="category-main category-badge">
+                      <span className="category-icon" aria-hidden="true">{categoryIcons[expense.category] || <FaQuestionCircle />}</span>
+                      <span>{expense.category}</span>
                     </div>
-                  )}
-                  {expense.notes && (
-                    <div className="notes-detail" title={expense.notes}>
-                      <FaStickyNote />
-                      <span>
-                        {expense.notes.length > 30
-                          ? `${expense.notes.substring(0, 30)}...`
-                          : expense.notes}
-                      </span>
-                    </div>
-                  )}
-                </td>
-                <td className="date-cell">{expense.date}</td>
-                <td className="amount">{formatCurrency(expense.amount)}</td>
-                <td className="actions-cell">
-                  <button
-                    className="delete-button"
-                    onClick={() => handleDelete(expense.id, expense.amount)}
-                    title="Eliminar gasto"
-                  >
-                    <FaTrash />
-                  </button>
-                </td>
-              </tr>
-            ))}
+                    {vehicleDetails.length > 0 && (
+                      <div className="fuel-details">
+                        {vehicleDetails.map(detail => <span key={detail}>{detail}</span>)}
+                      </div>
+                    )}
+                    {expense.notes && (
+                      <div className="notes-detail" title={expense.notes}>
+                        <FaStickyNote />
+                        <span>
+                          {expense.notes.length > 30
+                            ? `${expense.notes.substring(0, 30)}...`
+                            : expense.notes}
+                        </span>
+                      </div>
+                    )}
+                  </td>
+                  <td className="date-cell">{expense.date}</td>
+                  <td className="amount">{formatCurrency(expense.amount)}</td>
+                  <td className="actions-cell">
+                    <button
+                      className="delete-button"
+                      onClick={() => handleDelete(expense.id, expense.amount)}
+                      title="Eliminar gasto"
+                    >
+                      <FaTrash />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

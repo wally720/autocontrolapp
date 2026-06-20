@@ -5,7 +5,7 @@ import {
   FaQuestionCircle, FaStickyNote
 } from 'react-icons/fa';
 import { categoryIcons } from '../../utils/categoryIcons';
-import { CATEGORY_FUEL } from '../../utils/constants';
+import { getExpenseVehicleDetailDisplays } from '../../utils/expenseDisplayUtils';
 import './ExpenseDetail.css';
 
 const ExpenseDetail = ({ expenses: controlledExpenses, loading: externalLoading, globalRange } = {}) => {
@@ -98,34 +98,37 @@ const ExpenseDetail = ({ expenses: controlledExpenses, loading: externalLoading,
           </thead>
           <tbody>
             {filteredExpenses.length > 0 ? (
-              filteredExpenses.map(expense => (
-                <tr key={expense.id}>
-                  <td className="category-cell">
-                    <div className="category-main">
-                      {categoryIcons[expense.category] || <FaQuestionCircle />}
-                      <span>{expense.category}</span>
-                    </div>
-                    {expense.category === CATEGORY_FUEL && expense.odometer && (
-                      <div className="fuel-details">
-                        <span>{expense.odometer.toLocaleString()} km</span>
-                        <span>{expense.gallons ? expense.gallons.toFixed(2) + ' Gal' : ''}</span>
+              filteredExpenses.map(expense => {
+                const vehicleDetails = getExpenseVehicleDetailDisplays(expense);
+
+                return (
+                  <tr key={expense.id}>
+                    <td className="category-cell">
+                      <div className="category-main">
+                        {categoryIcons[expense.category] || <FaQuestionCircle />}
+                        <span>{expense.category}</span>
                       </div>
-                    )}
-                    {expense.notes && (
-                      <div className="notes-detail" title={expense.notes}>
-                        <FaStickyNote />
-                        <span>
-                          {expense.notes.length > 30
-                            ? `${expense.notes.substring(0, 30)}...`
-                            : expense.notes}
-                        </span>
-                      </div>
-                    )}
-                  </td>
-                  <td>{expense.date}</td>
-                  <td className="amount">{formatCurrency(expense.amount)}</td>
-                </tr>
-              ))
+                      {vehicleDetails.length > 0 && (
+                        <div className="fuel-details">
+                          {vehicleDetails.map(detail => <span key={detail}>{detail}</span>)}
+                        </div>
+                      )}
+                      {expense.notes && (
+                        <div className="notes-detail" title={expense.notes}>
+                          <FaStickyNote />
+                          <span>
+                            {expense.notes.length > 30
+                              ? `${expense.notes.substring(0, 30)}...`
+                              : expense.notes}
+                          </span>
+                        </div>
+                      )}
+                    </td>
+                    <td>{expense.date}</td>
+                    <td className="amount">{formatCurrency(expense.amount)}</td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
                 <td colSpan="3" className="no-data">No se encontraron gastos para el periodo y categoría seleccionados. Probá ampliar el filtro global o elegir otra categoría.</td>

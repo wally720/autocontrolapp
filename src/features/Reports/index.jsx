@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useExpenses } from '../../hooks/useExpenses';
 import { getLocalDate } from '../../utils/dateUtils';
 import { generateCSV, downloadCSV } from '../../utils/csvUtils';
+import { prepareExpenseCsvData } from '../../utils/expenseExportUtils.js';
 import { useSearchParams } from 'react-router-dom';
 import MonthlyEvolution from './MonthlyEvolution';
 import CategoryDistribution from './CategoryDistribution';
@@ -137,19 +138,7 @@ const Reports = () => {
       return;
     }
 
-    const headers = ["ID", "Vehículo", "Fecha", "Categoría", "Monto", "Notas", "Kilometraje", "Galones"];
-
-    // Preparar el array de datos sin procesar
-    const data = expenses.map(expense => [
-      expense.id,
-      expense.vehicleId,
-      expense.date,
-      expense.category,
-      expense.amount,
-      expense.notes,
-      expense.odometer,
-      expense.gallons
-    ]);
+    const { headers, data } = prepareExpenseCsvData(expenses);
 
     const csvString = generateCSV(headers, data);
     const fileName = `gastos_${expenses.length > 0 ? expenses[0].vehicleId : 'export'}_${getLocalDate()}.csv`;

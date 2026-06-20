@@ -14,7 +14,7 @@ const FuelEfficiency = ({ expenses: filteredExpenses, loading: externalLoading }
   if (isLoading) return <p className="report-state">Cargando datos del reporte...</p>;
 
   if (periods.length === 0) {
-    return <p className="report-state">No hay suficientes cargas dentro del periodo seleccionado. Se necesitan al menos dos registros de combustible con kilometraje y galones.</p>;
+    return <p className="report-state">No hay suficientes cargas dentro del periodo seleccionado. Se necesitan al menos dos registros de combustible con odómetro (kilometraje) y galones.</p>;
   }
 
   return (
