@@ -148,7 +148,7 @@ const ExpenseForm = () => {
                 <label
                   key={option.value}
                   className={`fuel-type-option ${fuelType === option.value ? 'is-selected' : ''}`}
-                  title={option.tooltip}
+                  data-tooltip={option.tooltip}
                 >
                   <input
                     type="radio"
@@ -156,15 +156,14 @@ const ExpenseForm = () => {
                     value={option.value}
                     checked={fuelType === option.value}
                     onChange={(e) => setFuelType(e.target.value)}
-                    title={option.tooltip}
                   />
-                  <span>{option.label}</span>
+                  <span className="fuel-type-label">{option.label}</span>
                 </label>
               ))}
             </div>
           </fieldset>
           <div className="form-group">
-            <label htmlFor="gallons">⛽ Galones</label>
+            <label className="field-label-tooltip" htmlFor="gallons" data-tooltip="Galones o Litros">⛽ Cantidad</label>
             <input
               id="gallons"
               type="number"

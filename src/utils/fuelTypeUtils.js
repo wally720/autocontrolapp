@@ -2,6 +2,7 @@ import { CATEGORY_FUEL } from './constants.js';
 
 export const FUEL_TYPE_NORMAL = 'normal';
 export const FUEL_TYPE_PREMIUM = 'premium';
+export const FUEL_TYPE_DIESEL = 'diesel';
 export const FUEL_TYPE_OTHER = 'other';
 
 export const DEFAULT_FUEL_TYPE = FUEL_TYPE_NORMAL;
@@ -10,19 +11,29 @@ export const FUEL_TYPE_OPTIONS = [
   {
     value: FUEL_TYPE_NORMAL,
     label: 'Normal',
+    abbreviation: 'NORM',
     tooltip: 'Corriente',
     className: 'fuel-type-normal',
   },
   {
     value: FUEL_TYPE_PREMIUM,
     label: 'Premium',
+    abbreviation: 'PREM',
     tooltip: 'Extra',
     className: 'fuel-type-premium',
   },
   {
+    value: FUEL_TYPE_DIESEL,
+    label: 'Diesel',
+    abbreviation: 'DSL',
+    tooltip: 'Diesel',
+    className: 'fuel-type-diesel',
+  },
+  {
     value: FUEL_TYPE_OTHER,
-    label: 'Otra',
-    tooltip: 'Otra',
+    label: 'Otro',
+    abbreviation: 'OTRO',
+    tooltip: 'Otro',
     className: 'fuel-type-other',
   },
 ];

@@ -108,7 +108,7 @@ const ExpenseHistory = () => {
                         {vehicleDetails.map(detail => <span className="vehicle-detail" key={detail}>{detail}</span>)}
                         {fuelTypeDisplay && (
                           <span className={fuelTypeDisplay.className} title={fuelTypeDisplay.tooltip} aria-label={`Tipo de combustible: ${fuelTypeDisplay.label}`}>
-                            {fuelTypeDisplay.label}
+                            {fuelTypeDisplay.abbreviation}
                           </span>
                         )}
                       </div>
