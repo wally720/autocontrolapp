@@ -13,6 +13,27 @@ export const AuthProvider = ({ children }) => {
     const [userProfile, setUserProfile] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const loginWithEmail = async (email, password) => {
+        if (!import.meta.env.DEV) {
+            throw new Error('Email login is only available in development.');
+        }
+
+        const { signInWithEmailAndPassword } = await import('firebase/auth');
+        const result = await signInWithEmailAndPassword(auth, email, password);
+        const user = result.user;
+        const userDocRef = doc(firestore, 'users', user.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (!userDoc.exists()) {
+            await setDoc(userDocRef, {
+                email: user.email,
+                status: 'pending',
+                role: 'user',
+                vehicles: [],
+                createdAt: new Date().toISOString()
+            });
+        }
+    };
+
     const loginWithGoogle = async () => {
         try {
             const result = await signInWithPopup(auth, googleProvider);
@@ -65,6 +86,7 @@ export const AuthProvider = ({ children }) => {
         currentUser,
         userProfile,
         loginWithGoogle,
+        ...(import.meta.env.DEV ? { loginWithEmail } : {}),
         loading
     };
 

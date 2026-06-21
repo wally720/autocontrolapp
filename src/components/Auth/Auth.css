@@ -195,6 +195,60 @@
   text-decoration: underline;
 }
 
+.dev-login {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed rgba(248, 200, 107, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.dev-login__label {
+  margin: 0 !important;
+  color: var(--color-warning) !important;
+  font-size: 0.72rem !important;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.dev-login__input {
+  width: 100%;
+  min-height: var(--touch-target);
+  padding: 0.7rem 0.9rem;
+  color: var(--color-text);
+  border: 1px solid rgba(248, 200, 107, 0.3);
+  border-radius: var(--radius-sm);
+  background: rgba(248, 200, 107, 0.05);
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.dev-login__input:focus {
+  outline: none;
+  border-color: var(--color-warning);
+}
+
+.dev-login__button {
+  width: 100%;
+  min-height: var(--touch-target);
+  padding: 0.7rem 1rem;
+  color: #061018;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-warning);
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.dev-login__button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 @media (max-width: 480px) {
   .auth-container {
     align-items: stretch;

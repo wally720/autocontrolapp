@@ -12,17 +12,19 @@ const ProtectedRoute = ({ allowedRoles, allowedStatuses }) => {
         return <Navigate to="/login" replace />;
     }
 
-    if (userProfile) {
-        if (allowedStatuses && !allowedStatuses.includes(userProfile.status)) {
-            if (userProfile.status === 'pending') {
-                return <Navigate to="/pending-access" replace />;
-            }
-            return <Navigate to="/login" replace />;
-        }
+    if (!userProfile) {
+        return <Navigate to="/pending-access" replace />;
+    }
 
-        if (allowedRoles && !allowedRoles.includes(userProfile.role)) {
-            return <Navigate to="/" replace />;
+    if (allowedStatuses && !allowedStatuses.includes(userProfile.status)) {
+        if (userProfile.status === 'pending') {
+            return <Navigate to="/pending-access" replace />;
         }
+        return <Navigate to="/login" replace />;
+    }
+
+    if (allowedRoles && !allowedRoles.includes(userProfile.role)) {
+        return <Navigate to="/" replace />;
     }
 
     return <Outlet />;
