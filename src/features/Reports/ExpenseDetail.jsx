@@ -6,6 +6,7 @@ import {
 } from 'react-icons/fa';
 import { categoryIcons } from '../../utils/categoryIcons';
 import { getExpenseVehicleDetailDisplays } from '../../utils/expenseDisplayUtils';
+import { getExpenseFuelTypeDisplay } from '../../utils/fuelTypeUtils';
 import './ExpenseDetail.css';
 
 const ExpenseDetail = ({ expenses: controlledExpenses, loading: externalLoading, globalRange } = {}) => {
@@ -27,13 +28,11 @@ const ExpenseDetail = ({ expenses: controlledExpenses, loading: externalLoading,
     }
   }, [categoryOptions, selectedCategory]);
 
-  // Memoize filtered expenses and total amount
   const { filteredExpenses, totalAmount } = useMemo(() => {
     const filtered = reportExpenses.filter(expense => {
       return selectedCategory === 'all' || expense.category === selectedCategory;
     });
 
-    // Sort by date descending
     filtered.sort((a, b) => b.date.localeCompare(a.date));
 
     const total = filtered.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
@@ -100,6 +99,7 @@ const ExpenseDetail = ({ expenses: controlledExpenses, loading: externalLoading,
             {filteredExpenses.length > 0 ? (
               filteredExpenses.map(expense => {
                 const vehicleDetails = getExpenseVehicleDetailDisplays(expense);
+                const fuelTypeDisplay = getExpenseFuelTypeDisplay(expense);
 
                 return (
                   <tr key={expense.id}>
@@ -108,9 +108,14 @@ const ExpenseDetail = ({ expenses: controlledExpenses, loading: externalLoading,
                         {categoryIcons[expense.category] || <FaQuestionCircle />}
                         <span>{expense.category}</span>
                       </div>
-                      {vehicleDetails.length > 0 && (
+                      {(vehicleDetails.length > 0 || fuelTypeDisplay) && (
                         <div className="fuel-details">
-                          {vehicleDetails.map(detail => <span key={detail}>{detail}</span>)}
+                          {vehicleDetails.map(detail => <span className="vehicle-detail" key={detail}>{detail}</span>)}
+                          {fuelTypeDisplay && (
+                            <span className={fuelTypeDisplay.className} title={fuelTypeDisplay.tooltip} aria-label={`Tipo de combustible: ${fuelTypeDisplay.label}`}>
+                              {fuelTypeDisplay.label}
+                            </span>
+                          )}
                         </div>
                       )}
                       {expense.notes && (

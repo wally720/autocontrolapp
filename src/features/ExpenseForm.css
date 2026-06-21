@@ -54,6 +54,53 @@
   gap: 0.85rem;
 }
 
+.fuel-type-group {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.fuel-type-group legend {
+  margin-bottom: 0.45rem;
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.fuel-type-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.fuel-type-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: var(--touch-target);
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.fuel-type-option input {
+  width: auto;
+  min-height: auto;
+  padding: 0;
+  accent-color: var(--color-accent);
+}
+
+.fuel-type-option:hover,
+.fuel-type-option:focus-within,
+.fuel-type-option.is-selected {
+  border-color: rgba(94, 234, 212, 0.44);
+  background: rgba(94, 234, 212, 0.1);
+  color: var(--color-text);
+}
+
 /* Bloque odómetro opcional para no combustible */
 .odometer-optional {
   padding: 0.75rem;
@@ -161,6 +208,10 @@
   .form-section-grid,
   .fuel-fields {
     grid-template-columns: 1fr;
+  }
+
+  .fuel-type-options {
+    flex-direction: column;
   }
 
   .form-section {

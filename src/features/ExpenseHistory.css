@@ -170,12 +170,40 @@
   font-size: 0.86rem;
 }
 
-.fuel-details span:last-of-type {
+.fuel-details .vehicle-detail:last-of-type {
   padding: 0.18rem 0.5rem;
   border-radius: var(--radius-pill);
   background-color: rgba(94, 234, 212, 0.1);
   color: var(--color-accent);
   font-weight: 800;
+}
+
+.fuel-type-tag {
+  padding: 0.18rem 0.55rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.fuel-type-normal {
+  border-color: rgba(94, 234, 212, 0.34);
+  background: rgba(94, 234, 212, 0.12);
+  color: var(--color-accent);
+}
+
+.fuel-type-premium {
+  border-color: rgba(251, 191, 36, 0.36);
+  background: rgba(251, 191, 36, 0.13);
+  color: #fbbf24;
+}
+
+.fuel-type-other {
+  border-color: rgba(167, 139, 250, 0.38);
+  background: rgba(167, 139, 250, 0.14);
+  color: #c4b5fd;
 }
 
 .notes-detail {

@@ -1,9 +1,9 @@
-// src/features/ExpenseForm.jsx
 import { useState } from 'react';
 import { useExpenses } from '../hooks/useExpenses';
 import { useNotification } from '../context/NotificationContext';
 import { getLocalDate } from '../utils/dateUtils';
 import { CATEGORY_FUEL, CATEGORY_LIST } from '../utils/constants';
+import { DEFAULT_FUEL_TYPE, FUEL_TYPE_OPTIONS } from '../utils/fuelTypeUtils';
 import { FaPlus, FaGasPump, FaWrench, FaCarSide } from 'react-icons/fa';
 import './ExpenseForm.css';
 
@@ -17,6 +17,7 @@ const ExpenseForm = () => {
   const [notes, setNotes] = useState('');
   const [odometer, setOdometer] = useState('');
   const [gallons, setGallons] = useState('');
+  const [fuelType, setFuelType] = useState(DEFAULT_FUEL_TYPE);
 
   const categories = CATEGORY_LIST;
   const isFuel = category === CATEGORY_FUEL;
@@ -47,6 +48,7 @@ const ExpenseForm = () => {
       }
       newExpense.odometer = parseFloat(odometer);
       newExpense.gallons = parseFloat(gallons);
+      newExpense.fuelType = fuelType;
     } else if (odometer) {
       newExpense.odometer = parseFloat(odometer);
     }
@@ -65,6 +67,7 @@ const ExpenseForm = () => {
     setNotes('');
     setOdometer('');
     setGallons('');
+    setFuelType(DEFAULT_FUEL_TYPE);
   };
 
   const getCategoryIcon = () => {
@@ -85,7 +88,6 @@ const ExpenseForm = () => {
         <h3>Registrar Nuevo Gasto</h3>
       </div>
 
-      {/* Categoría - всегда primeira */}
       <div className="form-section form-section-primary">
         <div className="form-group">
           <label htmlFor="category">
@@ -97,7 +99,6 @@ const ExpenseForm = () => {
         </div>
       </div>
 
-      {/* Monto e Fecha - siempre visibles */}
       <div className="form-section form-section-grid">
         <div className="form-group">
           <label htmlFor="amount">💰 Monto</label>
@@ -123,7 +124,6 @@ const ExpenseForm = () => {
         </div>
       </div>
 
-      {/* Notas - área completa */}
       <div className="form-section form-group">
         <label htmlFor="notes">📝 Notas (Opcional)</label>
         <textarea
@@ -139,9 +139,30 @@ const ExpenseForm = () => {
         </div>
       </div>
 
-      {/* Datos específicos por categoría */}
       {isFuel ? (
         <div className="form-section fuel-fields" aria-label="Datos de combustible">
+          <fieldset className="form-group fuel-type-group">
+            <legend>Tipo de combustible</legend>
+            <div className="fuel-type-options">
+              {FUEL_TYPE_OPTIONS.map(option => (
+                <label
+                  key={option.value}
+                  className={`fuel-type-option ${fuelType === option.value ? 'is-selected' : ''}`}
+                  title={option.tooltip}
+                >
+                  <input
+                    type="radio"
+                    name="fuelType"
+                    value={option.value}
+                    checked={fuelType === option.value}
+                    onChange={(e) => setFuelType(e.target.value)}
+                    title={option.tooltip}
+                  />
+                  <span>{option.label}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
           <div className="form-group">
             <label htmlFor="gallons">⛽ Galones</label>
             <input

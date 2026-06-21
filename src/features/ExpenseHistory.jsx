@@ -1,4 +1,3 @@
-// src/features/ExpenseHistory.jsx
 /* eslint-disable react-refresh/only-export-components -- formatCurrency ya es API compartida por reportes y dashboard. */
 import { useState } from 'react';
 import { useExpenses } from '../hooks/useExpenses';
@@ -7,6 +6,7 @@ import {
 } from 'react-icons/fa';
 import { categoryIcons } from '../utils/categoryIcons';
 import { getExpenseVehicleDetailDisplays } from '../utils/expenseDisplayUtils';
+import { getExpenseFuelTypeDisplay } from '../utils/fuelTypeUtils';
 import ConfirmModal from '../components/Modal/ConfirmModal';
 import { useNotification } from '../context/NotificationContext';
 import './ExpenseHistory.css';
@@ -94,6 +94,7 @@ const ExpenseHistory = () => {
           <tbody>
             {currentRecords.map(expense => {
               const vehicleDetails = getExpenseVehicleDetailDisplays(expense);
+              const fuelTypeDisplay = getExpenseFuelTypeDisplay(expense);
 
               return (
                 <tr key={expense.id}>
@@ -102,9 +103,14 @@ const ExpenseHistory = () => {
                       <span className="category-icon" aria-hidden="true">{categoryIcons[expense.category] || <FaQuestionCircle />}</span>
                       <span>{expense.category}</span>
                     </div>
-                    {vehicleDetails.length > 0 && (
+                    {(vehicleDetails.length > 0 || fuelTypeDisplay) && (
                       <div className="fuel-details">
-                        {vehicleDetails.map(detail => <span key={detail}>{detail}</span>)}
+                        {vehicleDetails.map(detail => <span className="vehicle-detail" key={detail}>{detail}</span>)}
+                        {fuelTypeDisplay && (
+                          <span className={fuelTypeDisplay.className} title={fuelTypeDisplay.tooltip} aria-label={`Tipo de combustible: ${fuelTypeDisplay.label}`}>
+                            {fuelTypeDisplay.label}
+                          </span>
+                        )}
                       </div>
                     )}
                     {expense.notes && (
@@ -148,4 +154,3 @@ const ExpenseHistory = () => {
 };
 
 export default ExpenseHistory;
-
