@@ -1,5 +1,8 @@
 # Auto Gasto PRO
 aplicacion de gastos vehiculares
+
+🌐 **App en línea: [https://autogastopro.cc](https://autogastopro.cc)**
+
 Esta aplicación te permite llevar un registro detallado de los gastos asociados a tus vehículos. Podrás gestionar:
 
 *   **Carga de combustible:** Registra cada vez que llenes el tanque, incluyendo el costo, la cantidad de litros y el kilometraje.
@@ -25,7 +28,7 @@ La información recopilada se utiliza exclusivamente para:
 
 ### 3. Seguridad y Almacenamiento
 * **Infraestructura:** Los datos se almacenan en **Firebase (Google)** bajo estándares de seguridad industriales.
-* **Conexión:** El sitio se sirve mediante **GitHub Pages** utilizando cifrado HTTPS.
+* **Conexión:** El sitio se sirve en `https://autogastopro.cc` mediante **GitHub Pages** utilizando cifrado HTTPS.
 
 ### 4. Control de Datos
 Los usuarios tienen control total sobre sus datos. Si deseas eliminar tu información, puedes hacerlo desde la configuración de la app o abriendo un *issue* en este repositorio.
