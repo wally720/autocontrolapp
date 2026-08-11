@@ -106,7 +106,7 @@ hosting ni GitHub Actions donde esas claves vivan.
 
 ## 6. Fases de ejecución
 
-### Fase 0 — Requisito de entrada — ⏳ *pendiente del usuario*
+### Fase 0 — Requisito de entrada — ✅ *hecha*
 
 Claude entrega `M1` y espera el token. Permisos exactos: `Zone → DNS → Edit` sobre la zona
 `autogastopro.cc`, nada más.
@@ -150,39 +150,55 @@ antes de estos cambios**: es deuda preexistente (`React` sin usar en 8 archivos 
 usar en `benchmark-monthly-comparison.js`). No se introdujo ningún error nuevo, y limpiarla
 queda fuera del alcance de esta migración.
 
-### Fase 2 — DNS en Cloudflare — ⛔ *bloqueada, requiere el token de `M1`*
+### Fase 2 — DNS en Cloudflare — ✅ *hecha (salvo los TXT que dependen de `M4` y `M5`)*
 
-**Paso 2.0 — Auditar la zona antes de crear nada.** Listar los registros existentes y
-reportarlos al usuario. GitHub advierte de que cualquier registro `A`, `AAAA`, `ALIAS` o `ANAME`
-adicional con host `@`, o un `CNAME` sobrante en `www`, **puede impedir la emisión del
-certificado HTTPS**, y Cloudflare crea registros por defecto al añadir un dominio. Los `TXT` en
-el apex **no** entran en esa advertencia y pueden convivir.
+**Paso 2.0 — Auditoría previa. Resultado: la zona estaba completamente vacía (0 registros).**
+No había registros por defecto de Cloudflare ni nada que entrara en conflicto, así que no hubo
+que borrar nada. Se comprobó porque GitHub advierte de que cualquier registro `A`, `AAAA`,
+`ALIAS` o `ANAME` adicional con host `@`, o un `CNAME` sobrante en `www`, **puede impedir la
+emisión del certificado HTTPS**. Los `TXT` en el apex **no** entran en esa advertencia.
 
-**Paso 2.1 — Crear los registros:**
+Datos de la zona: `autogastopro.cc`, estado `active`, plan Free, nameservers
+`sureena.ns.cloudflare.com` y `titan.ns.cloudflare.com`.
 
-| Tipo | Nombre | Contenido | Proxy |
-|---|---|---|---|
-| CNAME | `autogastopro.cc` (apex) | `wally720.github.io` | DNS only |
-| CNAME | `www` | `wally720.github.io` | DNS only |
-| TXT | `_github-pages-challenge-wally720` | valor que dé GitHub en `M4` | — |
-| TXT | `autogastopro.cc` | `v=spf1 -all` | — |
-| TXT | `_dmarc` | `v=DMARC1; p=reject; rua=mailto:walter.fontecha@gmail.com` | — |
-| TXT | `autogastopro.cc` | `google-site-verification=...` (solo si se hace `M5`) | — |
+**Paso 2.1 — Registros creados y verificados por resolución real:**
 
-El CNAME en el apex funciona porque Cloudflare aplica *CNAME flattening* por defecto en todos
-los planes cuando el registro está en la raíz de la zona, con o sin proxy. Apuntar al dominio
-`wally720.github.io` en lugar de a IPs fijas hace que el sitio siga a GitHub si cambia de IPs.
+| Tipo | Nombre | Contenido | Proxy | Estado |
+|---|---|---|---|---|
+| CNAME | `autogastopro.cc` (apex) | `wally720.github.io` | DNS only | ✅ resuelve a las 4 IPs de GitHub Pages |
+| CNAME | `www` | `wally720.github.io` | DNS only | ✅ resuelve a las 4 IPs de GitHub Pages |
+| TXT | `autogastopro.cc` | `v=spf1 -all` | — | ✅ verificado |
+| TXT | `_dmarc` | `v=DMARC1; p=reject; rua=mailto:walter.fontecha@gmail.com` | — | ✅ verificado |
+| TXT | `_github-pages-challenge-wally720` | valor que dé GitHub en `M4` | — | ⏳ pendiente de `M4.A3` |
+| TXT | `autogastopro.cc` | `google-site-verification=...` | — | ⏳ solo si se hace `M5` |
 
-Los registros SPF y DMARC existen porque el dominio no envía correo: bloquean que alguien lo
-use para suplantar identidad.
+Verificado contra los resolvers públicos de Cloudflare y Google: el apex devuelve
+`185.199.108.153`, `.109.153`, `.110.153` y `.111.153`, que son las IPs de GitHub Pages. El
+*CNAME flattening* del apex funciona como estaba previsto, sin configuración adicional.
 
-**Paso 2.2 — Ajustes de zona:** SSL/TLS en **Full (strict)** y **Always Use HTTPS** activado.
+Apuntar a `wally720.github.io` en vez de a IPs fijas hace que el sitio siga a GitHub si cambia
+de direcciones. SPF y DMARC existen porque el dominio no envía correo: bloquean la suplantación.
+
+**Paso 2.2 — CORREGIDO. No se aplican ajustes de SSL/TLS en Cloudflare, y es lo correcto.**
+
+La versión anterior de esta especificación pedía poner SSL/TLS en *Full (strict)* y activar
+*Always Use HTTPS*. **Era un error de planteamiento.** Esos dos ajustes solo actúan sobre
+tráfico que pasa por el proxy de Cloudflare, y aquí **todos los registros van en DNS only**, de
+modo que el tráfico va directo a GitHub sin tocar el edge de Cloudflare. Configurarlos no
+tendría ningún efecto.
+
+Quien hace ese trabajo es GitHub: el certificado lo emite Let's Encrypt a través de GitHub
+Pages, y la redirección de `http://` a `https://` la aplica la casilla *Enforce HTTPS* del paso
+`M4.B4`.
+
+Consecuencia práctica: el token de `M1` con permiso `Zone → DNS → Edit` es **exactamente** el
+alcance necesario. No hace falta ampliarlo.
 
 **El proxy naranja queda desactivado de forma permanente.** GitHub emite el certificado
-Let's Encrypt validando por HTTP contra el dominio; si Cloudflare intercepta, la validación no
-llega y *Enforce HTTPS* queda deshabilitado. El problema **se repite en cada renovación**
-(~90 días), así que activarlo "después" no es una opción segura. GitHub Pages ya sirve por su
-propia CDN, de modo que no se pierde rendimiento relevante.
+validando por HTTP contra el dominio; si Cloudflare intercepta, la validación no llega y
+*Enforce HTTPS* queda deshabilitado. El problema **se repite en cada renovación** (~90 días),
+así que activarlo "después" no es una opción segura. GitHub Pages ya sirve por su propia CDN,
+de modo que no se pierde rendimiento relevante.
 
 ### Fase 3 — Tareas manuales del usuario — ⏳ *pendiente*
 
