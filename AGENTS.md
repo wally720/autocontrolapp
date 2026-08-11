@@ -27,7 +27,8 @@
 
 ## Gotchas de entorno
 - `.env.example` define las claves `VITE_FIREBASE_*`, incluyendo `VITE_FIREBASE_RECAPTCHA_KEY` para App Check.
-- Para probar local, abrí `http://localhost:5173/autocontrolapp/`; Firebase Auth puede bloquear `127.0.0.1` si no está autorizado.
+- Para probar local, abrí `http://localhost:5173/`; Firebase Auth puede bloquear `127.0.0.1` si no está autorizado.
+- El sitio público es `https://autogastopro.cc` (GitHub Pages con dominio propio). `public/CNAME` es obligatorio: `gh-pages` reescribe la rama en cada deploy y sin ese archivo el dominio se pierde.
 - App Check local soporta `VITE_FIREBASE_APPCHECK_DEBUG_TOKEN`; registrá el token de depuración en Firebase antes de diagnosticar errores genéricos.
 - Reportes usan `recharts`; cambios en `src/features/Reports/` deben cuidar compatibilidad con ese stack.
 - `package.json` y `package-lock.json` pueden aparecer desincronizados por deuda histórica; no uses eso como señal de cambios funcionales sin verificar. Para releases o version bumps nuevos, sí deben quedar sincronizados junto con `src/utils/constants.js`.

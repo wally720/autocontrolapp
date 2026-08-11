@@ -2,7 +2,7 @@ from playwright.sync_api import sync_playwright
 
 def run_cuj(page):
     # Navigate to the app
-    page.goto("http://localhost:5173/autocontrolapp/")  # Vite default port with base path
+    page.goto("http://localhost:5173/")  # Vite default port
     page.wait_for_timeout(2000) # wait for firebase auth/loading
 
     # Enter email
