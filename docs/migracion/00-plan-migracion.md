@@ -205,7 +205,7 @@ validando por HTTP contra el dominio; si Cloudflare intercepta, la validación n
 así que activarlo "después" no es una opción segura. GitHub Pages ya sirve por su propia CDN,
 de modo que no se pierde rendimiento relevante.
 
-### Fase 3 — Tareas manuales del usuario — 🟡 *`M2`, `M3` y `M6` hechos; falta `M4`*
+### Fase 3 — Tareas manuales del usuario — ✅ *hecha*
 
 `M2` → `M3` → `M6` → `M4`, en ese orden. Auth y App Check antes de exponer el dominio; el
 despliegue antes de que GitHub intente validar nada.
@@ -215,7 +215,7 @@ despliegue antes de que GitHub intente validar nada.
 Queda `M4`. Entre `M4.A3` y `M4.A4` hay una **pausa bloqueante**: el usuario entrega el valor
 del TXT de verificación y espera a que Claude lo cree en Cloudflare.
 
-### Fase 4 — Verificación — 🟡 *parte automatizable hecha; falta la del navegador*
+### Fase 4 — Verificación — 🟡 *automatizable ✅ completa; falta la del navegador (`M7`)*
 
 Resultados reales observados tras el despliegue:
 
@@ -228,10 +228,12 @@ Resultados reales observados tras el despliegue:
 | `https://wally720.github.io/autocontrolapp/` | ✅ 301 al dominio nuevo |
 | `CNAME` en la rama `gh-pages` | ✅ `autogastopro.cc` |
 | DNS apex y `www` | ✅ las 4 IPs de GitHub Pages, en DNS only |
-| `http://autogastopro.cc` → HTTPS | ⏳ depende de *Enforce HTTPS* (`M4.B4`) |
+| `http://autogastopro.cc` | ✅ 301 a `https://` (confirma *Enforce HTTPS* activo) |
+| `http://www.autogastopro.cc` | ✅ 301 a `https://autogastopro.cc/` |
 
-Detalle relevante: la redirección desde la URL antigua apunta hoy a `http://autogastopro.cc`,
-en HTTP. Es `M4.B4` lo que cierra ese hueco.
+La redirección desde la URL antigua entra por `http://autogastopro.cc` y de ahí salta a HTTPS:
+son dos saltos en lugar de uno. Es el comportamiento normal de GitHub Pages y no requiere
+acción; el destino final es correcto y va cifrado.
 
 Nota: `https://autogastopro.cc/CNAME` devuelve 404 y **es correcto**. GitHub Pages consume ese
 archivo para configurar el dominio y no lo publica como recurso.
@@ -320,7 +322,15 @@ pantalla no coincide con lo descrito, se corrige en el momento con una captura.
 | `M1` token, `M2` Firebase, `M3` reCAPTCHA | ✅ |
 | `M8` credenciales de Git | ✅ (incidencia no prevista) |
 | `M6` despliegue | ✅ |
-| `M4` verificación del dominio y *Enforce HTTPS* | ⏳ **único paso pendiente** |
-| `M7` checklist final | ⏳ |
-| Revocar el API Token de Cloudflare | ⏳ **obligatorio**, tras `M4.A` |
+| `M4` verificación del dominio y *Enforce HTTPS* | ✅ |
+| `M7` checklist final en el navegador | ⏳ |
+| Revocar el API Token de Cloudflare | ⏳ **obligatorio** — ya no se necesita |
 | `M5` Search Console | Opcional, sin fecha |
+
+**La parte técnica está terminada.** El dominio sirve por HTTPS, todas las redirecciones
+funcionan y el mecanismo que protege el dominio frente a futuros despliegues (`public/CNAME`)
+está en su sitio.
+
+Queda comprobar en un navegador con sesión iniciada que el login y los datos funcionan
+(`M7`) — lo único que no se puede automatizar desde fuera — y revocar el token de Cloudflare,
+que ya cumplió su última función al crear el TXT de verificación de `M4`.
