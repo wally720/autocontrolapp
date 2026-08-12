@@ -1,5 +1,4 @@
 // src/pages/DashboardPage.jsx
-import React from 'react';
 import ExpenseForm from '../features/ExpenseForm';
 import ExpenseHistory from '../features/ExpenseHistory';
 import DashboardHeader from '../components/DashboardHeader';

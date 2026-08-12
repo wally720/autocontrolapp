@@ -1,17 +1,9 @@
 import { performance } from 'perf_hooks';
 
-// Simulate parseLocalDate behavior roughly
-const parseLocalDate = (dateStr) => {
-  if (!dateStr) return null;
-  const parts = dateStr.split('-');
-  return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-};
-
 // Generate test data
 const generateExpenses = (count) => {
   const expenses = [];
   const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth(); // 0-11
 
   for (let i = 0; i < count; i++) {
     // Random month between 0 and 11
@@ -137,6 +129,7 @@ const runOptimized = () => {
 // Also let's measure just the parsing speedup (using startsWith vs split/map)
 const runParsingOnly = () => {
   let totalTime = 0;
+  let lastResult = null;
   const currentMonthStr = String(currentMonth + 1).padStart(2, '0');
   const previousMonthStr = String(previousMonth + 1).padStart(2, '0');
   const currentPrefix = `${currentYear}-${currentMonthStr}-`;
@@ -157,8 +150,11 @@ const runParsingOnly = () => {
     }
     const end = performance.now();
     totalTime += (end - start);
+    // Read the totals outside the measured window so the loop's work cannot be
+    // optimized away, without inflating the timing.
+    lastResult = { currentMonthTotal, previousMonthTotal };
   }
-  return { time: totalTime };
+  return { time: totalTime, result: lastResult };
 }
 
 

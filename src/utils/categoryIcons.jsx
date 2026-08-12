@@ -1,5 +1,4 @@
 // src/utils/categoryIcons.jsx
-import React from 'react';
 import {
   FaGasPump, FaWrench, FaFileContract, FaUniversity, FaShower,
   FaParking, FaRoad, FaDotCircle, FaQuestionCircle

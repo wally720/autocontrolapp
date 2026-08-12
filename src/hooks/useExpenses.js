@@ -48,7 +48,7 @@ export const useExpenses = () => {
     });
 
     return () => unsubscribe();
-  }, [selectedVehicle, currentUser]);
+  }, [selectedVehicle, currentUser, showNotification]);
 
   const addExpense = async (expense) => {
     if (!selectedVehicle || !currentUser) {

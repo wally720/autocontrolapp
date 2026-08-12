@@ -1,5 +1,5 @@
 // src/context/VehicleContext.jsx
-import React, { createContext, useState, useEffect, useMemo } from 'react';
+import { createContext, useState, useEffect, useMemo } from 'react';
 import { useAuth } from './AuthContext';
 
 const VehicleContext = createContext();
