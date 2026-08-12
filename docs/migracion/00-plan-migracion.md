@@ -2,7 +2,7 @@
 
 > **Este archivo es la fuente de verdad de la migración.** Cualquier desvío respecto a lo
 > escrito aquí debe acordarse antes de ejecutarse y quedar reflejado en este documento.
-> El detalle paso a paso de las tareas manuales está en `M1`–`M7`; el registro de las
+> El detalle paso a paso de las tareas manuales está en `M1`–`M9`; el registro de las
 > revisiones, en `00-log-revisiones.md`.
 
 **Última actualización:** 10 de agosto de 2026
@@ -78,7 +78,8 @@ Comprobado leyendo el repositorio, no asumido:
 
 ### 5.2 Lo que solo puede hacer el usuario
 
-Cinco acciones. Ninguna es sustituible por API disponible en esta sesión:
+Estas son las acciones que Claude no puede ejecutar. Ninguna es sustituible por API disponible
+en esta sesión:
 
 | Paso | Doc | Acción | Dónde | Bloqueante |
 |---|---|---|---|---|
@@ -90,22 +91,31 @@ Cinco acciones. Ninguna es sustituible por API disponible en esta sesión:
 | 6 | `M7` | Checklist final de verificación | Navegador | Cierre |
 | — | `M5` | Alta en Google Search Console | Search Console | No, opcional |
 | — | `M8` | Autenticar Git con GitHub | Terminal local | Solo si `M6` falla |
+| — | `M9` | Autorizar el dominio en las restricciones de la clave de API | Google Cloud Console | Sí |
 
 `M8` **no estaba previsto**: surgió al ejecutar `M6`. El despliegue compiló bien pero falló al
 subir a `gh-pages` porque el Git local no tenía credenciales y GitHub no acepta contraseñas
 desde 2021. Ver el detalle en `00-log-revisiones.md`, sección de hallazgos en ejecución.
 
-**Orden de ejecución: M1 → M2 → M3 → M6 → M4 → M7.**
-El orden **no** es el numérico. `M6` (desplegar) va antes que `M4` (HTTPS).
+**Orden de ejecución: M1 → M2 → M3 → M9 → M6 → M4 → M7.**
+El orden **no** es el numérico: `M6` (desplegar) va antes que `M4` (HTTPS), y `M9` se descubrió
+al final aunque conceptualmente pertenece al bloque de listas blancas junto a `M2` y `M3`.
 
 **Por qué `M6` no lo puede hacer Claude:** el build inyecta las claves `VITE_FIREBASE_*` desde
 el `.env` local del usuario, excluido del repositorio (`.gitignore:71-75`). No hay panel de
 hosting ni GitHub Actions donde esas claves vivan.
 
-**Consecuencia de omitir cada bloqueante:**
-- Sin `M2` → login falla con `auth/unauthorized-domain`.
-- Sin `M3` → el login funciona pero Firestore devuelve permiso denegado por App Check.
-- Sin `M6` → no hay nada publicado en el dominio.
+**Consecuencia de omitir cada bloqueante.** Los tres primeros son listas blancas de dominios en
+tres sistemas distintos, y cada uno falla de una forma reconocible:
+
+| Falta | Síntoma exacto |
+|---|---|
+| `M2` | `auth/unauthorized-domain` |
+| `M9` | `auth/requests-from-referer-<dominio>-are-blocked` |
+| `M3` | El login entra correctamente, pero el dashboard no carga datos |
+| `M6` | No hay nada publicado en el dominio |
+
+Esa tabla es la herramienta de diagnóstico: el mensaje de error dice qué documento toca.
 
 ---
 
@@ -310,6 +320,7 @@ pantalla no coincide con lo descrito, se corrige en el momento con una captura.
 | `M6-desplegar.md` | Desplegar la app al dominio nuevo |
 | `M7-checklist-final.md` | Checklist final de verificación, 21 comprobaciones |
 | `M8-autenticar-github.md` | Autenticar Git con GitHub en macOS. Solo si `M6` falla por credenciales |
+| `M9-api-key-referrers.md` | Autorizar el dominio en las restricciones de la clave de API. Tercera lista blanca, no prevista |
 
 ## 11. Estado actual
 
@@ -323,6 +334,7 @@ pantalla no coincide con lo descrito, se corrige en el momento con una captura.
 | `M8` credenciales de Git | ✅ (incidencia no prevista) |
 | `M6` despliegue | ✅ |
 | `M4` verificación del dominio y *Enforce HTTPS* | ✅ |
+| `M9` restricciones de la clave de API | ⏳ **bloquea el login** (incidencia no prevista) |
 | `M7` checklist final en el navegador | ⏳ |
 | Revocar el API Token de Cloudflare | ⏳ **obligatorio** — ya no se necesita |
 | `M5` Search Console | Opcional, sin fecha |
