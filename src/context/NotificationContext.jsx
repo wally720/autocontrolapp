@@ -39,6 +39,8 @@ export const NotificationProvider = ({ children }) => {
   );
 };
 
+// The context and its hook intentionally share this module.
+// eslint-disable-next-line react-refresh/only-export-components
 export const useNotification = () => {
   const context = useContext(NotificationContext);
 

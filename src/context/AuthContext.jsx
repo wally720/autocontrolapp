@@ -6,6 +6,8 @@ import { auth, firestore, googleProvider } from '../config/firebase';
 
 const AuthContext = createContext();
 
+// The context and its hook intentionally share this module.
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
@@ -96,4 +98,3 @@ export const AuthProvider = ({ children }) => {
         </AuthContext.Provider>
     );
 };
-
