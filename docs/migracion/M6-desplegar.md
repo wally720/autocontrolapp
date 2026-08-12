@@ -203,9 +203,19 @@ No tienes Node.js instalado o no está en el PATH de esa terminal. Descárgalo d
 **`fatal: not a git repository`**
 No estás dentro de la carpeta del proyecto. Revisa el `cd` del paso 1.
 
-**El comando pide usuario y contraseña de GitHub**
-Tu Git no tiene credenciales guardadas. Avísame y lo resolvemos; no escribas tu contraseña de
-GitHub ahí, porque GitHub ya no la acepta para esto.
+**El comando pide usuario y contraseña de GitHub, y luego falla**
+
+```
+remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed
+```
+
+Tu Git no tiene credenciales guardadas, y GitHub dejó de aceptar contraseñas en 2021. **No es
+un fallo de la migración** y **el build no se pierde**: `dist/` ya quedó compilado, solo falta
+subirlo.
+
+👉 **Sigue `M8-autenticar-github.md`**, que lo resuelve en 5 minutos y una sola vez. Luego
+vuelve aquí y repite el paso 5.
 
 **Terminó con `Published` pero el sitio viejo sigue igual**
 Normal durante unos minutos: GitHub tarda en publicar. Espera 5 minutos y recarga con

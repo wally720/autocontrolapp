@@ -287,3 +287,4 @@ pantalla no coincide con lo descrito, se corrige en el momento con una captura.
 | `M5-search-console.md` | Alta en Google Search Console (opcional) |
 | `M6-desplegar.md` | Desplegar la app al dominio nuevo |
 | `M7-checklist-final.md` | Checklist final de verificación, 21 comprobaciones |
+| `M8-autenticar-github.md` | Autenticar Git con GitHub en macOS. Solo si `M6` falla por credenciales |
