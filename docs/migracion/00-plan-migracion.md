@@ -5,15 +5,18 @@
 > El detalle paso a paso de las tareas manuales está en `M1`–`M9`; el registro de las
 > revisiones, en `00-log-revisiones.md`.
 
-**Última actualización:** 10 de agosto de 2026
+**Última actualización:** 12 de agosto de 2026 — migración completada
 **Rama de trabajo:** `claude/autogastropro-migration-plan-eex38n`
 
 ---
 
 ## 1. Contexto
 
-La app se sirve hoy en `https://wally720.github.io/autocontrolapp`. Se compró el dominio
-`autogastopro.cc`, gestionado por Cloudflare, y debe pasar a ser la dirección pública única.
+> ✅ **Migración completada.** La app se sirve en `https://autogastopro.cc`. El estado final y
+> las notas de mantenimiento están en la §11.
+
+La app se servía en `https://wally720.github.io/autocontrolapp`. Se compró el dominio
+`autogastopro.cc`, gestionado por Cloudflare, para pasar a ser la dirección pública única.
 
 **Resultado buscado:** `https://autogastopro.cc` sirve la app con HTTPS válido, el login de
 Google sigue funcionando, App Check no bloquea Firestore, y la URL antigua redirige a la nueva.
@@ -93,7 +96,11 @@ en esta sesión:
 | — | `M8` | Autenticar Git con GitHub | Terminal local | Solo si `M6` falla |
 | — | `M9` | Autorizar el dominio en las restricciones de la clave de API | Google Cloud Console | Sí |
 
-`M8` **no estaba previsto**: surgió al ejecutar `M6`. El despliegue compiló bien pero falló al
+`M8` y `M9` **no estaban previstos**: surgieron al ejecutar. `M9` es el más importante de los
+dos, porque es una tercera lista blanca de dominios que la planificación no detectó y que dejó
+el login roto tras dar la migración por terminada.
+
+`M8` surgió al ejecutar `M6`. El despliegue compiló bien pero falló al
 subir a `gh-pages` porque el Git local no tenía credenciales y GitHub no acepta contraseñas
 desde 2021. Ver el detalle en `00-log-revisiones.md`, sección de hallazgos en ejecución.
 
@@ -322,27 +329,65 @@ pantalla no coincide con lo descrito, se corrige en el momento con una captura.
 | `M8-autenticar-github.md` | Autenticar Git con GitHub en macOS. Solo si `M6` falla por credenciales |
 | `M9-api-key-referrers.md` | Autorizar el dominio en las restricciones de la clave de API. Tercera lista blanca, no prevista |
 
-## 11. Estado actual
+## 11. Estado final — migración completada
 
-**El sitio está publicado y funcionando en `https://autogastopro.cc`.**
+**`https://autogastopro.cc` es el dominio de producción.** Verificado de extremo a extremo el
+12 de agosto de 2026.
 
 | Paso | Estado |
 |---|---|
 | Fase 1 — código | ✅ |
 | Fase 2 — DNS en Cloudflare | ✅ |
-| `M1` token, `M2` Firebase, `M3` reCAPTCHA | ✅ |
+| `M1` token de Cloudflare | ✅ |
+| `M2` Firebase Authentication | ✅ |
+| `M3` reCAPTCHA / App Check | ✅ |
+| `M9` restricciones de la clave de API | ✅ (incidencia no prevista) |
 | `M8` credenciales de Git | ✅ (incidencia no prevista) |
 | `M6` despliegue | ✅ |
 | `M4` verificación del dominio y *Enforce HTTPS* | ✅ |
-| `M9` restricciones de la clave de API | ⏳ **bloquea el login** (incidencia no prevista) |
-| `M7` checklist final en el navegador | ⏳ |
-| Revocar el API Token de Cloudflare | ⏳ **obligatorio** — ya no se necesita |
-| `M5` Search Console | Opcional, sin fecha |
+| `M7` checklist final, 21 comprobaciones | ✅ |
+| `M5` Search Console | Opcional, sin hacer |
 
-**La parte técnica está terminada.** El dominio sirve por HTTPS, todas las redirecciones
-funcionan y el mecanismo que protege el dominio frente a futuros despliegues (`public/CNAME`)
-está en su sitio.
+Comprobaciones automatizadas finales:
 
-Queda comprobar en un navegador con sesión iniciada que el login y los datos funcionan
-(`M7`) — lo único que no se puede automatizar desde fuera — y revocar el token de Cloudflare,
-que ya cumplió su última función al crear el TXT de verificación de `M4`.
+```
+200  https://autogastopro.cc
+301  http://autogastopro.cc              -> https://autogastopro.cc/
+301  https://www.autogastopro.cc         -> https://autogastopro.cc/
+301  github.io/autocontrolapp            -> autogastopro.cc
+     bundle publicado: /assets/index-d177ecf3.js
+```
+
+El usuario confirmó las 21 comprobaciones de `M7`, incluidas las que solo se pueden hacer con
+un navegador y sesión iniciada: certificado válido, login con Google, lectura y escritura de
+datos, y funcionamiento en móvil.
+
+### Aviso conocido y benigno
+
+En Chrome, la consola muestra `Cross-Origin-Opener-Policy policy would block the window.closed
+call` al iniciar sesión. **Es cosmético y no requiere acción.** Chrome corta la relación entre
+la página y la ventana emergente de Google; Firebase avisa al intentar consultar y cerrar esa
+ventana durante la limpieza, *después* de que la autenticación ya se completó. No lo causó la
+migración: ocurría igual en el dominio anterior. No se puede suprimir en GitHub Pages, que no
+permite configurar cabeceras HTTP. Único efecto real: si alguien cierra la ventana emergente a
+mano sin elegir cuenta, la app tarda algo más en detectar la cancelación.
+
+### Mantenimiento futuro
+
+**Nunca borres `public/CNAME`.** `npm run deploy` reescribe la rama `gh-pages` entera en cada
+despliegue; ese archivo es lo único que impide que el dominio se pierda.
+
+Si algún día se añade otro dominio o subdominio, hay que darlo de alta en **los tres** sistemas
+de la tabla de §5.2 — Firebase Authentication, reCAPTCHA Enterprise y las restricciones de la
+clave de API — más el DNS. Olvidar cualquiera de los tres rompe la app de una forma distinta;
+la tabla de errores de §5.2 dice cuál es cuál.
+
+### Trabajo propuesto, fuera del alcance de esta migración
+
+- **30 vulnerabilidades de dependencias**, 2 críticas, 18 en dependencias que llegan al
+  navegador. Ya existían antes de la migración. Arreglarlas exige saltos de versión mayor en
+  `firebase` y `react-router-dom`, con cambios incompatibles.
+- **Despliegue automático con GitHub Actions**, con las claves como *secrets*. Eliminaría el
+  paso manual `M6` y la dependencia del `.env` local.
+- **12 errores de lint preexistentes**, verificados como anteriores a esta migración.
+- **URLs sin `#`**, que requerirían mover el hosting a Cloudflare Pages (ver §7).
