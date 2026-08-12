@@ -89,6 +89,11 @@ Cinco acciones. Ninguna es sustituible por API disponible en esta sesión:
 | 5 | `M4` | Verificar el dominio y marcar *Enforce HTTPS* | GitHub | Sí |
 | 6 | `M7` | Checklist final de verificación | Navegador | Cierre |
 | — | `M5` | Alta en Google Search Console | Search Console | No, opcional |
+| — | `M8` | Autenticar Git con GitHub | Terminal local | Solo si `M6` falla |
+
+`M8` **no estaba previsto**: surgió al ejecutar `M6`. El despliegue compiló bien pero falló al
+subir a `gh-pages` porque el Git local no tenía credenciales y GitHub no acepta contraseñas
+desde 2021. Ver el detalle en `00-log-revisiones.md`, sección de hallazgos en ejecución.
 
 **Orden de ejecución: M1 → M2 → M3 → M6 → M4 → M7.**
 El orden **no** es el numérico. `M6` (desplegar) va antes que `M4` (HTTPS).
@@ -200,29 +205,44 @@ validando por HTTP contra el dominio; si Cloudflare intercepta, la validación n
 así que activarlo "después" no es una opción segura. GitHub Pages ya sirve por su propia CDN,
 de modo que no se pierde rendimiento relevante.
 
-### Fase 3 — Tareas manuales del usuario — ⏳ *pendiente*
+### Fase 3 — Tareas manuales del usuario — 🟡 *`M2`, `M3` y `M6` hechos; falta `M4`*
 
 `M2` → `M3` → `M6` → `M4`, en ese orden. Auth y App Check antes de exponer el dominio; el
 despliegue antes de que GitHub intente validar nada.
 
-Entre `M4.A3` y `M4.A4` hay una **pausa bloqueante**: el usuario entrega el valor del TXT de
-verificación y espera a que Claude lo cree en Cloudflare.
+`M6` requirió resolver antes `M8` (credenciales de Git), incidencia no prevista.
 
-### Fase 4 — Verificación — ⏳ *pendiente*
+Queda `M4`. Entre `M4.A3` y `M4.A4` hay una **pausa bloqueante**: el usuario entrega el valor
+del TXT de verificación y espera a que Claude lo cree en Cloudflare.
 
-Comprobaciones de Claude:
+### Fase 4 — Verificación — 🟡 *parte automatizable hecha; falta la del navegador*
 
-```bash
-dig +short autogastopro.cc          # IPs de GitHub Pages
-dig +short www.autogastopro.cc
-curl -sSI https://autogastopro.cc              # 200, cert Let's Encrypt válido
-curl -sSI http://autogastopro.cc               # 301 a https
-curl -sSI https://www.autogastopro.cc          # 301 al apex
-curl -sSI https://wally720.github.io/autocontrolapp/   # 301 al dominio nuevo
-curl -s https://autogastopro.cc/ | grep assets # bundles en /assets/
-```
+Resultados reales observados tras el despliegue:
 
-Comprobaciones del usuario: las 21 del checklist `M7`, que cubren certificado, estilos, login
+| Comprobación | Resultado |
+|---|---|
+| `https://autogastopro.cc` | ✅ HTTP 200, sirviendo la app |
+| Build publicado | ✅ `/assets/index-d177ecf3.js`, el hash que produjo el despliegue |
+| `<link rel="canonical">` | ✅ `https://autogastopro.cc/` |
+| `https://www.autogastopro.cc` | ✅ 301 al apex |
+| `https://wally720.github.io/autocontrolapp/` | ✅ 301 al dominio nuevo |
+| `CNAME` en la rama `gh-pages` | ✅ `autogastopro.cc` |
+| DNS apex y `www` | ✅ las 4 IPs de GitHub Pages, en DNS only |
+| `http://autogastopro.cc` → HTTPS | ⏳ depende de *Enforce HTTPS* (`M4.B4`) |
+
+Detalle relevante: la redirección desde la URL antigua apunta hoy a `http://autogastopro.cc`,
+en HTTP. Es `M4.B4` lo que cierra ese hueco.
+
+Nota: `https://autogastopro.cc/CNAME` devuelve 404 y **es correcto**. GitHub Pages consume ese
+archivo para configurar el dominio y no lo publica como recurso.
+
+**Limitación de la verificación automatizada.** El tráfico saliente del entorno donde corre
+Claude atraviesa un proxy que sustituye los certificados TLS. Al inspeccionar el certificado de
+`autogastopro.cc` se obtiene el del proxy, no el real de GitHub, de modo que **Claude no puede
+confirmar el emisor ni la validez del certificado**. Esa comprobación es necesariamente del
+usuario: el candado del navegador, paso 2 de `M7`.
+
+Comprobaciones pendientes del usuario: las 21 de `M7`, que cubren certificado, estilos, login
 (valida `M2`), lectura y escritura de datos (valida `M3`), navegación y móvil.
 
 ### Fase 5 — Rollback
@@ -279,7 +299,7 @@ pantalla no coincide con lo descrito, se corrige en el momento con una captura.
 | Archivo | Contenido |
 |---|---|
 | `00-plan-migracion.md` | Este documento. Especificación y fuente de verdad |
-| `00-log-revisiones.md` | Registro de las 5 pasadas de revisión y sus 19 hallazgos |
+| `00-log-revisiones.md` | Las 5 pasadas de revisión (19 hallazgos) y los 3 hallazgos que solo aparecieron al ejecutar |
 | `M1-cloudflare-api-token.md` | Crear y entregar el API Token de Cloudflare |
 | `M2-firebase-authorized-domains.md` | Autorizar el dominio en Firebase Authentication |
 | `M3-recaptcha-appcheck-dominios.md` | Autorizar el dominio en reCAPTCHA Enterprise |
@@ -288,3 +308,19 @@ pantalla no coincide con lo descrito, se corrige en el momento con una captura.
 | `M6-desplegar.md` | Desplegar la app al dominio nuevo |
 | `M7-checklist-final.md` | Checklist final de verificación, 21 comprobaciones |
 | `M8-autenticar-github.md` | Autenticar Git con GitHub en macOS. Solo si `M6` falla por credenciales |
+
+## 11. Estado actual
+
+**El sitio está publicado y funcionando en `https://autogastopro.cc`.**
+
+| Paso | Estado |
+|---|---|
+| Fase 1 — código | ✅ |
+| Fase 2 — DNS en Cloudflare | ✅ |
+| `M1` token, `M2` Firebase, `M3` reCAPTCHA | ✅ |
+| `M8` credenciales de Git | ✅ (incidencia no prevista) |
+| `M6` despliegue | ✅ |
+| `M4` verificación del dominio y *Enforce HTTPS* | ⏳ **único paso pendiente** |
+| `M7` checklist final | ⏳ |
+| Revocar el API Token de Cloudflare | ⏳ **obligatorio**, tras `M4.A` |
+| `M5` Search Console | Opcional, sin fecha |
