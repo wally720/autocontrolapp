@@ -2,18 +2,21 @@
 
 > **Este archivo es la fuente de verdad de la migración.** Cualquier desvío respecto a lo
 > escrito aquí debe acordarse antes de ejecutarse y quedar reflejado en este documento.
-> El detalle paso a paso de las tareas manuales está en `M1`–`M7`; el registro de las
+> El detalle paso a paso de las tareas manuales está en `M1`–`M9`; el registro de las
 > revisiones, en `00-log-revisiones.md`.
 
-**Última actualización:** 10 de agosto de 2026
+**Última actualización:** 12 de agosto de 2026 — migración completada
 **Rama de trabajo:** `claude/autogastropro-migration-plan-eex38n`
 
 ---
 
 ## 1. Contexto
 
-La app se sirve hoy en `https://wally720.github.io/autocontrolapp`. Se compró el dominio
-`autogastopro.cc`, gestionado por Cloudflare, y debe pasar a ser la dirección pública única.
+> ✅ **Migración completada.** La app se sirve en `https://autogastopro.cc`. El estado final y
+> las notas de mantenimiento están en la §11.
+
+La app se servía en `https://wally720.github.io/autocontrolapp`. Se compró el dominio
+`autogastopro.cc`, gestionado por Cloudflare, para pasar a ser la dirección pública única.
 
 **Resultado buscado:** `https://autogastopro.cc` sirve la app con HTTPS válido, el login de
 Google sigue funcionando, App Check no bloquea Firestore, y la URL antigua redirige a la nueva.
@@ -78,7 +81,8 @@ Comprobado leyendo el repositorio, no asumido:
 
 ### 5.2 Lo que solo puede hacer el usuario
 
-Cinco acciones. Ninguna es sustituible por API disponible en esta sesión:
+Estas son las acciones que Claude no puede ejecutar. Ninguna es sustituible por API disponible
+en esta sesión:
 
 | Paso | Doc | Acción | Dónde | Bloqueante |
 |---|---|---|---|---|
@@ -89,18 +93,36 @@ Cinco acciones. Ninguna es sustituible por API disponible en esta sesión:
 | 5 | `M4` | Verificar el dominio y marcar *Enforce HTTPS* | GitHub | Sí |
 | 6 | `M7` | Checklist final de verificación | Navegador | Cierre |
 | — | `M5` | Alta en Google Search Console | Search Console | No, opcional |
+| — | `M8` | Autenticar Git con GitHub | Terminal local | Solo si `M6` falla |
+| — | `M9` | Autorizar el dominio en las restricciones de la clave de API | Google Cloud Console | Sí |
 
-**Orden de ejecución: M1 → M2 → M3 → M6 → M4 → M7.**
-El orden **no** es el numérico. `M6` (desplegar) va antes que `M4` (HTTPS).
+`M8` y `M9` **no estaban previstos**: surgieron al ejecutar. `M9` es el más importante de los
+dos, porque es una tercera lista blanca de dominios que la planificación no detectó y que dejó
+el login roto tras dar la migración por terminada.
+
+`M8` surgió al ejecutar `M6`. El despliegue compiló bien pero falló al
+subir a `gh-pages` porque el Git local no tenía credenciales y GitHub no acepta contraseñas
+desde 2021. Ver el detalle en `00-log-revisiones.md`, sección de hallazgos en ejecución.
+
+**Orden de ejecución: M1 → M2 → M3 → M9 → M6 → M4 → M7.**
+El orden **no** es el numérico: `M6` (desplegar) va antes que `M4` (HTTPS), y `M9` se descubrió
+al final aunque conceptualmente pertenece al bloque de listas blancas junto a `M2` y `M3`.
 
 **Por qué `M6` no lo puede hacer Claude:** el build inyecta las claves `VITE_FIREBASE_*` desde
 el `.env` local del usuario, excluido del repositorio (`.gitignore:71-75`). No hay panel de
 hosting ni GitHub Actions donde esas claves vivan.
 
-**Consecuencia de omitir cada bloqueante:**
-- Sin `M2` → login falla con `auth/unauthorized-domain`.
-- Sin `M3` → el login funciona pero Firestore devuelve permiso denegado por App Check.
-- Sin `M6` → no hay nada publicado en el dominio.
+**Consecuencia de omitir cada bloqueante.** Los tres primeros son listas blancas de dominios en
+tres sistemas distintos, y cada uno falla de una forma reconocible:
+
+| Falta | Síntoma exacto |
+|---|---|
+| `M2` | `auth/unauthorized-domain` |
+| `M9` | `auth/requests-from-referer-<dominio>-are-blocked` |
+| `M3` | El login entra correctamente, pero el dashboard no carga datos |
+| `M6` | No hay nada publicado en el dominio |
+
+Esa tabla es la herramienta de diagnóstico: el mensaje de error dice qué documento toca.
 
 ---
 
@@ -200,29 +222,46 @@ validando por HTTP contra el dominio; si Cloudflare intercepta, la validación n
 así que activarlo "después" no es una opción segura. GitHub Pages ya sirve por su propia CDN,
 de modo que no se pierde rendimiento relevante.
 
-### Fase 3 — Tareas manuales del usuario — ⏳ *pendiente*
+### Fase 3 — Tareas manuales del usuario — ✅ *hecha*
 
 `M2` → `M3` → `M6` → `M4`, en ese orden. Auth y App Check antes de exponer el dominio; el
 despliegue antes de que GitHub intente validar nada.
 
-Entre `M4.A3` y `M4.A4` hay una **pausa bloqueante**: el usuario entrega el valor del TXT de
-verificación y espera a que Claude lo cree en Cloudflare.
+`M6` requirió resolver antes `M8` (credenciales de Git), incidencia no prevista.
 
-### Fase 4 — Verificación — ⏳ *pendiente*
+Queda `M4`. Entre `M4.A3` y `M4.A4` hay una **pausa bloqueante**: el usuario entrega el valor
+del TXT de verificación y espera a que Claude lo cree en Cloudflare.
 
-Comprobaciones de Claude:
+### Fase 4 — Verificación — 🟡 *automatizable ✅ completa; falta la del navegador (`M7`)*
 
-```bash
-dig +short autogastopro.cc          # IPs de GitHub Pages
-dig +short www.autogastopro.cc
-curl -sSI https://autogastopro.cc              # 200, cert Let's Encrypt válido
-curl -sSI http://autogastopro.cc               # 301 a https
-curl -sSI https://www.autogastopro.cc          # 301 al apex
-curl -sSI https://wally720.github.io/autocontrolapp/   # 301 al dominio nuevo
-curl -s https://autogastopro.cc/ | grep assets # bundles en /assets/
-```
+Resultados reales observados tras el despliegue:
 
-Comprobaciones del usuario: las 21 del checklist `M7`, que cubren certificado, estilos, login
+| Comprobación | Resultado |
+|---|---|
+| `https://autogastopro.cc` | ✅ HTTP 200, sirviendo la app |
+| Build publicado | ✅ `/assets/index-d177ecf3.js`, el hash que produjo el despliegue |
+| `<link rel="canonical">` | ✅ `https://autogastopro.cc/` |
+| `https://www.autogastopro.cc` | ✅ 301 al apex |
+| `https://wally720.github.io/autocontrolapp/` | ✅ 301 al dominio nuevo |
+| `CNAME` en la rama `gh-pages` | ✅ `autogastopro.cc` |
+| DNS apex y `www` | ✅ las 4 IPs de GitHub Pages, en DNS only |
+| `http://autogastopro.cc` | ✅ 301 a `https://` (confirma *Enforce HTTPS* activo) |
+| `http://www.autogastopro.cc` | ✅ 301 a `https://autogastopro.cc/` |
+
+La redirección desde la URL antigua entra por `http://autogastopro.cc` y de ahí salta a HTTPS:
+son dos saltos en lugar de uno. Es el comportamiento normal de GitHub Pages y no requiere
+acción; el destino final es correcto y va cifrado.
+
+Nota: `https://autogastopro.cc/CNAME` devuelve 404 y **es correcto**. GitHub Pages consume ese
+archivo para configurar el dominio y no lo publica como recurso.
+
+**Limitación de la verificación automatizada.** El tráfico saliente del entorno donde corre
+Claude atraviesa un proxy que sustituye los certificados TLS. Al inspeccionar el certificado de
+`autogastopro.cc` se obtiene el del proxy, no el real de GitHub, de modo que **Claude no puede
+confirmar el emisor ni la validez del certificado**. Esa comprobación es necesariamente del
+usuario: el candado del navegador, paso 2 de `M7`.
+
+Comprobaciones pendientes del usuario: las 21 de `M7`, que cubren certificado, estilos, login
 (valida `M2`), lectura y escritura de datos (valida `M3`), navegación y móvil.
 
 ### Fase 5 — Rollback
@@ -279,7 +318,7 @@ pantalla no coincide con lo descrito, se corrige en el momento con una captura.
 | Archivo | Contenido |
 |---|---|
 | `00-plan-migracion.md` | Este documento. Especificación y fuente de verdad |
-| `00-log-revisiones.md` | Registro de las 5 pasadas de revisión y sus 19 hallazgos |
+| `00-log-revisiones.md` | Las 5 pasadas de revisión (19 hallazgos) y los 3 hallazgos que solo aparecieron al ejecutar |
 | `M1-cloudflare-api-token.md` | Crear y entregar el API Token de Cloudflare |
 | `M2-firebase-authorized-domains.md` | Autorizar el dominio en Firebase Authentication |
 | `M3-recaptcha-appcheck-dominios.md` | Autorizar el dominio en reCAPTCHA Enterprise |
@@ -287,3 +326,68 @@ pantalla no coincide con lo descrito, se corrige en el momento con una captura.
 | `M5-search-console.md` | Alta en Google Search Console (opcional) |
 | `M6-desplegar.md` | Desplegar la app al dominio nuevo |
 | `M7-checklist-final.md` | Checklist final de verificación, 21 comprobaciones |
+| `M8-autenticar-github.md` | Autenticar Git con GitHub en macOS. Solo si `M6` falla por credenciales |
+| `M9-api-key-referrers.md` | Autorizar el dominio en las restricciones de la clave de API. Tercera lista blanca, no prevista |
+
+## 11. Estado final — migración completada
+
+**`https://autogastopro.cc` es el dominio de producción.** Verificado de extremo a extremo el
+12 de agosto de 2026.
+
+| Paso | Estado |
+|---|---|
+| Fase 1 — código | ✅ |
+| Fase 2 — DNS en Cloudflare | ✅ |
+| `M1` token de Cloudflare | ✅ |
+| `M2` Firebase Authentication | ✅ |
+| `M3` reCAPTCHA / App Check | ✅ |
+| `M9` restricciones de la clave de API | ✅ (incidencia no prevista) |
+| `M8` credenciales de Git | ✅ (incidencia no prevista) |
+| `M6` despliegue | ✅ |
+| `M4` verificación del dominio y *Enforce HTTPS* | ✅ |
+| `M7` checklist final, 21 comprobaciones | ✅ |
+| `M5` Search Console | Opcional, sin hacer |
+
+Comprobaciones automatizadas finales:
+
+```
+200  https://autogastopro.cc
+301  http://autogastopro.cc              -> https://autogastopro.cc/
+301  https://www.autogastopro.cc         -> https://autogastopro.cc/
+301  github.io/autocontrolapp            -> autogastopro.cc
+     bundle publicado: /assets/index-d177ecf3.js
+```
+
+El usuario confirmó las 21 comprobaciones de `M7`, incluidas las que solo se pueden hacer con
+un navegador y sesión iniciada: certificado válido, login con Google, lectura y escritura de
+datos, y funcionamiento en móvil.
+
+### Aviso conocido y benigno
+
+En Chrome, la consola muestra `Cross-Origin-Opener-Policy policy would block the window.closed
+call` al iniciar sesión. **Es cosmético y no requiere acción.** Chrome corta la relación entre
+la página y la ventana emergente de Google; Firebase avisa al intentar consultar y cerrar esa
+ventana durante la limpieza, *después* de que la autenticación ya se completó. No lo causó la
+migración: ocurría igual en el dominio anterior. No se puede suprimir en GitHub Pages, que no
+permite configurar cabeceras HTTP. Único efecto real: si alguien cierra la ventana emergente a
+mano sin elegir cuenta, la app tarda algo más en detectar la cancelación.
+
+### Mantenimiento futuro
+
+**Nunca borres `public/CNAME`.** `npm run deploy` reescribe la rama `gh-pages` entera en cada
+despliegue; ese archivo es lo único que impide que el dominio se pierda.
+
+Si algún día se añade otro dominio o subdominio, hay que darlo de alta en **los tres** sistemas
+de la tabla de §5.2 — Firebase Authentication, reCAPTCHA Enterprise y las restricciones de la
+clave de API — más el DNS. Olvidar cualquiera de los tres rompe la app de una forma distinta;
+la tabla de errores de §5.2 dice cuál es cuál.
+
+### Trabajo propuesto, fuera del alcance de esta migración
+
+- **30 vulnerabilidades de dependencias**, 2 críticas, 18 en dependencias que llegan al
+  navegador. Ya existían antes de la migración. Arreglarlas exige saltos de versión mayor en
+  `firebase` y `react-router-dom`, con cambios incompatibles.
+- **Despliegue automático con GitHub Actions**, con las claves como *secrets*. Eliminaría el
+  paso manual `M6` y la dependencia del `.env` local.
+- **12 errores de lint preexistentes**, verificados como anteriores a esta migración.
+- **URLs sin `#`**, que requerirían mover el hosting a Cloudflare Pages (ver §7).

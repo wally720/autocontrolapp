@@ -123,9 +123,79 @@ vocabulario de desarrollo. Busca puntos donde el lector se quedaría parado sin 
 - Dos cambios en mi propio trabajo: auditar la zona DNS antes de crear registros (S2), y
   eliminar registros conflictivos en el apex antes de M4 (F2).
 
-**Limitación que sigue en pie, y conviene decirla:** no tengo acceso a las cuentas de
+**Limitación que seguía en pie tras las revisiones:** no tengo acceso a las cuentas de
 Cloudflare, Firebase ni Google Cloud del usuario. Los documentos están contrastados contra la
 documentación oficial vigente, pero **no** contra las pantallas reales de esas cuentas. Los
 paneles cambian de nombre y de sitio con frecuencia — la pasada 1 encontró dos casos. Si alguna
 pantalla no coincide con lo descrito, es un fallo esperable de este método y se corrige en el
 momento con una captura.
+
+---
+
+## Hallazgos en ejecución
+
+Los cinco anteriores fueron revisiones **sobre el papel**. Esta sección recoge lo que apareció
+al ejecutar el proceso de verdad, y se registra porque es la parte más honesta del expediente:
+**ninguna de las cinco pasadas detectó estos cuatro fallos.**
+
+| # | Dónde | Qué pasó | Corrección |
+|---|---|---|---|
+| X1 | `M6` | El chequeo `grep -c VITE_FIREBASE .env` exigía **9** variables y mandaba parar si salían menos. El umbral era incorrecto: solo 8 son obligatorias, porque `VITE_FIREBASE_APPCHECK_DEBUG_TOKEN` es opcional y exclusiva de desarrollo (`src/config/firebase.js:21` la ignora fuera de modo DEV). Detuvo el despliegue sin motivo | Umbral corregido a 8, con la lista explícita. El comando anterior además solo contaba líneas, así que al fallar no decía **cuál** faltaba: sustituido por uno que lista los nombres sin exponer los valores (`d49f232`) |
+| X2 | `M6` | El despliegue compiló bien pero falló al subir a `gh-pages`: `Password authentication is not supported for Git operations`. El documento preveía el caso, pero se limitaba a decir *"avísame"* — dejaba al usuario bloqueado esperando en lugar de darle un procedimiento | Creado `M8-autenticar-github.md` con dos caminos (GitHub CLI o token personal), guardado en el Llavero de macOS y limpieza de credenciales viejas (`4a3dad0`) |
+| X3 | plan §6, paso 2.2 | La especificación pedía poner SSL/TLS en *Full (strict)* y activar *Always Use HTTPS* en Cloudflare. Esos ajustes **solo actúan sobre tráfico proxied**, y aquí todo va en DNS only: no tendrían ningún efecto. Además el token de `M1` no tiene permiso para tocarlos | Paso reescrito explicando por qué no se aplica nada, y confirmando que el alcance `Zone → DNS → Edit` del token es el correcto (`b9006e2`) |
+
+| X4 | `M2`, `M3` | **Faltaba una lista blanca entera.** La exploración inicial identificó dos sistemas que restringen dominios (Firebase Authentication y reCAPTCHA Enterprise) y se documentó uno para cada uno. Hay **tres**: la propia clave de API de Firebase tiene restricciones de sitio web en Google Cloud, independientes de las otras dos. El login quedó bloqueado con `auth/requests-from-referer-https://autogastopro.cc-are-blocked` | Creado `M9-api-key-referrers.md`. Añadida a `M2` una tabla que mapea cada mensaje de error a su documento, para que el síntoma identifique la causa sin adivinar |
+
+### Sobre X4, que es el más grave
+
+Los tres anteriores costaron tiempo; este **dejó la app rota para los usuarios** tras una
+migración que se había dado por técnicamente terminada. Merece un análisis aparte.
+
+El fallo no fue de redacción ni de revisión: fue **de inventario**. La exploración del código
+localizó correctamente `signInWithPopup` y `initializeAppCheck` y de ahí dedujo dos listas
+blancas. Pero la tercera **no es visible en el código**: la clave de API aparece en
+`src/config/firebase.js:7` como un valor cualquiera, y nada en el repositorio indica que además
+tenga restricciones por dominio configuradas en otra consola.
+
+La lección que queda es que buscar en el código sirve para encontrar *lo que la app usa*, no
+*lo que está configurado alrededor de la app*. Para una migración de dominio, la pregunta
+correcta no es "¿qué servicios llama el código?" sino **"¿qué sistemas conocen el dominio
+actual?"** — y esa lista solo se completa revisando las consolas, no el repositorio.
+
+Aplicado a este proyecto, el inventario completo de sistemas que guardaban el dominio antiguo
+resultó ser:
+
+| Sistema | Consola | Documento |
+|---|---|---|
+| Firebase Authentication — *Authorized domains* | Firebase | `M2` |
+| reCAPTCHA Enterprise — *Domains* | Google Cloud | `M3` |
+| Clave de API — restricciones de sitio web | Google Cloud | `M9` |
+| GitHub Pages — *Custom domain* | GitHub | `M4` + `public/CNAME` |
+| DNS | Cloudflare | Fase 2 |
+
+### Qué enseña esto sobre el método
+
+Las cinco pasadas fueron útiles: encontraron 19 fallos, entre ellos un paso innecesario, una
+ruta de consola obsoleta y una tarea manual entera que faltaba. Pero los cuatro de arriba tienen
+algo en común que ninguna revisión documental podía atrapar:
+
+- **X1 y X3** eran errores de *razonamiento sobre el sistema real*, no de redacción. El
+  documento era claro, estaba bien escrito y era coherente consigo mismo. Simplemente decía
+  algo que no era cierto.
+- **X2** era un vacío de cobertura: el documento **sí** anticipaba el fallo, pero lo resolvía
+  delegando en el chat. Un procedimiento que en su punto crítico dice "pregunta" no es un
+  procedimiento.
+- **X4** era un vacío de inventario: no faltaba precisión en lo escrito, faltaba un sistema
+  entero del que nadie se había acordado. Es el más caro de los cuatro y el único que dejó la
+  app inutilizable.
+
+La conclusión práctica es que revisar no sustituye a ejecutar. La regla que queda para futuros
+documentos de este tipo: **ningún paso puede resolverse con "avísame"**. Si un fallo es
+previsible, debe llevar su procedimiento escrito; si no lo es, el documento debe decir cómo
+reconocerlo y qué información recoger antes de pedir ayuda.
+
+**Limitación adicional detectada durante la verificación:** el entorno donde corre Claude
+enruta el tráfico saliente por un proxy que sustituye los certificados TLS. Por eso Claude
+puede confirmar que `https://autogastopro.cc` responde 200 y qué contenido sirve, pero **no**
+puede validar el emisor del certificado. Esa comprobación queda necesariamente del lado del
+usuario.

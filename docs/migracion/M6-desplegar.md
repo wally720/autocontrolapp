@@ -66,13 +66,33 @@ Debes ver un archivo llamado **`.env`** (además de `.env.example`).
 **Si NO aparece `.env`:** para aquí y avísame. Sin él, la app compila pero se queda sin
 conexión a Firebase, y el sitio publicado quedaría roto. No sigas.
 
-**Si aparece**, comprueba que tiene las 9 claves:
+**Si aparece**, comprueba qué claves tiene. Este comando imprime **solo los nombres, nunca los
+valores**, así que puedes pegar el resultado en el chat sin exponer nada:
 
 ```bash
-grep -c VITE_FIREBASE .env
+grep -oE '^VITE_FIREBASE[A-Z_]*' .env | sort
 ```
 
-Debe responder **9**. Si responde menos, avísame antes de continuar.
+Deben salir estas **8**, que son las imprescindibles para desplegar:
+
+```
+VITE_FIREBASE_API_KEY
+VITE_FIREBASE_APP_ID
+VITE_FIREBASE_AUTH_DOMAIN
+VITE_FIREBASE_MEASUREMENT_ID
+VITE_FIREBASE_MESSAGING_SENDER_ID
+VITE_FIREBASE_PROJECT_ID
+VITE_FIREBASE_RECAPTCHA_KEY
+VITE_FIREBASE_STORAGE_BUCKET
+```
+
+Puede salir además una novena, `VITE_FIREBASE_APPCHECK_DEBUG_TOKEN`. **Es opcional y solo
+sirve para desarrollo local**: `src/config/firebase.js:21` la ignora fuera de modo desarrollo,
+así que no influye en el despliegue. Que esté o que falte da igual para este paso.
+
+**Si falta alguna de las 8 de la lista, para y avísame** diciéndome cuál (el nombre, no el
+valor). Sin ella la app compila igual pero se queda sin conexión a Firebase, y el sitio
+publicado quedaría roto.
 
 ---
 
@@ -183,9 +203,19 @@ No tienes Node.js instalado o no está en el PATH de esa terminal. Descárgalo d
 **`fatal: not a git repository`**
 No estás dentro de la carpeta del proyecto. Revisa el `cd` del paso 1.
 
-**El comando pide usuario y contraseña de GitHub**
-Tu Git no tiene credenciales guardadas. Avísame y lo resolvemos; no escribas tu contraseña de
-GitHub ahí, porque GitHub ya no la acepta para esto.
+**El comando pide usuario y contraseña de GitHub, y luego falla**
+
+```
+remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed
+```
+
+Tu Git no tiene credenciales guardadas, y GitHub dejó de aceptar contraseñas en 2021. **No es
+un fallo de la migración** y **el build no se pierde**: `dist/` ya quedó compilado, solo falta
+subirlo.
+
+👉 **Sigue `M8-autenticar-github.md`**, que lo resuelve en 5 minutos y una sola vez. Luego
+vuelve aquí y repite el paso 5.
 
 **Terminó con `Published` pero el sitio viejo sigue igual**
 Normal durante unos minutos: GitHub tarda en publicar. Espera 5 minutos y recarga con

@@ -147,7 +147,14 @@ Revisa el paso 4: está en *Settings* o al final de *Sign-in method*, según tu 
 consola. Si no aparece en ninguna de las dos, mándame una captura de la pantalla completa.
 
 **"Añadí el dominio y el login sigue fallando".**
-Dos causas posibles, en este orden:
-1. El navegador cacheó el error. Prueba en una ventana de incógnito.
-2. Es App Check, no Auth. Si el login **sí** entra pero luego no cargan los datos, ese es el
-   síntoma de que falta **M3**. Son dos listas blancas distintas y hay que hacer las dos.
+Mira el mensaje de error exacto en la consola del navegador (F12 → *Console*). Hay **tres**
+listas blancas distintas y cada una da un error diferente:
+
+| Mensaje | Causa | Documento |
+|---|---|---|
+| `auth/unauthorized-domain` | Esta lista, la de Firebase Auth | este (`M2`) |
+| `auth/requests-from-referer-<dominio>-are-blocked` | Restricciones de la clave de API | `M9` |
+| El login entra, pero no cargan los datos | App Check / reCAPTCHA | `M3` |
+
+Si el error es el primero y ya añadiste el dominio, prueba en una ventana de incógnito: puede
+ser caché del navegador.
