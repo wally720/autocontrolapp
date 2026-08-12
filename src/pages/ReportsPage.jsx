@@ -1,5 +1,4 @@
 // src/pages/ReportsPage.jsx
-import React from 'react';
 import Reports from '../features/Reports';
 
 const ReportsPage = () => {

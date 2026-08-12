@@ -1,5 +1,5 @@
 // src/features/VehicleSwitcher.jsx
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import './VehicleSwitcher.css';
 import VehicleContext from '../context/VehicleContext';
 import { useAuth } from '../context/AuthContext';
