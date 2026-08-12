@@ -66,13 +66,33 @@ Debes ver un archivo llamado **`.env`** (además de `.env.example`).
 **Si NO aparece `.env`:** para aquí y avísame. Sin él, la app compila pero se queda sin
 conexión a Firebase, y el sitio publicado quedaría roto. No sigas.
 
-**Si aparece**, comprueba que tiene las 9 claves:
+**Si aparece**, comprueba qué claves tiene. Este comando imprime **solo los nombres, nunca los
+valores**, así que puedes pegar el resultado en el chat sin exponer nada:
 
 ```bash
-grep -c VITE_FIREBASE .env
+grep -oE '^VITE_FIREBASE[A-Z_]*' .env | sort
 ```
 
-Debe responder **9**. Si responde menos, avísame antes de continuar.
+Deben salir estas **8**, que son las imprescindibles para desplegar:
+
+```
+VITE_FIREBASE_API_KEY
+VITE_FIREBASE_APP_ID
+VITE_FIREBASE_AUTH_DOMAIN
+VITE_FIREBASE_MEASUREMENT_ID
+VITE_FIREBASE_MESSAGING_SENDER_ID
+VITE_FIREBASE_PROJECT_ID
+VITE_FIREBASE_RECAPTCHA_KEY
+VITE_FIREBASE_STORAGE_BUCKET
+```
+
+Puede salir además una novena, `VITE_FIREBASE_APPCHECK_DEBUG_TOKEN`. **Es opcional y solo
+sirve para desarrollo local**: `src/config/firebase.js:21` la ignora fuera de modo desarrollo,
+así que no influye en el despliegue. Que esté o que falte da igual para este paso.
+
+**Si falta alguna de las 8 de la lista, para y avísame** diciéndome cuál (el nombre, no el
+valor). Sin ella la app compila igual pero se queda sin conexión a Firebase, y el sitio
+publicado quedaría roto.
 
 ---
 
