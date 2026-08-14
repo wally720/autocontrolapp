@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Función para verificar si el usuario es Administrador
+    function isAdmin() {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // --- REGLAS PARA USUARIOS ---
+    match /users/{userId} {
+      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && (
+        (request.auth.uid == userId && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['vehicles'])) ||
+        isAdmin()
+      );
+    }
+
+    // --- REGLAS PARA VEHÍCULOS (Registro Central) ---
+    match /vehicles/{plate} {
+      // Todos los usuarios logueados pueden ver si una placa existe al intentar registrarla
+      allow read: if request.auth != null;
+      // Permite crear el documento de la placa solo si no existe
+      allow create: if request.auth != null;
+      // Solo el dueño (ownerId) o un Admin pueden modificar quién tiene acceso (authorizedUsers)
+      allow update: if request.auth != null && (resource.data.ownerId == request.auth.uid || isAdmin());
+    }
+
+
+    // --- REGLAS PARA GASTOS (Expenses) ---
+    match /expenses/{expenseId} {
+      // Función auxiliar para obtener datos del vehículo
+      function getVehicle() {
+        return get(/databases/$(database)/documents/vehicles/$(resource.data.vehicleId)).data;
+      }
+      // PROTECCIÓN CLAVE: Solo permite leer si el UID del usuario está en la lista 'authorizedUsers' de ese vehículo
+      allow read: if request.auth != null &&
+        request.auth.uid in getVehicle().authorizedUsers;
+
+      // Solo permite crear gastos si el usuario está autorizado para esa placa
+      allow create: if request.auth != null &&
+        request.resource.data.userId == request.auth.uid &&
+        request.auth.uid in get(/databases/$(database)/documents/vehicles/$(request.resource.data.vehicleId)).data.authorizedUsers;
+
+      // FIX: Permitir borrar si es el creador O el dueño del vehículo O admin
+      allow update, delete: if request.auth != null && (
+        resource.data.userId == request.auth.uid ||
+        getVehicle().ownerId == request.auth.uid
+      );
+    }
+  }
+}
