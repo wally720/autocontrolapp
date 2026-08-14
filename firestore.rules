@@ -1,31 +1,88 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
+    
     // Función para verificar si el usuario es Administrador
     function isAdmin() {
       return request.auth != null &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
+    // Un usuario bloqueado no toca datos. Se comprueba aqui y no solo en el
+    // cliente: sin esto, bloquear a alguien desde AdminDashboard solo le
+    // cambiaba la pantalla y conservaba el acceso via SDK.
+    //
+    // Se valida contra 'blocked' y no contra 'approved' a proposito, para no
+    // atar las reglas a la aprobacion manual, que esta planificada para
+    // eliminarse.
+    //
+    // No se aplica al perfil propio: un usuario bloqueado tiene que poder leer
+    // su doc para que la UI se lo diga. Tampoco al 'create' del perfil, que
+    // corre antes de que el doc exista.
+    //
+    // El default de get() es obligatorio: acceder a un campo inexistente es un
+    // error de evaluacion en las reglas, no null, asi que sin el un perfil sin
+    // 'status' quedaria bloqueado de toda la app.
+    function isNotBlocked() {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('status', 'active') != 'blocked';
+    }
+
     // --- REGLAS PARA USUARIOS ---
     match /users/{userId} {
       allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
-      allow create: if request.auth != null && request.auth.uid == userId;
+
+      // El perfil lo crea el cliente (AuthContext) en el primer login, asi que
+      // su contenido no es confiable: sin forzar 'role' aqui, cualquiera
+      // puede registrarse directamente como role:'admin' e isAdmin() lo
+      // aceptaria.
+      //
+      // Solo se restringen los campos que otorgan poder. El resto queda libre
+      // a proposito: una allowlist rigida romperia el alta de usuarios nuevos
+      // -- en produccion y en silencio -- el dia que alguien agregue un campo
+      // al perfil.
+      //
+      // 'status' NO se valida aqui a proposito: no gatea ningun dato en estas
+      // reglas, solo decide que pantalla muestra el cliente.
+      allow create: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.role == 'user'
+        && request.resource.data.email == request.auth.token.email;
+      // El usuario solo puede tocar su array 'vehicles'. El limite de 20 es
+      // anti-abuso, no el limite de producto (MAX_VEHICLES_PER_USER, que vive
+      // en el cliente): asi ajustar el limite de negocio no obliga a tocar
+      // reglas ni a redeployarlas.
+      //
+      // No se valida que las placas del array pertenezcan al usuario: exigirlo
+      // requeriria un get() por placa en cada update. El acceso real a los
+      // datos se resuelve contra vehicles.authorizedUsers, asi que una placa
+      // ajena aqui solo ensucia la navegacion del propio usuario.
       allow update: if request.auth != null && (
-        (request.auth.uid == userId && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['vehicles'])) ||
+        (request.auth.uid == userId
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['vehicles'])
+          && request.resource.data.vehicles.size() <= 20) ||
         isAdmin()
       );
     }
 
     // --- REGLAS PARA VEHÍCULOS (Registro Central) ---
     match /vehicles/{plate} {
-      // Todos los usuarios logueados pueden ver si una placa existe al intentar registrarla
-      allow read: if request.auth != null;
-      // Permite crear el documento de la placa solo si no existe
-      allow create: if request.auth != null;
+      // 'get' queda abierto porque VehicleSwitcher necesita consultar una placa
+      // concreta para saber si ya esta registrada antes de darla de alta.
+      // 'list' se separa a proposito: sin esa distincion, cualquier usuario
+      // podia enumerar la flota completa con sus ownerId y authorizedUsers.
+      allow get: if isNotBlocked();
+      allow list: if isAdmin();
+
+      // El alta la hace el cliente (VehicleSwitcher), asi que se fuerza que
+      // el creador sea el dueño y el unico autorizado inicial. Sin esto,
+      // cualquiera podia registrar una placa a nombre de otro.
+      allow create: if isNotBlocked()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.authorizedUsers.hasOnly([request.auth.uid])
+        && request.resource.data.authorizedUsers.size() == 1;
       // Solo el dueño (ownerId) o un Admin pueden modificar quién tiene acceso (authorizedUsers)
-      allow update: if request.auth != null && (resource.data.ownerId == request.auth.uid || isAdmin());
+      allow update: if request.auth != null && ((resource.data.ownerId == request.auth.uid && isNotBlocked()) || isAdmin());
     }
 
 
@@ -36,19 +93,32 @@ service cloud.firestore {
         return get(/databases/$(database)/documents/vehicles/$(resource.data.vehicleId)).data;
       }
       // PROTECCIÓN CLAVE: Solo permite leer si el UID del usuario está en la lista 'authorizedUsers' de ese vehículo
-      allow read: if request.auth != null &&
+      allow read: if isNotBlocked() &&
         request.auth.uid in getVehicle().authorizedUsers;
 
       // Solo permite crear gastos si el usuario está autorizado para esa placa
-      allow create: if request.auth != null &&
+      allow create: if isNotBlocked() &&
         request.resource.data.userId == request.auth.uid &&
         request.auth.uid in get(/databases/$(database)/documents/vehicles/$(request.resource.data.vehicleId)).data.authorizedUsers;
-
-      // FIX: Permitir borrar si es el creador O el dueño del vehículo O admin
-      allow update, delete: if request.auth != null && (
-        resource.data.userId == request.auth.uid ||
-        getVehicle().ownerId == request.auth.uid
+      
+      // Puede borrar el creador, el dueño del vehiculo o un admin.
+      allow delete: if request.auth != null && (
+        ((resource.data.userId == request.auth.uid ||
+          getVehicle().ownerId == request.auth.uid) && isNotBlocked()) ||
+        isAdmin()
       );
+
+      // Mismo criterio para editar, pero 'vehicleId' y 'userId' quedan
+      // inmutables: sin eso, el creador podia mover su gasto a cualquier
+      // vehiculo ajeno e inyectar datos en la contabilidad de otro.
+      allow update: if request.auth != null
+        && (
+          ((resource.data.userId == request.auth.uid ||
+            getVehicle().ownerId == request.auth.uid) && isNotBlocked()) ||
+          isAdmin()
+        )
+        && request.resource.data.vehicleId == resource.data.vehicleId
+        && request.resource.data.userId == resource.data.userId;
     }
   }
 }
