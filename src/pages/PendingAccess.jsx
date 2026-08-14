@@ -4,6 +4,24 @@ import { auth } from '../config/firebase';
 import { signOut } from 'firebase/auth';
 import '../components/Auth/Auth.css';
 
+const BLOCKED_COPY = {
+    kicker: 'Acceso restringido',
+    title: 'Cuenta bloqueada',
+    body: [
+        'Tu cuenta fue bloqueada por un administrador y no tiene acceso al sistema.',
+        'Si creés que se trata de un error, contactá al administrador.',
+    ],
+};
+
+const PENDING_COPY = {
+    kicker: 'Validación requerida',
+    title: 'Acceso Pendiente',
+    body: [
+        'Tu cuenta ha sido registrada correctamente, pero aún está pendiente de aprobación por un administrador.',
+        'Por favor, espera a que validemos tu cuenta para poder acceder al sistema.',
+    ],
+};
+
 const PendingAccess = () => {
     const { userProfile } = useAuth();
 
@@ -11,14 +29,15 @@ const PendingAccess = () => {
         signOut(auth);
     };
 
+    const copy = userProfile?.status === 'blocked' ? BLOCKED_COPY : PENDING_COPY;
+
     return (
         <div className="auth-container">
             <div className="auth-form auth-form--centered">
-                <p className="auth-kicker">Validación requerida</p>
-                <h2>Acceso Pendiente</h2>
+                <p className="auth-kicker">{copy.kicker}</p>
+                <h2>{copy.title}</h2>
                 <p>Hola <strong>{userProfile?.email}</strong>,</p>
-                <p>Tu cuenta ha sido registrada correctamente, pero aún está pendiente de aprobación por un administrador.</p>
-                <p>Por favor, espera a que validemos tu cuenta para poder acceder al sistema.</p>
+                {copy.body.map((line) => <p key={line}>{line}</p>)}
                 <button
                     onClick={handleLogout}
                     className="auth-button"

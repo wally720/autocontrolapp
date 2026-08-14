@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
         if (!userDoc.exists()) {
             await setDoc(userDocRef, {
                 email: user.email,
-                status: 'pending',
+                status: 'approved',
                 role: 'user',
                 vehicles: [],
                 createdAt: new Date().toISOString()
@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
             if (!userDoc.exists()) {
                 await setDoc(userDocRef, {
                     email: user.email,
-                    status: 'pending',
+                    status: 'approved',
                     role: 'user',
                     vehicles: [],
                     createdAt: new Date().toISOString()

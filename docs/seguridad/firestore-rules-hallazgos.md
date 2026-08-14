@@ -139,7 +139,7 @@ Estado final de cada hallazgo. Cada uno tiene su test en `firestore.rules.test.j
 
 ### Decisiones de diseño
 
-**`isNotBlocked()` valida contra `blocked`, no contra `approved`.** Así bloquear a alguien es una expulsión real sin atar las reglas a la aprobación manual, que está planificada para eliminarse. Abrir el registro no requerirá tocar este archivo.
+**`isNotBlocked()` valida contra `blocked`, no contra `approved`.** Así bloquear a alguien es una expulsión real sin atar las reglas a la aprobación manual. Esa previsión se cumplió: el registro se abrió el mismo día (`AuthContext` ahora crea los perfiles como `approved`) sin tocar una sola línea de este archivo.
 
 No se aplica al perfil propio ni al `create` de `users`: un usuario bloqueado tiene que poder leer su doc para que la UI se lo diga, y el `create` corre antes de que el doc exista.
 

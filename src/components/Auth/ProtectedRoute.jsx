@@ -15,11 +15,11 @@ const ProtectedRoute = ({ allowedRoles, allowedStatuses }) => {
         return <Navigate to="/pending-access" replace />;
     }
 
+    // Los rechazados van siempre a /pending-access, que explica el motivo.
+    // Mandarlos a /login los dejaba en un rebote sin explicacion: ya estaban
+    // autenticados, asi que volver a entrar los devolvia al mismo lugar.
     if (allowedStatuses && !allowedStatuses.includes(userProfile.status)) {
-        if (userProfile.status === 'pending') {
-            return <Navigate to="/pending-access" replace />;
-        }
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/pending-access" replace />;
     }
 
     if (allowedRoles && !allowedRoles.includes(userProfile.role)) {

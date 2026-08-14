@@ -36,7 +36,7 @@ let testEnv;
 /** Perfil tal como lo escribe AuthContext.jsx en el primer login. */
 const newProfile = (email, overrides = {}) => ({
   email,
-  status: 'pending',
+  status: 'approved',
   role: 'user',
   vehicles: [],
   createdAt: new Date().toISOString(),
